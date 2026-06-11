@@ -13,9 +13,9 @@
   <div class="panel">
     <div class="panel-title">USDT转出笔数统计</div>
     <div class="controls">
-      <div class="field"><label>快捷范围</label><select id="rangeSelect"><option value="7">最近7个完整日</option><option value="30">最近30个完整日</option><option value="custom">自定义日期</option></select></div>
       <div class="field"><label>开始日期</label><input id="startDate" type="date"></div>
       <div class="field"><label>结束日期</label><input id="endDate" type="date"></div>
+      <div class="field"><label>快捷范围</label><select id="rangeSelect"></select></div>
       <div class="field"><label>请求间隔(ms)</label><input id="delayMs" type="number" value="900" min="200" step="100"></div>
       <button class="btn" id="queryBtn" onclick="startOrResumeQuery()">开始查询</button>
       <button class="btn warn" id="pauseBtn" onclick="pauseQuery()" disabled>暂停</button>
@@ -72,6 +72,34 @@ function pad(n){return String(n).padStart(2,"0")}
 function toDateInput(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 function parseLocalDate(s){const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
 function initDates(days=7){const end=new Date();end.setDate(end.getDate()-1);const start=new Date(end);start.setDate(start.getDate()-days+1);startDate.value=toDateInput(start);endDate.value=toDateInput(end)}
+function setMonthRange(year,month){
+  const start=new Date(year,month-1,1);
+  let end=new Date(year,month,0);
+  const yesterday=new Date();
+  yesterday.setDate(yesterday.getDate()-1);
+  if(start<=yesterday && end>yesterday)end=yesterday;
+  startDate.value=toDateInput(start);
+  endDate.value=toDateInput(end);
+}
+function getPrevMonthInfo(){
+  const now=new Date();
+  let year=now.getFullYear();
+  let month=now.getMonth(); // 1-12 的上一个月；例如 6月返回 5
+  if(month===0){
+    year-=1;
+    month=12;
+  }
+  return {year,month};
+}
+function populateRangeOptions(){
+  const prev=getPrevMonthInfo();
+  rangeSelect.innerHTML=`<option value="month:${prev.year}-${pad(prev.month)}">${prev.month}月</option><option value="7">最近7个完整日</option><option value="30">最近30个完整日</option><option value="custom">自定义日期</option>`;
+}
+function initPrevMonth(){
+  const prev=getPrevMonthInfo();
+  setMonthRange(prev.year,prev.month);
+  rangeSelect.value=`month:${prev.year}-${pad(prev.month)}`;
+}
 function dateList(start,end){const arr=[];let d=parseLocalDate(start);const e=parseLocalDate(end);while(d<=e){arr.push(toDateInput(d));d.setDate(d.getDate()+1)}return arr}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 function setStatus(t){statusBox.textContent=t||""}
@@ -79,10 +107,21 @@ function setError(t){errorBox.textContent=t||""}
 function setProgress(done,total){progressBar.style.width=total?Math.round(done*100/total)+"%":"0%"}
 function getDelay(){return Math.max(200,Number(delayMs.value)||900)}
 
-rangeSelect.addEventListener("change",()=>{if(rangeSelect.value!=="custom")initDates(Number(rangeSelect.value));});
+populateRangeOptions();
+rangeSelect.addEventListener("change",()=>{
+  const value=rangeSelect.value;
+  if(value==="7"||value==="30"){
+    initDates(Number(value));
+    return;
+  }
+  if(value.startsWith("month:")){
+    const [year,month]=value.slice(6).split("-").map(Number);
+    setMonthRange(year,month);
+  }
+});
 startDate.addEventListener("change",()=>rangeSelect.value="custom");
 endDate.addEventListener("change",()=>rangeSelect.value="custom");
-initDates(7);
+initPrevMonth();
 
 function initFilter(){
   addressFilter.innerHTML='<option value="">全部地址</option>';
