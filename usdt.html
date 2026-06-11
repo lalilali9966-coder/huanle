@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USDT转出笔数统计</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fb;font-family:Arial,"Microsoft YaHei",sans-serif;color:#001a4d;font-size:14px}.page{max-width:1200px;margin:0 auto;padding:14px}.panel{background:#fff;border:1px solid #dfe6f2;border-radius:6px;margin-bottom:14px;box-shadow:0 6px 18px rgba(32,56,100,.06);overflow:hidden}.panel-title{min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 14px;border-bottom:1px solid #e7edf6;font-size:16px;font-weight:700}.title-tools{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:400;color:#5f76a3}.title-tools select{height:32px;border:1px solid #d4dbea;border-radius:4px;padding:0 8px;color:#001a4d;background:#fff}.controls{display:flex;gap:10px;align-items:end;flex-wrap:wrap;padding:14px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:13px;color:#5f76a3}.field input,.field select{height:36px;border:1px solid #d4dbea;border-radius:4px;padding:0 10px;color:#001a4d;background:#fff}.btn{height:36px;border:none;border-radius:4px;padding:0 18px;background:#4169ff;color:#fff;font-weight:700;cursor:pointer}.btn:hover{background:#3155d9}.btn:disabled{background:#9aa8c2;cursor:not-allowed}.btn.gray{background:#6577a6}.btn.warn{background:#f59e0b}.status{padding:0 14px 14px;color:#5f76a3}.error{color:#d93025}.progress-wrap{height:8px;background:#e5ebf7;margin:0 14px 14px;border-radius:20px;overflow:hidden}.progress{height:100%;width:0;background:#4169ff;transition:width .2s}.table-scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;table-layout:fixed;font-variant-numeric:tabular-nums}th{height:40px;background:#f1f5fb;color:#526b99;font-weight:600;text-align:left;padding:0 10px;border-bottom:1px solid #e7edf6}td{height:42px;padding:8px 10px;border-bottom:1px solid #e9eef6;font-weight:600}tr:hover{background:#fafcff}.addr{font-size:12px;color:#4169ff;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.num{text-align:right}.empty{text-align:center;color:#8a9ab7;height:80px}.small{font-size:12px;color:#6b7b99;font-weight:400}@media(max-width:800px){table{min-width:760px}.controls{align-items:stretch}.field,.btn{width:100%}.panel-title{align-items:flex-start;flex-direction:column;padding:12px 14px}.title-tools{width:100%}.title-tools select{flex:1}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="panel">
+    <div class="panel-title">USDT转出笔数统计</div>
+    <div class="controls">
+      <div class="field"><label>快捷范围</label><select id="rangeSelect"><option value="7">最近7个完整日</option><option value="30">最近30个完整日</option><option value="custom">自定义日期</option></select></div>
+      <div class="field"><label>开始日期</label><input id="startDate" type="date"></div>
+      <div class="field"><label>结束日期</label><input id="endDate" type="date"></div>
+      <div class="field"><label>请求间隔(ms)</label><input id="delayMs" type="number" value="900" min="200" step="100"></div>
+      <button class="btn" id="queryBtn" onclick="startOrResumeQuery()">开始查询</button>
+      <button class="btn warn" id="pauseBtn" onclick="pauseQuery()" disabled>暂停</button>
+    </div>
+    <div class="status" id="statusBox"></div>
+    <div class="status error" id="errorBox"></div>
+    <div class="progress-wrap"><div class="progress" id="progressBar"></div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">
+      <span>汇总</span>
+      <div class="title-tools">
+        <span>筛选地址</span>
+        <select id="addressFilter" onchange="renderRows()"><option value="">全部地址</option></select>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead id="resultHead"><tr><th style="width:16%">姓名</th><th style="width:60%">地址</th><th class="num">总笔数</th></tr></thead>
+        <tbody id="resultBody"><tr><td colspan="3" class="empty">请选择日期后查询</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_KEY="dacca474-eef9-4d1c-8114-ddad419b5c27";
+const USDT_CONTRACT="TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
+const TRONGRID_BASE="https://api.trongrid.io";
+const ADDRESSES=[
+{name:"IVI",address:"TUaG4CqiNCgUKZd5m4yBPtqnvECL4HBzkG"},
+{name:"VARA",address:"TYrGmcSHKjARZoKPtjpJWgespuhpK3zDxg"},
+{name:"HB",address:"TQHyRiwJxCYDGhDhd9vJCqcU9PBeVkaAiP"},
+{name:"蓝宝",address:"TKkN47q9nekpfk6ubTU1pQXY5enhPikoiV"},
+{name:"海神",address:"TJtwXCiiN4NRJNeyNm6eb8RSZkH6nzqX5s"},
+{name:"英伟达",address:"TSm5ag2cGHCtgBdQJxnQLpKj6foeUJK5VP"},
+{name:"KL",address:"TV8ah2qEVnsA3QxdUB2Tm7u6cBk5oVLuyQ"},
+{name:"世锦",address:"TDKz43sSrKMiee2kvN82zNgotCz9BBZaTz"},
+{name:"荣耀",address:"TDzLbc5Fyq5qreg5oZ2KJECE41SDzaAMKw"},
+{name:"星耀",address:"TGYmXFGpKDmyqmNWJP3JU9eXGyJr81hZoM"},
+{name:"明舟",address:"TFaBtcPNp8gVN8aaPouzL6dHmjjbKYeW7f"},
+{name:"TNT",address:"TWpPypTV2MqPHyY2vTarASXNbqekM1qnAU"}
+];
+
+let finalRows=[];
+let taskList=[];
+let currentTaskIndex=0;
+let running=false;
+let paused=false;
+let activeJobKey="";
+
+function pad(n){return String(n).padStart(2,"0")}
+function toDateInput(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function parseLocalDate(s){const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
+function initDates(days=7){const end=new Date();end.setDate(end.getDate()-1);const start=new Date(end);start.setDate(start.getDate()-days+1);startDate.value=toDateInput(start);endDate.value=toDateInput(end)}
+function dateList(start,end){const arr=[];let d=parseLocalDate(start);const e=parseLocalDate(end);while(d<=e){arr.push(toDateInput(d));d.setDate(d.getDate()+1)}return arr}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function setStatus(t){statusBox.textContent=t||""}
+function setError(t){errorBox.textContent=t||""}
+function setProgress(done,total){progressBar.style.width=total?Math.round(done*100/total)+"%":"0%"}
+function getDelay(){return Math.max(200,Number(delayMs.value)||900)}
+
+rangeSelect.addEventListener("change",()=>{if(rangeSelect.value!=="custom")initDates(Number(rangeSelect.value));});
+startDate.addEventListener("change",()=>rangeSelect.value="custom");
+endDate.addEventListener("change",()=>rangeSelect.value="custom");
+initDates(7);
+
+function initFilter(){
+  addressFilter.innerHTML='<option value="">全部地址</option>';
+  for(const item of ADDRESSES){
+    const opt=document.createElement("option");
+    opt.value=item.address;
+    opt.textContent=item.name+" - "+item.address;
+    addressFilter.appendChild(opt);
+  }
+}
+initFilter();
+
+function buildUrl(address,day,fingerprint=""){
+  const start=parseLocalDate(day).getTime();
+  const end=start+86400000-1;
+  const url=new URL(TRONGRID_BASE+`/v1/accounts/${address}/transactions/trc20`);
+  url.searchParams.set("limit","200");
+  url.searchParams.set("only_confirmed","true");
+  url.searchParams.set("contract_address",USDT_CONTRACT);
+  url.searchParams.set("order_by","block_timestamp,desc");
+  url.searchParams.set("min_timestamp",String(start));
+  url.searchParams.set("max_timestamp",String(end));
+  if(fingerprint)url.searchParams.set("fingerprint",fingerprint);
+  url.searchParams.set("_",Date.now().toString());
+  return url.toString();
+}
+
+async function requestJson(url,retry=3){
+  let lastErr;
+  for(let i=0;i<=retry;i++){
+    const ctrl=new AbortController();
+    const timer=setTimeout(()=>ctrl.abort(),15000);
+    try{
+      const res=await fetch(url,{method:"GET",headers:{"Accept":"application/json","TRON-PRO-API-KEY":API_KEY},cache:"no-store",signal:ctrl.signal});
+      clearTimeout(timer);
+      if(res.status===429)throw new Error("429限流");
+      if(!res.ok)throw new Error("HTTP "+res.status);
+      return await res.json();
+    }catch(e){
+      clearTimeout(timer);
+      lastErr=e;
+      if(i<retry)await sleep(1000*(i+1));
+    }
+  }
+  throw lastErr;
+}
+
+async function countOutForDay(address,day){
+  let count=0, fp="", safe=0;
+  do{
+    const data=await requestJson(buildUrl(address,day,fp));
+    const list=Array.isArray(data.data)?data.data:[];
+    for(const tx of list){
+      if(tx.from===address && tx.to!==address)count++;
+    }
+    fp=data.meta&&data.meta.fingerprint?data.meta.fingerprint:"";
+    safe++;
+    if(fp)await sleep(getDelay());
+  }while(fp&&safe<30);
+  return count;
+}
+
+function createRows(days){
+  finalRows=ADDRESSES.map(item=>({name:item.name,address:item.address,total:0,daily:Object.fromEntries(days.map(d=>[d,null]))}));
+}
+
+function createTasks(days){
+  taskList=[];
+  for(const item of ADDRESSES){
+    for(const day of days){
+      taskList.push({name:item.name,address:item.address,day});
+    }
+  }
+  currentTaskIndex=0;
+}
+
+function renderRows(){
+  resultBody.innerHTML="";
+  const selectedAddr=addressFilter.value;
+
+  if(selectedAddr){
+    resultHead.innerHTML='<tr><th style="width:16%">日期</th><th style="width:16%">姓名</th><th style="width:52%">地址</th><th class="num">笔数</th></tr>';
+    const row=finalRows.find(r=>r.address===selectedAddr);
+    if(!row){
+      resultBody.innerHTML='<tr><td colspan="4" class="empty">请先查询，查询后这里会显示该地址每天转出笔数</td></tr>';
+      return;
+    }
+    const days=Object.keys(row.daily).sort();
+    if(!days.length){
+      resultBody.innerHTML='<tr><td colspan="4" class="empty">暂无每日数据</td></tr>';
+      return;
+    }
+    for(const day of days){
+      const count=row.daily[day];
+      const tr=document.createElement("tr");
+      tr.innerHTML=`<td>${day}</td><td>${row.name}</td><td class="addr" title="${row.address}">${row.address}</td><td class="num">${count===null?"-":count}</td>`;
+      resultBody.appendChild(tr);
+    }
+    return;
+  }
+
+  resultHead.innerHTML='<tr><th style="width:16%">姓名</th><th style="width:60%">地址</th><th class="num">总笔数</th></tr>';
+  if(!finalRows.length){
+    resultBody.innerHTML='<tr><td colspan="3" class="empty">暂无数据</td></tr>';
+    return;
+  }
+  for(const r of finalRows){
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${r.name}</td><td class="addr" title="${r.address}">${r.address}</td><td class="num">${r.total}</td>`;
+    resultBody.appendChild(tr);
+  }
+}
+
+function currentJobKey(){return startDate.value+"|"+endDate.value;}
+
+async function startOrResumeQuery(){
+  setError("");
+  if(running)return;
+
+  const days=dateList(startDate.value,endDate.value);
+  if(!days.length){setError("日期范围不正确");return;}
+  if(days.length>60){setError("单次最多建议查60天，请缩小范围。");return;}
+
+  const newKey=currentJobKey();
+  const hasUnfinished=taskList.length>0 && currentTaskIndex<taskList.length;
+  if(!paused || !hasUnfinished || activeJobKey!==newKey){
+    activeJobKey=newKey;
+    createRows(days);
+    createTasks(days);
+    renderRows();
+    setProgress(0,taskList.length);
+  }
+
+  paused=false;
+  running=true;
+  queryBtn.disabled=true;
+  queryBtn.textContent="查询中";
+  pauseBtn.disabled=false;
+
+  try{
+    while(currentTaskIndex<taskList.length){
+      if(paused)break;
+      const task=taskList[currentTaskIndex];
+      setStatus(`正在查询：${task.name} ${task.day}（${currentTaskIndex+1}/${taskList.length}）`);
+      const count=await countOutForDay(task.address,task.day);
+      const row=finalRows.find(r=>r.address===task.address);
+      row.daily[task.day]=count;
+      row.total=Object.values(row.daily).reduce((sum,v)=>sum+(Number(v)||0),0);
+      currentTaskIndex++;
+      setProgress(currentTaskIndex,taskList.length);
+      renderRows();
+      if(currentTaskIndex<taskList.length && !paused)await sleep(getDelay());
+    }
+
+    if(paused){
+      setStatus(`已暂停：进度 ${currentTaskIndex}/${taskList.length}。调整请求间隔后点击“继续查询”。`);
+      queryBtn.textContent="继续查询";
+    }else{
+      setStatus(`查询完成：${startDate.value} 至 ${endDate.value}`);
+      queryBtn.textContent="重新查询";
+      pauseBtn.disabled=true;
+    }
+  }catch(e){
+    setError("查询失败："+(e&&e.message?e.message:String(e))+"。可以点暂停后把请求间隔调大，再点继续查询；如果已经失败，点查询会从当前未完成位置继续。");
+    paused=true;
+    queryBtn.textContent="继续查询";
+  }finally{
+    running=false;
+    queryBtn.disabled=false;
+    if(!paused && currentTaskIndex>=taskList.length)pauseBtn.disabled=true;
+  }
+}
+
+function pauseQuery(){
+  if(!running)return;
+  paused=true;
+  pauseBtn.disabled=true;
+  setStatus("正在暂停：当前这一天查询完成后会停下。");
+}
+</script>
+</body>
+</html>
