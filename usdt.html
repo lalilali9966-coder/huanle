@@ -184,13 +184,19 @@ async function countOutForDay(address,day){
   return count;
 }
 
-function createRows(days){
-  finalRows=ADDRESSES.map(item=>({name:item.name,address:item.address,total:0,daily:Object.fromEntries(days.map(d=>[d,null]))}));
+function getQueryAddresses(){
+  const selectedAddr=addressFilter.value;
+  if(!selectedAddr)return ADDRESSES;
+  return ADDRESSES.filter(item=>item.address===selectedAddr);
 }
 
-function createTasks(days){
+function createRows(days,queryAddresses){
+  finalRows=queryAddresses.map(item=>({name:item.name,address:item.address,total:0,daily:Object.fromEntries(days.map(d=>[d,null]))}));
+}
+
+function createTasks(days,queryAddresses){
   taskList=[];
-  for(const item of ADDRESSES){
+  for(const item of queryAddresses){
     for(const day of days){
       taskList.push({name:item.name,address:item.address,day});
     }
@@ -235,7 +241,7 @@ function renderRows(){
   }
 }
 
-function currentJobKey(){return startDate.value+"|"+endDate.value;}
+function currentJobKey(){return startDate.value+"|"+endDate.value+"|"+(addressFilter.value||"ALL");}
 
 async function startOrResumeQuery(){
   setError("");
@@ -247,10 +253,13 @@ async function startOrResumeQuery(){
 
   const newKey=currentJobKey();
   const hasUnfinished=taskList.length>0 && currentTaskIndex<taskList.length;
+  const queryAddresses=getQueryAddresses();
+  if(!queryAddresses.length){setError("请选择要查询的地址");return;}
+
   if(!paused || !hasUnfinished || activeJobKey!==newKey){
     activeJobKey=newKey;
-    createRows(days);
-    createTasks(days);
+    createRows(days,queryAddresses);
+    createTasks(days,queryAddresses);
     renderRows();
     setProgress(0,taskList.length);
   }
@@ -265,7 +274,8 @@ async function startOrResumeQuery(){
     while(currentTaskIndex<taskList.length){
       if(paused)break;
       const task=taskList[currentTaskIndex];
-      setStatus(`正在查询：${task.name} ${task.day}（${currentTaskIndex+1}/${taskList.length}）`);
+      const scopeText=addressFilter.value ? "单地址" : "全部地址";
+      setStatus(`正在查询：${scopeText} / ${task.name} ${task.day}（${currentTaskIndex+1}/${taskList.length}）`);
       const count=await countOutForDay(task.address,task.day);
       const row=finalRows.find(r=>r.address===task.address);
       row.daily[task.day]=count;
