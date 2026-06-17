@@ -671,6 +671,7 @@
     const PAGE_SIZE = 10;
     const TRANSACTION_LIMIT = 10;
     const INITIAL_TRANSACTION_PAGES = 1;
+    const LAST_QUERY_ADDRESS_KEY = "LAST_TRON_QUERY_ADDRESS";
 
     let allTransactions = [];
     let currentPage = 1;
@@ -700,6 +701,12 @@
       document.getElementById("prevPageBtn").addEventListener("click", goPrevPage);
       document.getElementById("nextPageBtn").addEventListener("click", goNextPage);
       document.getElementById("lastPageBtn").addEventListener("click", goLastPage);
+
+      const lastAddress = localStorage.getItem(LAST_QUERY_ADDRESS_KEY) || "";
+      if (isTronAddress(lastAddress)) {
+        document.getElementById("addressInput").value = lastAddress;
+        queryData();
+      }
     });
 
     function getApiKey() {
@@ -1355,6 +1362,7 @@
 
         renderEmpty("正在查询...");
         await refreshOnce(address, queryId);
+        localStorage.setItem(LAST_QUERY_ADDRESS_KEY, address);
         setStatus("");
       } catch (err) {
         document.getElementById("balanceBox").textContent = "-";
