@@ -671,7 +671,7 @@
     const PAGE_SIZE = 10;
     const TRANSACTION_LIMIT = 10;
     const INITIAL_TRANSACTION_PAGES = 1;
-    const LAST_QUERY_ADDRESS_KEY = "LAST_TRON_QUERY_ADDRESS";
+    const LAST_QUERY_ADDRESS_KEY = "LAST_TRON_QUERY_ADDRESS_" + document.title.trim();
 
     let allTransactions = [];
     let currentPage = 1;
