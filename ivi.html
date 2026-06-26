@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IVI</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+CiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNyIgZmlsbD0iIzQxNjlmZiIvPgogIDxwYXRoIGQ9Ik03LjIgMTAuMWgxNi4yYTIuNSAyLjUgMCAwIDEgMi41IDIuNXYxMGEyLjUgMi41IDAgMCAxLTIuNSAyLjVIOC44YTMuOCAzLjggMCAwIDEtMy44LTMuOFY5LjJhMy44IDMuOCAwIDAgMSAzLjgtMy44aDEyLjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyLjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik0yNS45IDE1aC01LjJhMi44IDIuOCAwIDAgMCAwIDUuNmg1LjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyLjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogIDxjaXJjbGUgY3g9IjIxIiBjeT0iMTcuOCIgcj0iMSIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4=">
 
   <style>
     * {
@@ -407,7 +408,7 @@
     }
 
     .addr-col {
-      width: 22%;
+      width: 24.5%;
       white-space: nowrap;
     }
 
@@ -419,8 +420,16 @@
       text-align: left;
     }
 
+    tbody td.addr-col:nth-child(4) {
+      padding-right: 12px;
+    }
+
+    tbody td.addr-col:nth-child(5) {
+      padding-left: 12px;
+    }
+
     .amount-col {
-      width: 11%;
+      width: 8%;
       text-align: center;
       white-space: nowrap;
     }
@@ -433,7 +442,7 @@
     }
 
     .status-col {
-      width: 8%;
+      width: 6%;
       text-align: center;
       white-space: nowrap;
     }
@@ -461,7 +470,7 @@
       cursor: pointer;
       white-space: nowrap;
       line-height: 1.4;
-      font-size: 12.5px;
+      font-size: 14.5px;
       font-weight: 400;
       letter-spacing: -0.28px;
       text-decoration: none;
@@ -562,7 +571,7 @@
       }
 
       .addr-full {
-        font-size: 11.8px;
+        font-size: 13.8px;
         letter-spacing: -0.45px;
       }
 
@@ -686,7 +695,7 @@
             <th class="type-col">类型</th>
             <th class="addr-col">输出地址</th>
             <th class="addr-col">接收地址</th>
-            <th class="amount-col">数量（USDT）</th>
+            <th class="amount-col">数量</th>
             <th class="status-col">状态</th>
           </tr>
         </thead>
