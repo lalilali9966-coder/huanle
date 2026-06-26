@@ -13,15 +13,16 @@
     body {
       margin: 0;
       background: #f5f7fb;
-      font-family: Arial, "Microsoft YaHei", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
       color: #001a4d;
       font-size: 14px;
     }
 
     .page {
-      max-width: 1200px;
+      width: calc(100% - 28px);
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 14px;
+      padding: 14px 0;
     }
 
     .search-panel {
@@ -31,16 +32,16 @@
       padding: 14px;
       background: #ffffff;
       border: 1px solid #dfe6f2;
-      border-radius: 6px;
+      border-radius: 8px;
       box-shadow: 0 6px 18px rgba(32, 56, 100, 0.06);
     }
 
     .search-panel input {
       flex: 1;
-      height: 38px;
-      padding: 0 12px;
+      height: 40px;
+      padding: 0 13px;
       border: 1px solid #d4dbea;
-      border-radius: 3px;
+      border-radius: 5px;
       outline: none;
       color: #001a4d;
       font-size: 14px;
@@ -48,13 +49,14 @@
 
     .search-panel input:focus {
       border-color: #4169ff;
+      box-shadow: 0 0 0 3px rgba(65, 105, 255, 0.08);
     }
 
     .search-panel button {
-      width: 90px;
-      height: 38px;
+      width: 104px;
+      height: 40px;
       border: none;
-      border-radius: 3px;
+      border-radius: 5px;
       background: #4169ff;
       color: #ffffff;
       cursor: pointer;
@@ -70,48 +72,191 @@
       cursor: not-allowed;
     }
 
-
     .panel {
       background: #ffffff;
       border: 1px solid #dfe6f2;
-      border-radius: 6px;
+      border-radius: 8px;
       margin-bottom: 14px;
       overflow: hidden;
       box-shadow: 0 6px 18px rgba(32, 56, 100, 0.06);
     }
 
     .panel-title {
-      height: 54px;
+      height: 56px;
       display: flex;
       align-items: center;
-      padding: 0 14px;
+      padding: 0 18px;
       border-bottom: 1px solid #e7edf6;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 700;
       color: #001a4d;
     }
 
     .address-info {
       position: relative;
-      min-height: 126px;
-      padding: 12px 150px 12px 14px;
+      min-height: 162px;
+      padding: 22px 330px 20px 22px;
+    }
+
+    .address-main {
+      min-width: 0;
+    }
+
+    .address-primary-row {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .wallet-icon {
+      width: 58px;
+      height: 58px;
+      flex: 0 0 58px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 14px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #f5f8ff, #e8eefc);
+      border: 1px solid #dbe4f4;
+      color: #4169ff;
+    }
+
+    .wallet-icon svg {
+      width: 31px;
+      height: 31px;
+    }
+
+    .address-text-wrap {
+      min-width: 0;
+    }
+
+    .address-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .main-address {
+      display: inline-block;
+      color: #001a4d;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .inline-copy-btn {
+      width: 26px;
+      height: 26px;
+      flex: 0 0 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 5px;
+      background: transparent;
+      color: #5f76a3;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .inline-copy-btn:hover {
+      color: #4169ff;
+      background: #f2f5ff;
+    }
+
+    .inline-copy-btn svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .address-caption {
+      margin-top: 7px;
+      color: #7889a7;
+      font-size: 13px;
+    }
+
+    .balance-block {
+      margin-top: 21px;
+      padding-left: 72px;
+    }
+
+    .balance-label {
+      margin-bottom: 4px;
+      color: #7889a7;
+      font-size: 13px;
+    }
+
+    #balanceBox {
+      display: inline-block;
+      padding: 2px 0;
+      color: #001a4d;
+      font-size: 18px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    .copy-text {
+      cursor: pointer;
+    }
+
+    .copy-text:hover {
+      color: #4169ff;
+    }
+
+    .address-quick-actions {
+      position: absolute;
+      top: 24px;
+      right: 176px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      white-space: nowrap;
+    }
+
+    .quick-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      background: transparent;
+      color: #4169ff;
+      cursor: pointer;
+      padding: 4px 0;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .quick-action:hover {
+      color: #3155d9;
+    }
+
+    .quick-action svg {
+      width: 16px;
+      height: 16px;
     }
 
     .address-actions {
       position: absolute;
-      top: 12px;
-      right: 14px;
+      top: 16px;
+      right: 18px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      width: 112px;
+      gap: 8px;
+      width: 140px;
     }
 
     .address-action-btn {
       width: 100%;
-      height: 34px;
-      border: 1px solid #d4dbea;
-      border-radius: 3px;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 1px solid #4169ff;
+      border-radius: 5px;
       background: #ffffff;
       color: #4169ff;
       cursor: pointer;
@@ -120,8 +265,17 @@
     }
 
     .address-action-btn:hover {
-      border-color: #4169ff;
-      background: #f7f9ff;
+      background: #f3f6ff;
+    }
+
+    .address-action-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .address-action-btn.secondary {
+      border-color: #d4dbea;
+      color: #4169ff;
     }
 
     .address-action-btn:disabled {
@@ -131,63 +285,9 @@
       cursor: not-allowed;
     }
 
-    .info-row {
-      display: grid;
-      grid-template-columns: 110px 1fr;
-      min-height: 34px;
-      align-items: center;
-    }
-
-    .info-label {
-      color: #5f76a3;
-      font-size: 13px;
-    }
-
-    .info-value {
-      color: #001a4d;
-      font-weight: 700;
-      word-break: break-all;
-    }
-
-    .main-address {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: .2px;
-    }
-
-    .copy-text {
-      cursor: pointer;
-    }
-
-    #balanceBox {
-      display: inline-block;
-      padding: 3px 0;
-      font-size: 16px;
-      line-height: 1.4;
-    }
-
-    .copy-text:hover {
-      color: #4169ff;
-    }
-
-    .link-btn {
-      display: inline-flex;
-      align-items: center;
-      margin-left: 12px;
-      color: #5f76a3;
-      font-size: 13px;
-      font-weight: 400;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .link-btn:hover {
-      color: #4169ff;
-    }
-
     .status-line {
       min-height: 20px;
-      padding: 0 14px 12px;
+      padding: 0 18px 12px;
       color: #6b7b99;
       font-size: 13px;
     }
@@ -198,7 +298,7 @@
 
     .api-row {
       display: none;
-      padding: 0 14px 14px;
+      padding: 0 18px 14px;
     }
 
     .api-row.show {
@@ -215,11 +315,11 @@
     }
 
     .table-top {
-      height: 52px;
+      height: 54px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 14px;
+      padding: 0 16px;
       border-bottom: 1px solid #e7edf6;
     }
 
@@ -257,8 +357,7 @@
 
     .table-scroll {
       width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow: visible;
     }
 
     table {
@@ -269,21 +368,23 @@
     }
 
     thead th {
-      height: 40px;
+      height: 42px;
       background: linear-gradient(180deg, #f7f9fe, #eef3fb);
       color: #526b99;
-      font-weight: 500;
+      font-weight: 600;
       text-align: left;
-      padding: 0 14px;
+      padding: 0 8px;
       border-bottom: 1px solid #e7edf6;
+      white-space: nowrap;
     }
 
     tbody td {
-      min-height: 58px;
-      padding: 10px 12px;
+      height: 62px;
+      padding: 10px 8px;
       border-bottom: 1px solid #e9eef6;
       color: #001a4d;
       vertical-align: middle;
+      overflow: visible;
     }
 
     tbody tr:hover {
@@ -291,21 +392,49 @@
     }
 
     .hash-col {
-      width: 22%;
+      width: 16%;
     }
 
     .time-col {
-      width: 10%;
+      width: 13%;
+      white-space: nowrap;
+    }
+
+    .type-col {
+      width: 8%;
+      text-align: center;
       white-space: nowrap;
     }
 
     .addr-col {
-      width: 28%;
+      width: 22%;
+      white-space: nowrap;
+    }
+
+    thead th.addr-col {
+      text-align: center;
+    }
+
+    tbody td.addr-col {
+      text-align: left;
     }
 
     .amount-col {
-      width: 12%;
-      text-align: right;
+      width: 11%;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .amount-value {
+      display: inline-block;
+      width: 8ch;
+      text-align: left;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .status-col {
+      width: 8%;
+      text-align: center;
       white-space: nowrap;
     }
 
@@ -318,6 +447,7 @@
       color: #4169ff;
       cursor: pointer;
       vertical-align: middle;
+      font-weight: 400;
     }
 
     .hash-text:hover {
@@ -326,28 +456,52 @@
 
     .addr-full {
       display: inline-block;
-      width: 100%;
+      width: auto;
+      max-width: none;
       cursor: pointer;
-      word-break: normal;
-      overflow-wrap: normal;
       white-space: nowrap;
       line-height: 1.4;
-      letter-spacing: -0.2px;
+      font-size: 12.5px;
+      font-weight: 400;
+      letter-spacing: -0.28px;
+      text-decoration: none;
     }
 
     .addr-self {
       color: #001a4d;
-      font-weight: 700;
+      font-weight: 500;
     }
 
     .addr-other {
       color: #4169ff;
-      font-weight: 500;
     }
 
     .addr-other:hover,
     .addr-self:hover {
-      text-decoration: underline;
+      text-decoration: none;
+    }
+
+    .type-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 66px;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .type-in {
+      color: #16803a;
+      background: #e9f7ee;
+    }
+
+    .type-out {
+      color: #d93025;
+      background: #fdeeee;
     }
 
     .amount-in {
@@ -360,28 +514,25 @@
       font-weight: 700;
     }
 
-    .pending-tag {
+    .pending-tag,
+    .ok-tag {
       display: inline-block;
-      margin-left: 6px;
-      padding: 1px 6px;
+      margin-left: 0;
+      padding: 3px 9px;
       border-radius: 10px;
-      background: #fff4d6;
-      color: #8a5a00;
       font-size: 12px;
       vertical-align: middle;
       white-space: nowrap;
     }
 
+    .pending-tag {
+      background: #fff4d6;
+      color: #8a5a00;
+    }
+
     .ok-tag {
-      display: inline-block;
-      margin-left: 6px;
-      padding: 1px 6px;
-      border-radius: 10px;
       background: #e8f7ee;
       color: #16803a;
-      font-size: 12px;
-      vertical-align: middle;
-      white-space: nowrap;
     }
 
     .empty {
@@ -390,25 +541,33 @@
       color: #8a9ab7;
     }
 
-    @media (max-width: 900px) {
-      .search-panel {
-        flex-direction: column;
+    @media (max-width: 1180px) {
+      .page {
+        width: calc(100% - 20px);
       }
 
-      .search-panel button {
-        width: 100%;
+      .address-info {
+        padding-right: 310px;
       }
 
-      .info-row {
-        grid-template-columns: 86px 1fr;
+      .address-quick-actions {
+        right: 166px;
+        gap: 14px;
+      }
+
+      thead th,
+      tbody td {
+        padding-left: 6px;
+        padding-right: 6px;
+      }
+
+      .addr-full {
+        font-size: 11.8px;
+        letter-spacing: -0.45px;
       }
 
       .main-address {
         font-size: 16px;
-      }
-
-      table {
-        min-width: 1100px;
       }
     }
   </style>
@@ -427,31 +586,72 @@
     <div class="panel-title">地址信息</div>
 
     <div class="address-info">
-      <div class="info-row">
-        <div class="info-label">普通地址</div>
-        <div class="info-value">
-          <span id="addressBox" class="main-address">-</span>
-          <span class="link-btn" onclick="copyCurrentAddress()">复制</span>
-          <span class="link-btn">二维码</span>
+      <div class="address-main">
+        <div class="address-primary-row">
+          <div class="wallet-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 7.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3v-10a3 3 0 0 1 3-3h11"/>
+              <path d="M20 11.5h-4a2 2 0 0 0 0 4h4"/>
+              <circle cx="16" cy="13.5" r=".65" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+
+          <div class="address-text-wrap">
+            <div class="address-line">
+              <span id="addressBox" class="main-address">-</span>
+              <button class="inline-copy-btn" type="button" onclick="copyCurrentAddress()" title="复制地址" aria-label="复制地址">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="11" height="11" rx="2"/>
+                  <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/>
+                </svg>
+              </button>
+            </div>
+            <div class="address-caption">普通地址</div>
+          </div>
         </div>
-      </div>
 
-      <div class="info-row">
-        <div class="info-label">链</div>
-        <div class="info-value">TRX</div>
-      </div>
-
-      <div class="info-row">
-        <div class="info-label">余额</div>
-        <div class="info-value">
+        <div class="balance-block">
+          <div class="balance-label">余额</div>
           <span id="balanceBox" class="copy-text" onclick="copyBalance()">-</span>
         </div>
       </div>
 
+      <div class="address-quick-actions">
+        <button class="quick-action" type="button" onclick="copyCurrentAddress()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="11" height="11" rx="2"/>
+            <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/>
+          </svg>
+          复制地址
+        </button>
+
+        <button class="quick-action" type="button" onclick="openCurrentAddress()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 5h5v5"/>
+            <path d="M10 14 19 5"/>
+            <path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/>
+          </svg>
+          在区块链上查看
+        </button>
+      </div>
+
       <div class="address-actions">
-        <button class="address-action-btn" type="button" onclick="openCurrentAddress()">TRONSCAN</button>
-        <button id="updateBalanceBtn" class="address-action-btn" type="button" onclick="updateCurrentAddress()">更新余额</button>
-        <button class="address-action-btn" type="button" onclick="copyBalance()">复制余额</button>
+        <button id="updateBalanceBtn" class="address-action-btn" type="button" onclick="updateCurrentAddress()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6v5h-5"/>
+            <path d="M4 18v-5h5"/>
+            <path d="M6.1 9a7 7 0 0 1 11.5-2.6L20 11"/>
+            <path d="M17.9 15a7 7 0 0 1-11.5 2.6L4 13"/>
+          </svg>
+          更新余额
+        </button>
+        <button class="address-action-btn secondary" type="button" onclick="copyBalance()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="11" height="11" rx="2"/>
+            <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/>
+          </svg>
+          复制余额
+        </button>
       </div>
     </div>
 
@@ -483,15 +683,17 @@
           <tr>
             <th class="hash-col">交易哈希</th>
             <th class="time-col">时间</th>
-            <th class="addr-col">从</th>
-            <th class="addr-col">到</th>
-            <th class="amount-col">交易总额</th>
+            <th class="type-col">类型</th>
+            <th class="addr-col">输出地址</th>
+            <th class="addr-col">接收地址</th>
+            <th class="amount-col">数量（USDT）</th>
+            <th class="status-col">状态</th>
           </tr>
         </thead>
 
         <tbody id="txBody">
           <tr>
-            <td colspan="5" class="empty">请输入地址查询</td>
+            <td colspan="7" class="empty">请输入地址查询</td>
           </tr>
         </tbody>
       </table>
@@ -555,13 +757,8 @@
   function formatTime(timestamp) {
     if (!timestamp) return "-";
     const date = new Date(timestamp);
-    return date.toLocaleString("zh-CN", {
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    });
+    const pad = value => String(value).padStart(2, "0");
+    return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   }
 
   function formatTokenAmount(value, decimals = 6) {
@@ -759,7 +956,7 @@
   }
 
   function renderEmpty(text) {
-    document.getElementById("txBody").innerHTML = `<tr><td colspan="5" class="empty">${text}</td></tr>`;
+    document.getElementById("txBody").innerHTML = `<tr><td colspan="7" class="empty">${text}</td></tr>`;
   }
 
   function updatePageText(total) {
@@ -825,7 +1022,8 @@
       const amount = formatTokenAmount(tx.value, decimals);
       const isIn = to === address;
       const amountClass = isIn ? "amount-in" : "amount-out";
-      const amountText = `${amount} USDT`;
+      const typeClass = isIn ? "type-in" : "type-out";
+      const typeText = isIn ? "接收 ↓" : "发送 ↑";
       const fromClass = getAddressClass(from, address);
       const toClass = getAddressClass(to, address);
       const confirmed = isConfirmedTx(tx);
@@ -835,11 +1033,12 @@
 
       const row = document.createElement("tr");
       const safeHash = escapeHtml(hash);
-      const safeShortHash = escapeHtml(shortText(hash, 16, 8));
+      const safeShortHash = escapeHtml(shortText(hash, 12, 5));
       const safeFrom = escapeHtml(from);
       const safeTo = escapeHtml(to);
       const safeTime = escapeHtml(time);
-      const safeAmountText = escapeHtml(amountText);
+      const safeAmount = escapeHtml(amount);
+      const safeTypeText = escapeHtml(typeText);
       const hashArg = JSON.stringify(hash);
       const fromArg = JSON.stringify(from);
       const toArg = JSON.stringify(to);
@@ -848,12 +1047,14 @@
         <td class="hash-col">
           <span class="hash-text" title="${safeHash}" onclick='openTransactionDetail(${hashArg})'>
             ${safeShortHash}
-          </span>${tag}
+          </span>
         </td>
         <td class="time-col">${safeTime}</td>
+        <td class="type-col"><span class="type-tag ${typeClass}">${safeTypeText}</span></td>
         <td class="addr-col"><span class="addr-full ${fromClass}" title="${safeFrom}" onclick='copyText(${fromArg})'>${safeFrom}</span></td>
         <td class="addr-col"><span class="addr-full ${toClass}" title="${safeTo}" onclick='copyText(${toArg})'>${safeTo}</span></td>
-        <td class="amount-col ${amountClass}">${safeAmountText}</td>
+        <td class="amount-col ${amountClass}"><span class="amount-value">${safeAmount}</span></td>
+        <td class="status-col">${tag}</td>
       `;
       txBody.appendChild(row);
     });
