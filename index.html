@@ -285,14 +285,35 @@
       cursor: not-allowed;
     }
 
-    .status-line {
-      min-height: 20px;
-      padding: 0 18px 12px;
-      color: #6b7b99;
-      font-size: 13px;
+    .address-feedback {
+      position: absolute;
+      top: 108px;
+      left: 300px;
+      right: 330px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      pointer-events: none;
     }
 
-    .error-line {
+    .address-feedback .status-line {
+      width: 100%;
+      min-width: 0;
+      padding: 0;
+      color: #6b7b99;
+      font-size: 13px;
+      line-height: 30px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .address-feedback .status-line:empty {
+      display: none;
+    }
+
+    .address-feedback .error-line {
       color: #d93025;
     }
 
@@ -661,14 +682,16 @@
           复制余额
         </button>
       </div>
+
+      <div class="address-feedback" aria-live="polite">
+        <div id="statusBox" class="status-line"></div>
+        <div id="errorBox" class="status-line error-line"></div>
+      </div>
     </div>
 
     <div class="api-row" id="apiRow" style="display:none;">
       <input id="apiKeyInput" type="hidden" autocomplete="off">
     </div>
-
-    <div id="statusBox" class="status-line"></div>
-    <div id="errorBox" class="status-line error-line"></div>
   </div>
 
   <div class="panel">
