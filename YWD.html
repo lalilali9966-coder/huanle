@@ -278,6 +278,14 @@
       color: #4169ff;
     }
 
+    .address-action-btn.balance-updated {
+      background: #e9edf3;
+    }
+
+    .address-action-btn.balance-updated:hover {
+      background: #eceff3;
+    }
+
     .address-action-btn:disabled {
       border-color: #d4dbea;
       background: #f1f3f7;
@@ -568,6 +576,18 @@
       color: #16803a;
     }
 
+    .new-tx-tag {
+      display: inline-block;
+      margin-left: 0;
+      padding: 3px 9px;
+      border-radius: 10px;
+      font-size: 12px;
+      vertical-align: middle;
+      white-space: nowrap;
+      background: #FFFF00;
+      color: #001a4d;
+    }
+
     .empty {
       height: 80px;
       text-align: center;
@@ -676,14 +696,14 @@
             <path d="M6.1 9a7 7 0 0 1 11.5-2.6L20 11"/>
             <path d="M17.9 15a7 7 0 0 1-11.5 2.6L4 13"/>
           </svg>
-          更新余额
+          <span class="btn-text">更新交易</span>
         </button>
-        <button class="address-action-btn secondary" type="button" onclick="copyBalance()">
+        <button id="copyBalanceBtn" class="address-action-btn secondary" type="button" onclick="copyBalance()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <rect x="9" y="9" width="11" height="11" rx="2"/>
             <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/>
           </svg>
-          复制余额
+          <span class="btn-text">复制余额</span>
         </button>
       </div>
 
@@ -752,6 +772,9 @@
   let currentBalanceValue = "";
 
   let activeQueryId = 0;
+  let copyBalanceTextTimer = null;
+  let newTransactionHashes = new Set();
+  let newTransactionTimer = null;
 
   const REQUEST_TIMEOUT_MS = 12000;
 
@@ -777,6 +800,67 @@
 
   function setError(text) {
     document.getElementById("errorBox").textContent = text || "";
+  }
+
+  function setCopyBalanceChanged(changed) {
+    const copyBalanceBtn = document.getElementById("copyBalanceBtn");
+    if (!copyBalanceBtn) return;
+    copyBalanceBtn.classList.toggle("balance-updated", Boolean(changed));
+  }
+
+  function setButtonLabel(buttonId, text) {
+    const button = document.getElementById(buttonId);
+    if (!button) return;
+    const label = button.querySelector(".btn-text");
+    if (label) {
+      label.textContent = text;
+    }
+  }
+
+  function showCopyBalanceCopiedText() {
+    setButtonLabel("copyBalanceBtn", "已复制");
+
+    if (copyBalanceTextTimer) {
+      clearTimeout(copyBalanceTextTimer);
+    }
+
+    copyBalanceTextTimer = setTimeout(() => {
+      setButtonLabel("copyBalanceBtn", "复制余额");
+      copyBalanceTextTimer = null;
+    }, 1000);
+  }
+
+  function resetCopyBalanceText() {
+    if (copyBalanceTextTimer) {
+      clearTimeout(copyBalanceTextTimer);
+      copyBalanceTextTimer = null;
+    }
+    setButtonLabel("copyBalanceBtn", "复制余额");
+  }
+
+  function clearNewTransactionTags(shouldRender = false) {
+    if (newTransactionTimer) {
+      clearTimeout(newTransactionTimer);
+      newTransactionTimer = null;
+    }
+    newTransactionHashes = new Set();
+
+    if (shouldRender && currentQueryAddress) {
+      renderTransactions(allTransactions, currentQueryAddress);
+    }
+  }
+
+  function showNewTransactionTags(hashes, queryId) {
+    clearNewTransactionTags(false);
+
+    if (!hashes.length) return;
+
+    newTransactionHashes = new Set(hashes);
+    newTransactionTimer = setTimeout(() => {
+      if (queryId === activeQueryId) {
+        clearNewTransactionTags(true);
+      }
+    }, 3000);
   }
 
   function shortText(text, start = 10, end = 10) {
@@ -812,11 +896,16 @@
   }
 
   function copyText(text) {
-    if (!text || text === "-") return;
-    navigator.clipboard.writeText(text).then(() => {
+    if (!text || text === "-") return Promise.resolve(false);
+
+    return navigator.clipboard.writeText(text).then(() => {
       setStatus("已复制：" + shortText(text, 8, 8));
       setTimeout(() => setStatus(""), 1500);
-    }).catch(() => setError("复制失败，请手动复制。"));
+      return true;
+    }).catch(() => {
+      setError("复制失败，请手动复制。");
+      return false;
+    });
   }
 
   function copyCurrentAddress() {
@@ -826,7 +915,13 @@
 
   function copyBalance() {
     if (!currentBalanceValue) return;
-    copyText(currentBalanceValue);
+    setCopyBalanceChanged(false);
+
+    copyText(currentBalanceValue).then(success => {
+      if (success) {
+        showCopyBalanceCopiedText();
+      }
+    });
   }
 
   function openCurrentAddress() {
@@ -1062,9 +1157,12 @@
       const fromClass = getAddressClass(from, address);
       const toClass = getAddressClass(to, address);
       const confirmed = isConfirmedTx(tx);
-      const tag = confirmed
-        ? `<span class="ok-tag">已确认</span>`
-        : `<span class="pending-tag">待确认</span>`;
+      const isNewTransaction = newTransactionHashes.has(hash);
+      const tag = isNewTransaction
+        ? `<span class="new-tx-tag">新交易</span>`
+        : confirmed
+          ? `<span class="ok-tag">已确认</span>`
+          : `<span class="pending-tag">待确认</span>`;
 
       const row = document.createElement("tr");
       const safeHash = escapeHtml(hash);
@@ -1125,7 +1223,7 @@
     renderTransactions(allTransactions, currentQueryAddress);
   }
 
-  async function refreshOnce(address, queryId, cachedTransactions = [], silent = false) {
+  async function refreshOnce(address, queryId, cachedTransactions = [], silent = false, trackBalanceChange = false, previousBalanceValue = "", trackNewTransactions = false) {
     if (queryId !== activeQueryId) return;
 
     if (!silent) {
@@ -1143,17 +1241,28 @@
     if (queryId !== activeQueryId) return;
 
     if (balanceResult.status === "fulfilled") {
-      currentBalanceValue = balanceResult.value;
-      document.getElementById("balanceBox").textContent = balanceResult.value + " USDT";
+      const newBalanceValue = balanceResult.value;
+      if (trackBalanceChange) {
+        setCopyBalanceChanged(Boolean(previousBalanceValue) && newBalanceValue !== previousBalanceValue);
+      }
+      currentBalanceValue = newBalanceValue;
+      document.getElementById("balanceBox").textContent = newBalanceValue + " USDT";
     } else {
       document.getElementById("balanceBox").textContent = "查询失败";
     }
 
     if (txResult.status === "fulfilled") {
-      allTransactions = mergeTransactions(cachedTransactions, txResult.value);
+      const oldTransactionHashes = new Set(cachedTransactions.map(getTransactionHash).filter(Boolean));
+      const latestTransactions = txResult.value;
+      const newHashes = trackNewTransactions && cachedTransactions.length
+        ? latestTransactions.map(getTransactionHash).filter(hash => hash && !oldTransactionHashes.has(hash))
+        : [];
+
+      allTransactions = mergeTransactions(cachedTransactions, latestTransactions);
       currentQueryAddress = address;
       currentPage = 1;
       saveTransactionCache(address, allTransactions);
+      showNewTransactionTags(newHashes, queryId);
       renderTransactions(allTransactions, currentQueryAddress);
     } else if (cachedTransactions.length) {
       allTransactions = cachedTransactions;
@@ -1182,6 +1291,9 @@
 
     setStatus("");
     setError("");
+    setCopyBalanceChanged(false);
+    resetCopyBalanceText();
+    clearNewTransactionTags(false);
 
     try {
       if (!isTronAddress(address)) {
@@ -1245,16 +1357,21 @@
 
     setStatus("");
     setError("");
+    setCopyBalanceChanged(false);
+    resetCopyBalanceText();
+    clearNewTransactionTags(false);
 
     if (!isTronAddress(address)) {
       setError("请先输入或查询一个正确的 TRON 地址。 ");
       return;
     }
 
+    const previousBalanceValue = currentBalanceValue;
+
     activeQueryId++;
     const queryId = activeQueryId;
     updateBtn.disabled = true;
-    updateBtn.textContent = "更新中";
+    setButtonLabel("updateBalanceBtn", "更新中");
 
     const cachedTransactions = loadTransactionCache(address);
     allTransactions = cachedTransactions;
@@ -1271,7 +1388,7 @@
 
     try {
       setStatus("正在更新余额和最新交易记录...");
-      await refreshOnce(address, queryId, cachedTransactions, true);
+      await refreshOnce(address, queryId, cachedTransactions, true, true, previousBalanceValue, true);
       setStatus("余额和最新交易记录已更新。 ");
     } catch (err) {
       const message = err && err.message ? err.message : String(err);
@@ -1280,7 +1397,7 @@
     } finally {
       if (queryId === activeQueryId) {
         updateBtn.disabled = false;
-        updateBtn.textContent = "更新余额";
+        setButtonLabel("updateBalanceBtn", "更新交易");
       }
     }
   }
