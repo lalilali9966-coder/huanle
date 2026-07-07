@@ -496,6 +496,10 @@
       text-decoration: none;
     }
 
+    .find-hidden-address::before {
+      content: attr(data-address);
+    }
+
     .addr-self {
       color: #001a4d;
       font-weight: 500;
@@ -1082,8 +1086,8 @@
         </td>
         <td class="time-col">${safeTime}</td>
         <td class="type-col"><span class="type-tag ${typeClass}">${safeTypeText}</span></td>
-        <td class="addr-col"><span class="addr-full ${fromClass}" title="${safeFrom}" onclick='copyText(${fromArg})'>${safeFrom}</span></td>
-        <td class="addr-col"><span class="addr-full ${toClass}" title="${safeTo}" onclick='copyText(${toArg})'>${safeTo}</span></td>
+        <td class="addr-col"><span class="addr-full ${fromClass} find-hidden-address" data-address="${safeFrom}" title="${safeFrom}" onclick='copyText(${fromArg})'></span></td>
+        <td class="addr-col"><span class="addr-full ${toClass} find-hidden-address" data-address="${safeTo}" title="${safeTo}" onclick='copyText(${toArg})'></span></td>
         <td class="amount-col ${amountClass}"><span class="amount-value">${safeAmount}</span></td>
         <td class="status-col">${tag}</td>
       `;
