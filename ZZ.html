@@ -179,15 +179,8 @@
     }
 
     .balance-block {
-      display: flex;
-      align-items: flex-start;
-      gap: 52px;
       margin-top: 21px;
       padding-left: 72px;
-    }
-
-    .balance-item {
-      min-width: 140px;
     }
 
     .balance-label {
@@ -196,8 +189,7 @@
       font-size: 13px;
     }
 
-    #balanceBox,
-    #trxBalanceBox {
+    #balanceBox {
       display: inline-block;
       padding: 2px 0;
       color: #001a4d;
@@ -296,7 +288,7 @@
     .address-feedback {
       position: absolute;
       top: 108px;
-      left: 470px;
+      left: 300px;
       right: 330px;
       height: 30px;
       display: flex;
@@ -504,6 +496,10 @@
       text-decoration: none;
     }
 
+    .find-hidden-address::before {
+      content: attr(data-address);
+    }
+
     .addr-self {
       color: #001a4d;
       font-weight: 500;
@@ -648,15 +644,8 @@
         </div>
 
         <div class="balance-block">
-          <div class="balance-item">
-            <div class="balance-label">USDT 余额</div>
-            <span id="balanceBox" class="copy-text" onclick="copyBalance()">-</span>
-          </div>
-
-          <div class="balance-item">
-            <div class="balance-label">TRX 余额</div>
-            <span id="trxBalanceBox" class="copy-text" onclick="copyTrxBalance()">-</span>
-          </div>
+          <div class="balance-label">余额</div>
+          <span id="balanceBox" class="copy-text" onclick="copyBalance()">-</span>
         </div>
       </div>
 
@@ -761,7 +750,6 @@
   const pageSize = 10;
   let currentQueryAddress = "";
   let currentBalanceValue = "";
-  let currentTrxBalanceValue = "";
 
   let activeQueryId = 0;
 
@@ -839,11 +827,6 @@
   function copyBalance() {
     if (!currentBalanceValue) return;
     copyText(currentBalanceValue);
-  }
-
-  function copyTrxBalance() {
-    if (!currentTrxBalanceValue) return;
-    copyText(currentTrxBalanceValue);
   }
 
   function openCurrentAddress() {
@@ -965,30 +948,21 @@
   async function queryBalance(address) {
     const url = buildUrl(`/v1/accounts/${address}`);
     const data = await requestJson(url);
-    let usdtBalance = "0";
-    let trxBalance = "0";
+    let balance = "0";
 
     if (data && data.data && data.data.length > 0) {
       const account = data.data[0];
-
-      if (account.balance !== undefined && account.balance !== null) {
-        trxBalance = formatTokenAmount(account.balance, 6);
-      }
-
       if (Array.isArray(account.trc20)) {
         for (const item of account.trc20) {
           if (item[USDT_CONTRACT] !== undefined) {
-            usdtBalance = formatTokenAmount(item[USDT_CONTRACT], 6);
+            balance = formatTokenAmount(item[USDT_CONTRACT], 6);
             break;
           }
         }
       }
     }
 
-    return {
-      usdt: usdtBalance,
-      trx: trxBalance
-    };
+    return balance;
   }
 
   async function queryTransactions(address, minTimestamp = 0) {
@@ -1112,8 +1086,8 @@
         </td>
         <td class="time-col">${safeTime}</td>
         <td class="type-col"><span class="type-tag ${typeClass}">${safeTypeText}</span></td>
-        <td class="addr-col"><span class="addr-full ${fromClass}" title="${safeFrom}" onclick='copyText(${fromArg})'>${safeFrom}</span></td>
-        <td class="addr-col"><span class="addr-full ${toClass}" title="${safeTo}" onclick='copyText(${toArg})'>${safeTo}</span></td>
+        <td class="addr-col"><span class="addr-full ${fromClass} find-hidden-address" data-address="${safeFrom}" title="${safeFrom}" onclick='copyText(${fromArg})'></span></td>
+        <td class="addr-col"><span class="addr-full ${toClass} find-hidden-address" data-address="${safeTo}" title="${safeTo}" onclick='copyText(${toArg})'></span></td>
         <td class="amount-col ${amountClass}"><span class="amount-value">${safeAmount}</span></td>
         <td class="status-col">${tag}</td>
       `;
@@ -1169,15 +1143,10 @@
     if (queryId !== activeQueryId) return;
 
     if (balanceResult.status === "fulfilled") {
-      currentBalanceValue = balanceResult.value.usdt;
-      currentTrxBalanceValue = balanceResult.value.trx;
-      document.getElementById("balanceBox").textContent = balanceResult.value.usdt + " USDT";
-      document.getElementById("trxBalanceBox").textContent = balanceResult.value.trx + " TRX";
+      currentBalanceValue = balanceResult.value;
+      document.getElementById("balanceBox").textContent = balanceResult.value + " USDT";
     } else {
-      currentBalanceValue = "";
-      currentTrxBalanceValue = "";
       document.getElementById("balanceBox").textContent = "查询失败";
-      document.getElementById("trxBalanceBox").textContent = "查询失败";
     }
 
     if (txResult.status === "fulfilled") {
@@ -1220,10 +1189,8 @@
         currentPage = 1;
         currentQueryAddress = "";
         currentBalanceValue = "";
-        currentTrxBalanceValue = "";
         document.getElementById("addressBox").textContent = address || "-";
         document.getElementById("balanceBox").textContent = "-";
-        document.getElementById("trxBalanceBox").textContent = "-";
         updatePageText(0);
         renderEmpty("请输入正确的 TRON 地址");
         setError("地址格式不正确，TRON 地址一般是 T 开头的 34 位地址。 ");
@@ -1235,11 +1202,9 @@
       currentPage = 1;
       currentQueryAddress = address;
       currentBalanceValue = "";
-      currentTrxBalanceValue = "";
 
       document.getElementById("addressBox").textContent = address;
       document.getElementById("balanceBox").textContent = "-";
-      document.getElementById("trxBalanceBox").textContent = "-";
 
       if (cachedTransactions.length) {
         renderTransactions(cachedTransactions, address);
@@ -1255,9 +1220,7 @@
     } catch (err) {
       if (!allTransactions.length) {
         document.getElementById("balanceBox").textContent = "-";
-        document.getElementById("trxBalanceBox").textContent = "-";
         currentBalanceValue = "";
-        currentTrxBalanceValue = "";
         renderEmpty("查询失败");
       }
       setStatus("");
