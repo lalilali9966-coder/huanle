@@ -842,12 +842,18 @@
 
     tbody tr.row-new,
     tbody tr.row-new:hover {
-      background: #fffcf0;
+      background: #f3f6ff;
     }
 
     .hash-text,
     .addr-other {
       color: var(--brand);
+    }
+
+    /* 输出地址和接收地址：字号、粗细一致，只用颜色区分 */
+    .addr-self,
+    .addr-other {
+      font-weight: 500;
     }
 
     .addr-self {
@@ -955,7 +961,7 @@
       }
 
       .hash-col {
-        width: 13%;
+        width: 12%;
       }
 
       .type-col {
@@ -967,7 +973,7 @@
       }
 
       .status-col {
-        width: 7%;
+        width: 8%;
       }
 
       .amount-value {
@@ -1029,11 +1035,11 @@
       }
 
       .amount-col {
-        width: 11%;
+        width: 10%;
       }
 
       .status-col {
-        width: 8%;
+        width: 9%;
       }
 
       .time-date {
@@ -1070,6 +1076,64 @@
     .wallet-logo {
       width: 44px;
       height: 44px;
+    }
+
+    /* 交易表：数字换成更圆润的字体，标题和表头加粗 */
+    .table-title {
+      font-weight: 700;
+    }
+
+    thead th {
+      color: #475467;
+      font-weight: 600;
+    }
+
+    .amount-value,
+    .time-col,
+    .hash-text {
+      font-family: "SF Pro Display", "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-variant-numeric: normal;
+    }
+
+    .amount-value {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    /* 状态标签：实心色块 + 白字 */
+    .status-tag {
+      display: inline-block;
+      min-width: 54px;
+      padding: 4px 9px;
+      border: none;
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 16px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .ok-tag {
+      background: #17a364;
+    }
+
+    .pending-tag {
+      background: #f0a400;
+    }
+
+    .new-tx-tag {
+      background: #2f5bd8;
+    }
+
+    @media (min-width: 701px) and (max-width: 1279px) {
+      .status-tag {
+        min-width: 48px;
+        padding: 3px 7px;
+        font-size: 11.5px;
+      }
     }
 
     /* 手机端专用布局：无横向滚动，每页 5 条交易 */
@@ -1475,6 +1539,14 @@
     }
 
     @media (max-width: 700px) {
+      .status-tag {
+        min-width: 0;
+        padding: 2px 7px;
+        border-radius: 5px;
+        font-size: 10px;
+        line-height: 14px;
+      }
+
       .wallet-logo {
         width: 32px;
         height: 32px;
@@ -1615,6 +1687,11 @@
 
 <script>
   const USDT_CONTRACT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
+
+  // 点击哈希 / “在区块链上查看”打开的区块链浏览器，换网站只改这里
+  // 备选：OKLink   https://www.oklink.com/zh-hans/trx/tx/哈希   https://www.oklink.com/zh-hans/trx/address/地址
+  const EXPLORER_TX_URL = "https://tronscan.org/#/transaction/";
+  const EXPLORER_ADDRESS_URL = "https://tronscan.org/#/address/";
   const TRONGRID_BASE = "https://api.trongrid.io";
   const DEFAULT_TRONGRID_API_KEY = "e39e6de7-6c7a-474b-8198-058cfbe437f0";
   const TRANSACTION_CACHE_PREFIX = "TRON_USDT_TRANSACTIONS_";
@@ -1638,11 +1715,6 @@
   let newTransactionTimer = null;
 
   const REQUEST_TIMEOUT_MS = 12000;
-
-  // 点“更新交易”后若暂未查到新交易，短时间内连续再查几次（TronGrid 收录通常有几秒延迟）
-  const UPDATE_RECHECK_INTERVAL_MS = 1500;
-  const UPDATE_RECHECK_TIMES = 8;
-  let updateRecheckId = 0;
 
   window.addEventListener("DOMContentLoaded", () => {
     const iconLink = document.querySelector('link[rel="icon"]');
@@ -1692,18 +1764,6 @@
     }
   });
 
-  async function queryLatestTransactionHash(address) {
-    const url = buildUrl(`/v1/accounts/${address}/transactions/trc20`, {
-      limit: 1,
-      only_confirmed: false,
-      contract_address: USDT_CONTRACT,
-      order_by: "block_timestamp,desc"
-    });
-    const data = await requestJson(url, 0);
-    const tx = Array.isArray(data.data) ? data.data[0] : null;
-    return tx ? getTransactionHash(tx) : "";
-  }
-
   function setStatus(text) {
     document.getElementById("statusBox").textContent = text || "";
   }
@@ -1721,16 +1781,11 @@
   function setBalanceText(value) {
     const balanceBox = document.getElementById("balanceBox");
     if (/^\d/.test(value)) {
-      balanceBox.innerHTML = `${escapeHtml(formatThousands(value))}<span class="balance-unit">USDT</span>`;
+      // 余额不加千分位逗号，直接显示原始数字
+      balanceBox.innerHTML = `${escapeHtml(value)}<span class="balance-unit">USDT</span>`;
     } else {
       balanceBox.textContent = value;
     }
-  }
-
-  function formatThousands(amount) {
-    const [intPart, decimalPart] = String(amount).split(".");
-    const intStr = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return decimalPart ? `${intStr}.${decimalPart}` : intStr;
   }
 
   function setError(text) {
@@ -1864,7 +1919,7 @@
       setError("请先输入或查询一个正确的 TRON 地址。 ");
       return;
     }
-    window.open(`https://tronscan.org/#/address/${address}`, "_blank", "noopener,noreferrer");
+    window.open(EXPLORER_ADDRESS_URL + address, "_blank", "noopener,noreferrer");
   }
 
   function getTransactionCacheKey(address) {
@@ -1918,7 +1973,7 @@
   function openTransactionDetail(hash) {
     if (!hash || hash === "-") return;
     copyText(hash);
-    window.open(`https://tronscan.org/#/transaction/${hash}`, "_blank", "noopener,noreferrer");
+    window.open(EXPLORER_TX_URL + hash, "_blank", "noopener,noreferrer");
   }
 
   function buildUrl(path, params = {}) {
@@ -2102,10 +2157,10 @@
       const confirmed = isConfirmedTx(tx);
       const isNewTransaction = newTransactionHashes.has(hash);
       const tag = isNewTransaction
-        ? `<span class="new-tx-tag">新交易</span>`
+        ? `<span class="status-tag new-tx-tag">新交易</span>`
         : confirmed
-          ? `<span class="ok-tag">已确认</span>`
-          : `<span class="pending-tag">待确认</span>`;
+          ? `<span class="status-tag ok-tag">已确认</span>`
+          : `<span class="status-tag pending-tag">待确认</span>`;
 
       const row = document.createElement("tr");
       if (isNewTransaction) row.className = "row-new";
@@ -2116,7 +2171,7 @@
       const safeTo = escapeHtml(to);
       const safeTime = `<span class="time-date">${escapeHtml(datePart)}</span> <span class="time-clock">${escapeHtml(clockPart)}</span>`;
       // 数量不加千分位逗号；点击复制纯数字（不带 +/− 号）
-      const safeAmount = escapeHtml((isIn ? "+" : "−") + amount);
+      const safeAmount = escapeHtml(amount);
       const amountArg = JSON.stringify(amount);
       const safeTypeText = escapeHtml(typeText);
       const hashArg = JSON.stringify(hash);
@@ -2368,15 +2423,6 @@
     // 搜索框查询后会清空，所以更新的是当前正在查看的地址
     const address = currentQueryAddress || document.getElementById("addressInput").value.trim();
 
-    // 正在连续检查时再点一次，就是停止检查
-    if (updateRecheckId && updateRecheckId === activeQueryId) {
-      updateRecheckId = 0;
-      activeQueryId++;
-      setStatus("已停止检查。");
-      setButtonLabel("updateBalanceBtn", "更新交易");
-      return;
-    }
-
     setStatus("");
     setError("");
     setCopyBalanceChanged(false);
@@ -2411,53 +2457,16 @@
 
     try {
       setStatus("正在更新余额和最新交易记录...");
-      let added = await refreshOnce(address, queryId, cachedTransactions, true, true, previousBalanceValue, true);
+      const added = await refreshOnce(address, queryId, cachedTransactions, true, true, previousBalanceValue, true);
       if (queryId !== activeQueryId) return;
-
-      if (added > 0 || !cachedTransactions.length) {
-        setStatus(added > 0 && cachedTransactions.length
-          ? `已更新，发现 ${added} 笔新交易。`
-          : "余额和最新交易记录已更新。 ");
-        return;
-      }
-
-      // 暂未查到新交易：刚转账时 TronGrid 往往还没收录，接着快速再查几次（每次只查最新一笔）
-      updateRecheckId = queryId;
-      updateBtn.disabled = false;
-      setButtonLabel("updateBalanceBtn", "停止检查");
-
-      for (let i = 1; i <= UPDATE_RECHECK_TIMES; i++) {
-        setStatus(`暂未发现新交易，继续检查中（${i}/${UPDATE_RECHECK_TIMES}）...`);
-        await new Promise(resolve => setTimeout(resolve, UPDATE_RECHECK_INTERVAL_MS));
-        if (queryId !== activeQueryId) return;
-
-        let latestHash = "";
-        try {
-          latestHash = await queryLatestTransactionHash(address);
-        } catch (err) {
-          continue;
-        }
-        if (queryId !== activeQueryId) return;
-
-        if (latestHash && !allTransactions.some(tx => getTransactionHash(tx) === latestHash)) {
-          added = await refreshOnce(address, queryId, loadTransactionCache(address), true, true, previousBalanceValue, true);
-          if (queryId !== activeQueryId) return;
-          if (added > 0) {
-            setStatus(`已更新，发现 ${added} 笔新交易。`);
-            return;
-          }
-        }
-      }
-
-      setStatus("暂未发现新交易。如果刚转账，链上可能还在确认，稍后再点一次。");
+      setStatus(added > 0 && cachedTransactions.length
+        ? `已更新，发现 ${added} 笔新交易。`
+        : "已更新，暂无新交易。");
     } catch (err) {
       const message = err && err.message ? err.message : String(err);
       setStatus("");
       setError("更新失败：" + message + "。请稍后再试。 ");
     } finally {
-      if (updateRecheckId === queryId) {
-        updateRecheckId = 0;
-      }
       if (queryId === updateBtnOwnerId) {
         updateBtn.disabled = false;
         setButtonLabel("updateBalanceBtn", "更新交易");
