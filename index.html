@@ -1136,6 +1136,43 @@
       }
     }
 
+    /* 整体字重调细，余额字号调小 */
+    #balanceBox {
+      font-size: 21px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    #balanceBox .balance-unit {
+      font-weight: 500;
+    }
+
+    .main-address,
+    .panel-title,
+    .table-title,
+    thead th,
+    .amount-value,
+    .type-tag,
+    .address-action-btn,
+    .quick-action {
+      font-weight: 500;
+    }
+
+    /* 状态标签文字调细 */
+    .status-tag {
+      font-weight: 400;
+      letter-spacing: 0.5px;
+    }
+
+    /* 时间：年月日和时分秒用同一种黑体、同一个颜色 */
+    .time-col,
+    .time-col .time-date,
+    .time-col .time-clock {
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "PingFang SC", "Heiti SC", "Hiragino Sans GB", sans-serif;
+      font-weight: 400;
+    }
+
     /* 手机端专用布局：无横向滚动，每页 5 条交易 */
     @media (max-width: 700px) {
       html,
@@ -1702,7 +1739,7 @@
   let currentPage = 1;
   const MOBILE_QUERY = window.matchMedia("(max-width: 700px)");
   let pageSize = MOBILE_QUERY.matches ? 5 : 10;
-  const MAX_CACHED_TRANSACTIONS = 1000;
+  const MAX_CACHED_TRANSACTIONS = 500;
   const MAX_UPDATE_PAGES = 20;
   let currentQueryAddress = "";
   let currentBalanceValue = "";
@@ -1936,11 +1973,33 @@
     }
   }
 
+  // 只保存显示需要的字段：多个页面共用同一个网站的浏览器存储（约 5MB），存完整记录很快会满
+  function slimTransaction(tx) {
+    const slim = {
+      transaction_id: getTransactionHash(tx),
+      block_timestamp: tx.block_timestamp,
+      from: tx.from,
+      to: tx.to,
+      value: tx.value
+    };
+    if (tx.token_info && tx.token_info.decimals) slim.token_info = { decimals: tx.token_info.decimals };
+    if (tx.confirmed === false) slim.confirmed = false;
+    if (tx.result) slim.result = tx.result;
+    return slim;
+  }
+
   function saveTransactionCache(address, transactions) {
+    const data = JSON.stringify(transactions.slice(0, MAX_CACHED_TRANSACTIONS).map(slimTransaction));
     try {
-      localStorage.setItem(getTransactionCacheKey(address), JSON.stringify(transactions.slice(0, MAX_CACHED_TRANSACTIONS)));
+      localStorage.setItem(getTransactionCacheKey(address), data);
     } catch (err) {
-      setError("交易记录保存到浏览器失败。 ");
+      // 存储满了就清掉其他地址的旧缓存再试一次；仍失败也不影响页面显示
+      try {
+        Object.keys(localStorage)
+          .filter(key => key.startsWith(TRANSACTION_CACHE_PREFIX) && key !== getTransactionCacheKey(address))
+          .forEach(key => localStorage.removeItem(key));
+        localStorage.setItem(getTransactionCacheKey(address), data);
+      } catch (retryErr) {}
     }
   }
 
@@ -2252,14 +2311,14 @@
       allTransactions = mergeTransactions(cachedTransactions, latestTransactions);
       addedCount = allTransactions.length - cachedTransactions.length;
       currentQueryAddress = address;
-      currentPage = 1;
+      // 有新交易才回到第一页（新交易排在最上方），没有就停留在当前页
+      if (addedCount > 0) currentPage = 1;
       saveTransactionCache(address, allTransactions);
       showNewTransactionTags(newHashes, queryId);
       renderTransactions(allTransactions, currentQueryAddress);
     } else if (cachedTransactions.length) {
       allTransactions = cachedTransactions;
       currentQueryAddress = address;
-      currentPage = 1;
       renderTransactions(allTransactions, currentQueryAddress);
     }
 
@@ -2442,17 +2501,21 @@
     updateBtn.disabled = true;
     setButtonLabel("updateBalanceBtn", "更新中");
 
-    const cachedTransactions = loadTransactionCache(address);
-    allTransactions = cachedTransactions;
-    currentPage = 1;
-    currentQueryAddress = address;
-    document.getElementById("addressBox").textContent = address;
+    // 以页面上已经显示的交易为基础更新，列表保持不动，查到新交易再加到最上方
+    const showingThisAddress = currentQueryAddress === address && allTransactions.length > 0;
+    const cachedTransactions = showingThisAddress ? allTransactions : loadTransactionCache(address);
 
-    if (cachedTransactions.length) {
-      renderTransactions(cachedTransactions, address);
-    } else {
-      updatePageText(0);
-      renderEmpty("正在查询...");
+    if (!showingThisAddress) {
+      allTransactions = cachedTransactions;
+      currentPage = 1;
+      currentQueryAddress = address;
+      document.getElementById("addressBox").textContent = address;
+      if (cachedTransactions.length) {
+        renderTransactions(cachedTransactions, address);
+      } else {
+        updatePageText(0);
+        renderEmpty("正在查询...");
+      }
     }
 
     try {
