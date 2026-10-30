@@ -330,6 +330,58 @@
       opacity: 1;
       transform: translate(-50%, 0);
     }
+
+    /* 紧凑布局：仅调整显示，不改变输入、计算和复制功能。 */
+    body {
+      min-height: 100vh;
+      background: var(--surface);
+      overflow-x: hidden;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    .card {
+      padding: 10px;
+      border: 0;
+      border-radius: 20px;
+      box-shadow: none;
+    }
+
+    .results {
+      padding: 4px 12px 2px;
+    }
+
+    .result-row {
+      padding: 14px 0 12px;
+    }
+
+    .app-foot {
+      display: none;
+    }
+
+    /* 提示覆盖在卡片下部，不增加页面高度。 */
+    .toast {
+      top: 236px;
+      bottom: auto;
+      max-width: calc(100% - 24px);
+      padding: 7px 12px;
+      font-size: 12px;
+    }
+
+    @media (max-width: 320px) {
+      .card { padding: 8px; }
+      .display { padding: 8px; }
+      .fields { gap: 6px; }
+      .field { padding: 8px; }
+      .field-input { font-size: 19px; }
+      .result-value { font-size: 27px; }
+      .results { padding-right: 10px; padding-left: 10px; }
+    }
   </style>
 </head>
 <body>
