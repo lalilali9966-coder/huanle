@@ -623,6 +623,1357 @@
         font-size: 16px;
       }
     }
+
+    /* 页头、统计、提示（电脑和手机共用） */
+    :root {
+      --ink: #0b1530;
+      --ink-2: #4a5878;
+      --ink-3: #8a96b0;
+      --line: #e5e9f1;
+      --line-2: #eef1f6;
+      --bg: #f3f5f9;
+      --accent: #3a5cff;
+      --accent-2: #2b4ae6;
+      --accent-soft: #eef1ff;
+      --green: #0e9f5a;
+      --green-soft: #e6f6ee;
+      --red: #e5484d;
+      --red-soft: #fdeded;
+      --amber: #a66a00;
+      --amber-soft: #fff4dc;
+      --radius: 16px;
+      --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 10px 30px rgba(16, 24, 40, 0.06);
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 4px 0 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .brand-mark img {
+      width: 26px;
+      height: 26px;
+    }
+
+    .brand-name {
+      color: var(--ink);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-sub {
+      margin-top: 2px;
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+
+    .net-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 30px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #ffffff;
+      color: var(--ink-2);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .net-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.16);
+    }
+
+    .time-date {
+      color: var(--ink-3);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 32px;
+      z-index: 50;
+      max-width: calc(100% - 32px);
+      padding: 10px 16px;
+      border-radius: 10px;
+      background: rgba(11, 21, 48, 0.92);
+      color: #ffffff;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 12px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      box-shadow: 0 10px 30px rgba(11, 21, 48, 0.25);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* 电脑端：账本式简洁布局（不影响手机端） */
+    @media (min-width: 701px) {
+      :root {
+        --ink: #111111;
+        --ink-2: #4b4b4b;
+        --ink-3: #8a8a8a;
+        --line: #e8e8e8;
+        --line-2: #f0f0f0;
+        --line-strong: #d4d4d4;
+        --green: #1a7f37;
+        --red: #cf222e;
+        --amber: #9a6700;
+        --highlight: #fff8c5;
+      }
+
+      body {
+        background: #ffffff;
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .page {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        column-gap: 40px;
+        align-items: center;
+        width: calc(100% - 64px);
+        max-width: 1200px;
+        padding: 0 0 64px;
+      }
+
+      .page > .panel {
+        grid-column: 1 / -1;
+      }
+
+      /* 顶栏：标题 + 搜索同一行 */
+      .app-header {
+        height: 76px;
+        margin: 0;
+      }
+
+      .brand {
+        gap: 10px;
+      }
+
+      .brand > div:last-child {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+
+      .brand-mark {
+        width: 22px;
+        height: 22px;
+        flex: 0 0 22px;
+        border: none;
+        border-radius: 0;
+        background: none;
+        box-shadow: none;
+      }
+
+      .brand-mark img {
+        width: 22px;
+        height: 22px;
+      }
+
+      .brand-name {
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      .brand-sub {
+        margin: 0;
+        padding-left: 12px;
+        border-left: 1px solid var(--line-strong);
+        color: var(--ink-3);
+        font-size: 13px;
+        line-height: 14px;
+      }
+
+      .net-chip {
+        display: none;
+      }
+
+      .search-panel {
+        justify-self: end;
+        width: min(560px, 100%);
+        gap: 0;
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        background: none;
+        box-shadow: none;
+      }
+
+      .search-panel input {
+        height: 38px;
+        padding: 0 12px;
+        border: 1px solid var(--line-strong);
+        border-right: none;
+        border-radius: 6px 0 0 6px;
+        background: #ffffff;
+        color: var(--ink);
+        font-size: 13.5px;
+      }
+
+      .search-panel input::placeholder {
+        color: #a8a8a8;
+      }
+
+      .search-panel input:focus {
+        border-color: var(--ink);
+        box-shadow: none;
+      }
+
+      .search-panel button {
+        width: auto;
+        height: 38px;
+        padding: 0 20px;
+        border-radius: 0 6px 6px 0;
+        background: var(--ink);
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .search-panel button:hover {
+        background: #333333;
+      }
+
+      .search-panel button:disabled {
+        background: #9a9a9a;
+      }
+
+      /* 去掉卡片外观，用细线分区 */
+      .panel {
+        margin: 0;
+        border: none;
+        border-top: 1px solid var(--line);
+        border-radius: 0;
+        background: none;
+        box-shadow: none;
+        overflow: visible;
+      }
+
+      .panel-title {
+        display: none;
+      }
+
+      /* 地址概览 */
+      .address-info {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+          "addr quick"
+          "balance actions"
+          "feedback feedback";
+        column-gap: 32px;
+        min-height: 0;
+        padding: 26px 0 20px;
+      }
+
+      .address-main {
+        display: contents;
+      }
+
+      .address-primary-row {
+        grid-area: addr;
+      }
+
+      .wallet-icon {
+        display: none;
+      }
+
+      .address-line {
+        gap: 6px;
+      }
+
+      .main-address {
+        color: var(--ink);
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .inline-copy-btn {
+        width: 24px;
+        height: 24px;
+        flex-basis: 24px;
+        border-radius: 4px;
+        color: var(--ink-3);
+      }
+
+      .inline-copy-btn:hover {
+        background: var(--line-2);
+        color: var(--ink);
+      }
+
+      .inline-copy-btn svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .address-caption {
+        margin-top: 3px;
+        color: var(--ink-3);
+        font-size: 12px;
+      }
+
+      .address-quick-actions {
+        grid-area: quick;
+        position: static;
+        align-self: start;
+        justify-self: end;
+        gap: 20px;
+      }
+
+      .quick-action {
+        gap: 5px;
+        height: 34px;
+        padding: 2px 0;
+        color: var(--ink-2);
+        font-weight: 400;
+      }
+
+      .quick-action:hover {
+        color: var(--ink);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      .quick-action svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .balance-block {
+        grid-area: balance;
+        align-self: end;
+        margin-top: 22px;
+        padding-left: 0;
+      }
+
+      .balance-label {
+        margin-bottom: 4px;
+        color: var(--ink-3);
+        font-size: 12px;
+      }
+
+      #balanceBox {
+        padding: 0;
+        color: var(--ink);
+        font-size: 34px;
+        font-weight: 600;
+        line-height: 1.15;
+        letter-spacing: -0.5px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      #balanceBox .balance-unit {
+        margin-left: 6px;
+        color: var(--ink-3);
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0;
+      }
+
+      .copy-text:hover {
+        color: var(--ink);
+      }
+
+      .address-actions {
+        grid-area: actions;
+        position: static;
+        flex-direction: row-reverse;
+        align-self: end;
+        justify-self: end;
+        gap: 8px;
+        width: auto;
+        margin-bottom: 4px;
+      }
+
+      .address-action-btn {
+        width: auto;
+        height: 34px;
+        padding: 0 14px;
+        border: 1px solid var(--ink);
+        border-radius: 6px;
+        background: var(--ink);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .address-action-btn:hover {
+        background: #333333;
+      }
+
+      .address-action-btn svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .address-action-btn.secondary {
+        border-color: var(--line-strong);
+        background: #ffffff;
+        color: var(--ink);
+      }
+
+      .address-action-btn.secondary:hover {
+        background: #f6f6f6;
+      }
+
+      .address-action-btn.balance-updated,
+      .address-action-btn.balance-updated:hover {
+        border-color: #d4a72c;
+        background: var(--highlight);
+        color: #6b4e00;
+      }
+
+      .address-action-btn:disabled {
+        border-color: #e3e3e3;
+        background: #f3f3f3;
+        color: #a0a0a0;
+      }
+
+      .address-feedback {
+        grid-area: feedback;
+        position: static;
+        justify-self: start;
+        align-self: start;
+        height: auto;
+        min-height: 20px;
+        margin-top: 8px;
+      }
+
+      .address-feedback .status-line {
+        color: var(--ink-3);
+        font-size: 12.5px;
+        line-height: 20px;
+      }
+
+      .address-feedback .error-line {
+        color: var(--red);
+      }
+
+      /* 交易表 */
+      .table-top {
+        height: 60px;
+        padding: 0;
+        border-bottom: none;
+      }
+
+      .table-title {
+        color: var(--ink);
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      .table-summary {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--ink-3);
+      }
+
+      .table-summary span {
+        margin-left: 0;
+      }
+
+      .page-btn {
+        min-width: 30px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 8px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        color: var(--ink-2);
+      }
+
+      .page-btn:hover {
+        border-color: var(--ink);
+        color: var(--ink);
+      }
+
+      .page-disabled {
+        border-color: var(--line-2);
+        color: #c4c4c4;
+      }
+
+      #pageText {
+        min-width: 52px;
+        text-align: center;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+
+      #totalText {
+        margin-left: 14px;
+      }
+
+      /* 窗口太窄时表格左右滑动，地址始终一行完整显示 */
+      .table-scroll {
+        padding: 0;
+        overflow-x: auto;
+      }
+
+      .table-scroll table {
+        min-width: 980px;
+      }
+
+      thead th {
+        height: 34px;
+        padding: 0 10px;
+        border-bottom: 1px solid var(--ink);
+        background: none;
+        color: var(--ink-3);
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      /* 表头和内容统一居中对齐 */
+      thead th,
+      thead th.addr-col,
+      thead th.type-col,
+      thead th.status-col,
+      thead th.amount-col,
+      tbody td,
+      tbody td.addr-col {
+        text-align: center;
+      }
+
+      tbody td {
+        height: 50px;
+        padding: 0 10px;
+        border-bottom: 1px solid var(--line-2);
+        color: var(--ink);
+      }
+
+      tbody td.addr-col:nth-child(4),
+      tbody td.addr-col:nth-child(5) {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      tbody tr:hover {
+        background: #fafafa;
+      }
+
+      tbody tr.row-new,
+      tbody tr.row-new:hover {
+        background: var(--highlight);
+      }
+
+      .hash-col {
+        width: 13%;
+      }
+
+      .time-col {
+        width: 9%;
+      }
+
+      .type-col {
+        width: 6%;
+        text-align: center;
+      }
+
+      .addr-col {
+        width: 26.5%;
+      }
+
+      .amount-col {
+        width: 11%;
+        text-align: center;
+      }
+
+      .status-col {
+        width: 8%;
+        text-align: center;
+      }
+
+      .hash-text {
+        color: var(--ink);
+        font-size: 12.5px;
+      }
+
+      .hash-text:hover {
+        text-underline-offset: 3px;
+      }
+
+      .time-col {
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .time-date {
+        display: block;
+        color: var(--ink-3);
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      .time-clock {
+        display: block;
+        line-height: 1.4;
+      }
+
+      .addr-full {
+        display: block;
+        max-width: 100%;
+        font-size: 13.5px;
+        letter-spacing: -0.1px;
+        line-height: 1.4;
+        white-space: nowrap;
+      }
+
+      .addr-self {
+        color: var(--ink-3);
+        font-weight: 400;
+      }
+
+      .addr-other {
+        color: var(--ink);
+      }
+
+      .addr-other:hover,
+      .addr-self:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      .type-tag {
+        min-width: 0;
+        height: auto;
+        padding: 0;
+        border-radius: 0;
+        background: none;
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .type-in {
+        background: none;
+        color: var(--green);
+      }
+
+      .type-out {
+        background: none;
+        color: var(--red);
+      }
+
+      .amount-value {
+        width: auto;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .amount-in {
+        color: var(--green);
+      }
+
+      .amount-out {
+        color: var(--red);
+      }
+
+      .pending-tag,
+      .ok-tag {
+        padding: 0;
+        border-radius: 0;
+        background: none;
+        font-size: 13px;
+      }
+
+      .ok-tag {
+        color: var(--ink-3);
+      }
+
+      .pending-tag {
+        color: var(--amber);
+      }
+
+      .new-tx-tag {
+        padding: 2px 6px;
+        border-radius: 3px;
+        background: #ffd33d;
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .empty {
+        height: 140px;
+        color: var(--ink-3);
+      }
+    }
+
+    .summary-label {
+      display: none;
+    }
+
+    /* 电脑端：地址 / 余额概览卡片 */
+    @media (min-width: 701px) {
+      .app-header {
+        border-bottom: none;
+      }
+
+      .panel.summary-panel {
+        margin: 4px 0 28px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fafafa;
+      }
+
+      .summary-panel + .panel {
+        border-top: none;
+      }
+
+      .summary-panel .address-info {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        grid-template-areas:
+          "addr balance actions"
+          "quick feedback actions";
+        column-gap: 0;
+        padding: 22px 28px;
+      }
+
+      .summary-label,
+      .summary-panel .balance-label {
+        display: block;
+        height: 18px;
+        margin: 0 0 6px;
+        color: var(--ink-3);
+        font-size: 12px;
+        line-height: 18px;
+      }
+
+      .summary-panel .address-primary-row {
+        align-self: start;
+        padding-right: 36px;
+      }
+
+      .summary-panel .address-line {
+        height: 40px;
+      }
+
+      .summary-panel .main-address {
+        font-size: 16px;
+      }
+
+      .summary-panel .address-caption {
+        display: none;
+      }
+
+      .summary-panel .address-quick-actions {
+        align-self: start;
+        justify-self: start;
+        gap: 16px;
+        margin-top: 8px;
+        padding-right: 36px;
+      }
+
+      .summary-panel .quick-action {
+        height: 20px;
+        color: var(--ink-3);
+        font-size: 12.5px;
+      }
+
+      .summary-panel .quick-action:hover {
+        color: var(--ink);
+      }
+
+      .summary-panel .quick-action svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      .summary-panel .balance-block,
+      .summary-panel .address-feedback {
+        padding-left: 36px;
+        border-left: 1px solid var(--line);
+      }
+
+      .summary-panel .balance-block {
+        align-self: stretch;
+        margin: 0;
+      }
+
+      .summary-panel #balanceBox {
+        height: 40px;
+        font-size: 30px;
+        line-height: 40px;
+        white-space: nowrap;
+      }
+
+      .summary-panel #balanceBox .balance-unit {
+        font-size: 13px;
+      }
+
+      .summary-panel .address-feedback {
+        align-self: stretch;
+        justify-self: stretch;
+        min-height: 0;
+        margin: 0;
+        padding-top: 8px;
+      }
+
+      .summary-panel .address-feedback .status-line {
+        line-height: 20px;
+      }
+
+      .summary-panel .address-actions {
+        align-self: center;
+        justify-self: end;
+        margin: 0 0 0 24px;
+      }
+    }
+
+    @media (min-width: 701px) and (max-width: 1279px) {
+      .summary-panel .address-info {
+        padding: 20px 22px;
+      }
+
+      .summary-panel .address-primary-row,
+      .summary-panel .address-quick-actions {
+        padding-right: 24px;
+      }
+
+      .summary-panel .balance-block,
+      .summary-panel .address-feedback {
+        padding-left: 24px;
+      }
+
+      .summary-panel .main-address {
+        font-size: 14.5px;
+      }
+
+      .summary-panel #balanceBox {
+        font-size: 26px;
+      }
+    }
+
+    @media (min-width: 701px) and (max-width: 1279px) {
+      .page {
+        grid-template-columns: minmax(0, 1fr);
+        width: calc(100% - 40px);
+      }
+
+      .app-header {
+        height: auto;
+        padding: 22px 0 14px;
+      }
+
+      .search-panel {
+        justify-self: stretch;
+        width: 100%;
+        margin-bottom: 22px;
+      }
+
+      .hash-col {
+        width: 12%;
+      }
+
+      .time-col {
+        width: 9%;
+      }
+
+      .type-col {
+        width: 6%;
+      }
+
+      .addr-col {
+        width: 27%;
+      }
+
+      .amount-col {
+        width: 11%;
+      }
+
+      .status-col {
+        width: 8%;
+      }
+
+      thead th,
+      tbody td,
+      tbody td.addr-col:nth-child(4),
+      tbody td.addr-col:nth-child(5) {
+        padding-left: 7px;
+        padding-right: 7px;
+      }
+
+      .hash-text {
+        font-size: 11.5px;
+      }
+
+      .addr-full {
+        font-size: 11.5px;
+        letter-spacing: -0.2px;
+      }
+    }
+
+    /* 手机端专用布局：无横向滚动，每页 5 条交易 */
+    @media (max-width: 700px) {
+      html,
+      body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      body {
+        font-size: 12px;
+      }
+
+      .page {
+        width: calc(100% - 12px);
+        max-width: none;
+        padding: 6px 0 calc(10px + env(safe-area-inset-bottom));
+      }
+
+      .search-panel {
+        gap: 6px;
+        margin-bottom: 7px;
+        padding: 7px;
+        border-radius: 9px;
+      }
+
+      .search-panel input {
+        min-width: 0;
+        height: 36px;
+        padding: 0 9px;
+        font-size: 12px;
+      }
+
+      .search-panel button {
+        width: 82px;
+        height: 36px;
+        flex: 0 0 82px;
+        font-size: 12px;
+      }
+
+      .panel {
+        margin-bottom: 7px;
+        border-radius: 9px;
+        box-shadow: 0 3px 12px rgba(32, 56, 100, 0.05);
+      }
+
+      .panel-title {
+        height: 40px;
+        padding: 0 12px;
+        font-size: 15px;
+      }
+
+      .address-info {
+        min-height: 0;
+        padding: 11px;
+      }
+
+      .address-primary-row {
+        align-items: flex-start;
+      }
+
+      .wallet-icon {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        margin-right: 9px;
+        border-radius: 9px;
+      }
+
+      .wallet-icon svg {
+        width: 23px;
+        height: 23px;
+      }
+
+      .address-text-wrap,
+      .address-line {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .address-line {
+        align-items: flex-start;
+        gap: 4px;
+        white-space: normal;
+      }
+
+      .main-address {
+        min-width: 0;
+        font-size: 12px;
+        line-height: 1.45;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-all;
+      }
+
+      .inline-copy-btn {
+        width: 24px;
+        height: 24px;
+        flex: 0 0 24px;
+      }
+
+      .address-caption,
+      .balance-label {
+        font-size: 11px;
+      }
+
+      .address-caption {
+        margin-top: 3px;
+      }
+
+      .balance-block {
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+        margin-top: 10px;
+        padding-left: 51px;
+      }
+
+      .balance-label {
+        margin: 0;
+      }
+
+      #balanceBox {
+        font-size: 15px;
+      }
+
+      .address-quick-actions {
+        position: static;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        margin-top: 11px;
+      }
+
+      .quick-action {
+        justify-content: center;
+        min-width: 0;
+        height: 32px;
+        padding: 0 5px;
+        border: 1px solid #e1e7f1;
+        border-radius: 6px;
+        background: #f8faff;
+        font-size: 11px;
+      }
+
+      .quick-action svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .address-actions {
+        position: static;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        width: auto;
+        margin-top: 6px;
+      }
+
+      .address-action-btn {
+        height: 34px;
+        font-size: 11px;
+      }
+
+      .address-feedback {
+        position: static;
+        height: auto;
+        min-height: 0;
+        margin-top: 6px;
+        pointer-events: auto;
+      }
+
+      .address-feedback .status-line {
+        font-size: 11px;
+        line-height: 1.4;
+        white-space: normal;
+      }
+
+      .table-top {
+        min-height: 44px;
+        height: auto;
+        gap: 8px;
+        padding: 7px 10px;
+      }
+
+      .table-title {
+        flex: 0 0 auto;
+        font-size: 14px;
+      }
+
+      .table-summary {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 3px 7px;
+        min-width: 0;
+        font-size: 10px;
+        line-height: 1.25;
+      }
+
+      .table-summary span {
+        margin-left: 0;
+      }
+
+      .table-scroll {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      table,
+      tbody {
+        display: block;
+        width: 100%;
+      }
+
+      table {
+        table-layout: auto;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody {
+        padding: 5px;
+      }
+
+      tbody tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        grid-template-areas:
+          "hash type amount"
+          "time status status"
+          "from from from"
+          "to to to";
+        column-gap: 6px;
+        row-gap: 2px;
+        margin-bottom: 5px;
+        padding: 7px 8px;
+        border: 1px solid #e4eaf3;
+        border-radius: 8px;
+        background: #ffffff;
+      }
+
+      tbody tr:last-child {
+        margin-bottom: 0;
+      }
+
+      tbody tr:hover {
+        background: #ffffff;
+      }
+
+      tbody td {
+        width: auto !important;
+        height: auto;
+        min-width: 0;
+        padding: 0 !important;
+        border: 0;
+        font-size: 10.5px;
+        line-height: 1.35;
+        overflow: hidden;
+      }
+
+      tbody td.hash-col {
+        grid-area: hash;
+        align-self: center;
+      }
+
+      tbody td.time-col {
+        grid-area: time;
+        color: #7889a7;
+        font-size: 9.5px;
+      }
+
+      tbody td.type-col {
+        grid-area: type;
+      }
+
+      tbody td.addr-col:nth-child(4) {
+        grid-area: from;
+        margin-top: 4px;
+        padding-top: 5px !important;
+        border-top: 1px dashed #e3e9f2;
+      }
+
+      tbody td.addr-col:nth-child(5) {
+        grid-area: to;
+      }
+
+      tbody td.addr-col {
+        display: flex;
+        align-items: flex-start;
+        gap: 5px;
+        text-align: left;
+        overflow: visible;
+      }
+
+      tbody td.addr-col::before {
+        flex: 0 0 46px;
+        color: #7889a7;
+        font-size: 9.5px;
+        line-height: 1.45;
+      }
+
+      tbody td.addr-col:nth-child(4)::before {
+        content: "输出地址";
+      }
+
+      tbody td.addr-col:nth-child(5)::before {
+        content: "接收地址";
+      }
+
+      tbody td.amount-col {
+        grid-area: amount;
+        align-self: center;
+        text-align: right;
+        font-size: 11px;
+      }
+
+      tbody td.status-col {
+        grid-area: status;
+        align-self: center;
+        justify-self: end;
+      }
+
+      .hash-text {
+        max-width: 100%;
+        font-size: 10px;
+      }
+
+      .addr-full {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        min-width: 0;
+        flex: 1;
+        color: #4169ff;
+        font-size: 10.5px;
+        line-height: 1.45;
+        letter-spacing: -0.25px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-all;
+      }
+
+      .addr-self {
+        color: #001a4d;
+      }
+
+      .type-tag {
+        min-width: 52px;
+        height: 22px;
+        padding: 0 6px;
+        border-radius: 5px;
+        font-size: 10px;
+      }
+
+      .amount-value {
+        width: auto;
+        max-width: 78px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .pending-tag,
+      .ok-tag,
+      .new-tx-tag {
+        padding: 2px 6px;
+        font-size: 9px;
+      }
+
+      tbody tr.empty-row {
+        display: block;
+        margin: 0;
+        padding: 0;
+        border: 0;
+      }
+
+      tbody tr.empty-row .empty {
+        display: block;
+        width: 100% !important;
+        height: 74px;
+        padding: 26px 8px !important;
+        text-align: center;
+        color: #8a9ab7;
+      }
+
+      .app-header {
+        margin: 2px 2px 8px;
+      }
+
+      .brand-mark {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+        border-radius: 10px;
+      }
+
+      .brand-mark img {
+        width: 22px;
+        height: 22px;
+      }
+
+      .brand-name {
+        font-size: 16px;
+      }
+
+      .brand-sub {
+        font-size: 10.5px;
+      }
+
+      .net-chip {
+        height: 26px;
+        padding: 0 9px;
+        font-size: 10.5px;
+      }
+
+      #balanceBox .balance-unit {
+        margin-left: 4px;
+        color: #7889a7;
+        font-size: 12px;
+      }
+
+      .toast {
+        bottom: calc(20px + env(safe-area-inset-bottom));
+        font-size: 12px;
+      }
+    }
+
   </style>
 </head>
 
@@ -630,12 +1981,23 @@
 
 <div class="page">
 
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark"><img id="brandIcon" alt=""></div>
+      <div>
+        <div id="brandName" class="brand-name">-</div>
+        <div class="brand-sub">USDT-TRC20 地址查询</div>
+      </div>
+    </div>
+    <div class="net-chip"><span class="net-dot"></span>TRON 主网</div>
+  </header>
+
   <div class="search-panel">
     <input id="addressInput" placeholder="输入 TRON 地址，例如：T 开头的钱包地址">
     <button id="queryBtn" onclick="queryData()">查询/刷新</button>
   </div>
 
-  <div class="panel">
+  <div class="panel summary-panel">
     <div class="panel-title">地址信息</div>
 
     <div class="address-info">
@@ -650,6 +2012,7 @@
           </div>
 
           <div class="address-text-wrap">
+            <div class="summary-label">地址</div>
             <div class="address-line">
               <span id="addressBox" class="main-address">-</span>
               <button class="inline-copy-btn" type="button" onclick="copyCurrentAddress()" title="复制地址" aria-label="复制地址">
@@ -664,7 +2027,7 @@
         </div>
 
         <div class="balance-block">
-          <div class="balance-label">余额</div>
+          <div class="balance-label">USDT 余额</div>
           <span id="balanceBox" class="copy-text" onclick="copyBalance()">-</span>
         </div>
       </div>
@@ -747,7 +2110,7 @@
         </thead>
 
         <tbody id="txBody">
-          <tr>
+          <tr class="empty-row">
             <td colspan="7" class="empty">请输入地址查询</td>
           </tr>
         </tbody>
@@ -756,6 +2119,8 @@
   </div>
 
 </div>
+
+<div id="toast" class="toast" role="status"></div>
 
 <script>
   const USDT_CONTRACT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
@@ -767,18 +2132,35 @@
 
   let allTransactions = [];
   let currentPage = 1;
-  const pageSize = 10;
+  const MOBILE_QUERY = window.matchMedia("(max-width: 700px)");
+  let pageSize = MOBILE_QUERY.matches ? 5 : 10;
+  const MAX_CACHED_TRANSACTIONS = 1000;
+  const MAX_UPDATE_PAGES = 20;
   let currentQueryAddress = "";
   let currentBalanceValue = "";
 
   let activeQueryId = 0;
+  let queryBtnOwnerId = 0;
+  let updateBtnOwnerId = 0;
   let copyBalanceTextTimer = null;
   let newTransactionHashes = new Set();
   let newTransactionTimer = null;
 
   const REQUEST_TIMEOUT_MS = 12000;
 
+  // 点“更新交易”后若暂未查到新交易，短时间内连续再查几次（TronGrid 收录通常有几秒延迟）
+  const UPDATE_RECHECK_INTERVAL_MS = 1500;
+  const UPDATE_RECHECK_TIMES = 8;
+  let updateRecheckId = 0;
+
   window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("brandName").textContent = document.title;
+    const iconLink = document.querySelector('link[rel="icon"]');
+    if (iconLink) {
+      document.getElementById("brandIcon").src = iconLink.href;
+    }
+    updatePageText(0);
+
     const apiKeyInput = document.getElementById("apiKeyInput");
     const savedApiKey = localStorage.getItem("TRONGRID_API_KEY") || DEFAULT_TRONGRID_API_KEY;
     apiKeyInput.value = savedApiKey;
@@ -792,10 +2174,61 @@
     document.getElementById("addressInput").addEventListener("keydown", (event) => {
       if (event.key === "Enter") queryData();
     });
+
+    MOBILE_QUERY.addEventListener("change", () => {
+      pageSize = MOBILE_QUERY.matches ? 5 : 10;
+      currentPage = 1;
+      if (currentQueryAddress) {
+        renderTransactions(allTransactions, currentQueryAddress);
+      }
+    });
+
+    // 网址里带了地址（?address=T...）就直接查询
+    const urlAddress = getAddressFromUrl();
+    if (isTronAddress(urlAddress)) {
+      queryData(urlAddress);
+    }
   });
+
+  async function queryLatestTransactionHash(address) {
+    const url = buildUrl(`/v1/accounts/${address}/transactions/trc20`, {
+      limit: 1,
+      only_confirmed: false,
+      contract_address: USDT_CONTRACT,
+      order_by: "block_timestamp,desc"
+    });
+    const data = await requestJson(url, 0);
+    const tx = Array.isArray(data.data) ? data.data[0] : null;
+    return tx ? getTransactionHash(tx) : "";
+  }
 
   function setStatus(text) {
     document.getElementById("statusBox").textContent = text || "";
+  }
+
+  let toastTimer = null;
+
+  function showToast(text) {
+    const toast = document.getElementById("toast");
+    toast.textContent = text;
+    toast.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 1600);
+  }
+
+  function setBalanceText(value) {
+    const balanceBox = document.getElementById("balanceBox");
+    if (/^\d/.test(value)) {
+      balanceBox.innerHTML = `${escapeHtml(formatThousands(value))}<span class="balance-unit">USDT</span>`;
+    } else {
+      balanceBox.textContent = value;
+    }
+  }
+
+  function formatThousands(amount) {
+    const [intPart, decimalPart] = String(amount).split(".");
+    const intStr = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return decimalPart ? `${intStr}.${decimalPart}` : intStr;
   }
 
   function setError(text) {
@@ -899,8 +2332,7 @@
     if (!text || text === "-") return Promise.resolve(false);
 
     return navigator.clipboard.writeText(text).then(() => {
-      setStatus("已复制：" + shortText(text, 8, 8));
-      setTimeout(() => setStatus(""), 1500);
+      showToast("已复制：" + shortText(text, 8, 8));
       return true;
     }).catch(() => {
       setError("复制失败，请手动复制。");
@@ -925,7 +2357,7 @@
   }
 
   function openCurrentAddress() {
-    const address = document.getElementById("addressInput").value.trim() || currentQueryAddress;
+    const address = currentQueryAddress || document.getElementById("addressInput").value.trim();
     if (!isTronAddress(address)) {
       setError("请先输入或查询一个正确的 TRON 地址。 ");
       return;
@@ -949,7 +2381,7 @@
 
   function saveTransactionCache(address, transactions) {
     try {
-      localStorage.setItem(getTransactionCacheKey(address), JSON.stringify(transactions));
+      localStorage.setItem(getTransactionCacheKey(address), JSON.stringify(transactions.slice(0, MAX_CACHED_TRANSACTIONS)));
     } catch (err) {
       setError("交易记录保存到浏览器失败。 ");
     }
@@ -1072,9 +2504,18 @@
       params.min_timestamp = minTimestamp;
     }
 
-    const url = buildUrl(`/v1/accounts/${address}/transactions/trc20`, params);
-    const data = await requestJson(url);
-    const list = Array.isArray(data.data) ? data.data : [];
+    const list = [];
+    let fingerprint = "";
+    let pageCount = 0;
+
+    do {
+      const url = buildUrl(`/v1/accounts/${address}/transactions/trc20`, { ...params, fingerprint });
+      const data = await requestJson(url);
+      if (Array.isArray(data.data)) list.push(...data.data);
+      fingerprint = data.meta && data.meta.fingerprint ? data.meta.fingerprint : "";
+      pageCount++;
+      // 首次查询只取最近 50 笔；更新时继续翻页，避免两次更新之间超过 50 笔时漏单
+    } while (minTimestamp && fingerprint && pageCount < MAX_UPDATE_PAGES);
 
     const seen = new Set();
     return list.filter(tx => {
@@ -1086,7 +2527,7 @@
   }
 
   function renderEmpty(text) {
-    document.getElementById("txBody").innerHTML = `<tr><td colspan="7" class="empty">${text}</td></tr>`;
+    document.getElementById("txBody").innerHTML = `<tr class="empty-row"><td colspan="7" class="empty">${text}</td></tr>`;
   }
 
   function updatePageText(total) {
@@ -1165,12 +2606,14 @@
           : `<span class="pending-tag">待确认</span>`;
 
       const row = document.createElement("tr");
+      if (isNewTransaction) row.className = "row-new";
+      const [datePart, clockPart = ""] = time.split(" ");
       const safeHash = escapeHtml(hash);
-      const safeShortHash = escapeHtml(shortText(hash, 12, 5));
+      const safeShortHash = escapeHtml(shortText(hash, 6, 6));
       const safeFrom = escapeHtml(from);
       const safeTo = escapeHtml(to);
-      const safeTime = escapeHtml(time);
-      const safeAmount = escapeHtml(amount);
+      const safeTime = `<span class="time-date">${escapeHtml(datePart)}</span> <span class="time-clock">${escapeHtml(clockPart)}</span>`;
+      const safeAmount = escapeHtml((isIn ? "+" : "−") + formatThousands(amount));
       const safeTypeText = escapeHtml(typeText);
       const hashArg = JSON.stringify(hash);
       const fromArg = JSON.stringify(from);
@@ -1224,7 +2667,7 @@
   }
 
   async function refreshOnce(address, queryId, cachedTransactions = [], silent = false, trackBalanceChange = false, previousBalanceValue = "", trackNewTransactions = false) {
-    if (queryId !== activeQueryId) return;
+    if (queryId !== activeQueryId) return 0;
 
     if (!silent) {
       setStatus(cachedTransactions.length
@@ -1233,24 +2676,13 @@
     }
 
     const minTimestamp = getLatestTransactionTimestamp(cachedTransactions);
-    const [balanceResult, txResult] = await Promise.allSettled([
-      queryBalance(address),
-      queryTransactions(address, minTimestamp)
-    ]);
+    // 两个请求同时发出，交易记录先回来就先显示，不等余额
+    const balancePending = Promise.allSettled([queryBalance(address)]).then(results => results[0]);
+    const [txResult] = await Promise.allSettled([queryTransactions(address, minTimestamp)]);
 
-    if (queryId !== activeQueryId) return;
+    if (queryId !== activeQueryId) return 0;
 
-    if (balanceResult.status === "fulfilled") {
-      const newBalanceValue = balanceResult.value;
-      if (trackBalanceChange) {
-        setCopyBalanceChanged(Boolean(previousBalanceValue) && newBalanceValue !== previousBalanceValue);
-      }
-      currentBalanceValue = newBalanceValue;
-      document.getElementById("balanceBox").textContent = newBalanceValue + " USDT";
-    } else {
-      document.getElementById("balanceBox").textContent = "查询失败";
-    }
-
+    let addedCount = 0;
     if (txResult.status === "fulfilled") {
       const oldTransactionHashes = new Set(cachedTransactions.map(getTransactionHash).filter(Boolean));
       const latestTransactions = txResult.value;
@@ -1259,6 +2691,7 @@
         : [];
 
       allTransactions = mergeTransactions(cachedTransactions, latestTransactions);
+      addedCount = allTransactions.length - cachedTransactions.length;
       currentQueryAddress = address;
       currentPage = 1;
       saveTransactionCache(address, allTransactions);
@@ -1271,21 +2704,57 @@
       renderTransactions(allTransactions, currentQueryAddress);
     }
 
-    if (balanceResult.status === "rejected" && txResult.status === "rejected") {
-      throw txResult.reason || balanceResult.reason;
+    const balanceResult = await balancePending;
+    if (queryId !== activeQueryId) return addedCount;
+
+    if (balanceResult.status === "fulfilled") {
+      const newBalanceValue = balanceResult.value;
+      if (trackBalanceChange) {
+        setCopyBalanceChanged(Boolean(previousBalanceValue) && newBalanceValue !== previousBalanceValue);
+      }
+      currentBalanceValue = newBalanceValue;
+      setBalanceText(newBalanceValue);
+    } else {
+      setBalanceText("查询失败");
     }
 
     if (txResult.status === "rejected") {
       throw txResult.reason;
     }
+
+    return addedCount;
   }
 
-  async function queryData() {
+  // 把当前查询的地址写到网址最后（?address=...），不刷新页面
+  function setAddressInUrl(address) {
+    try {
+      const url = new URL(window.location.href);
+      if (address) {
+        url.searchParams.set("address", address);
+      } else {
+        url.searchParams.delete("address");
+      }
+      history.replaceState(null, "", url.toString());
+    } catch (err) {}
+  }
+
+  function getAddressFromUrl() {
+    try {
+      return (new URL(window.location.href).searchParams.get("address") || "").trim();
+    } catch (err) {
+      return "";
+    }
+  }
+
+  async function queryData(addressOverride) {
     const queryBtn = document.getElementById("queryBtn");
-    const address = document.getElementById("addressInput").value.trim();
+    const addressInput = document.getElementById("addressInput");
+    // 搜索框为空时，“查询/刷新”就刷新当前地址
+    const address = (typeof addressOverride === "string" ? addressOverride : addressInput.value.trim()) || currentQueryAddress;
     activeQueryId++;
     const queryId = activeQueryId;
 
+    queryBtnOwnerId = queryId;
     queryBtn.disabled = true;
     queryBtn.textContent = "查询中";
 
@@ -1301,108 +2770,6 @@
         currentPage = 1;
         currentQueryAddress = "";
         currentBalanceValue = "";
+        setAddressInUrl("");
         document.getElementById("addressBox").textContent = address || "-";
-        document.getElementById("balanceBox").textContent = "-";
-        updatePageText(0);
-        renderEmpty("请输入正确的 TRON 地址");
-        setError("地址格式不正确，TRON 地址一般是 T 开头的 34 位地址。 ");
-        return;
-      }
-
-      const cachedTransactions = loadTransactionCache(address);
-      allTransactions = cachedTransactions;
-      currentPage = 1;
-      currentQueryAddress = address;
-      currentBalanceValue = "";
-
-      document.getElementById("addressBox").textContent = address;
-      document.getElementById("balanceBox").textContent = "-";
-
-      if (cachedTransactions.length) {
-        renderTransactions(cachedTransactions, address);
-      } else {
-        updatePageText(0);
-        renderEmpty("正在查询...");
-      }
-
-      await refreshOnce(address, queryId, cachedTransactions, false);
-      setStatus(cachedTransactions.length
-        ? "余额和最新交易记录已更新。 "
-        : "查询完成，交易记录已保存到当前浏览器。 ");
-    } catch (err) {
-      if (!allTransactions.length) {
-        document.getElementById("balanceBox").textContent = "-";
-        currentBalanceValue = "";
-        renderEmpty("查询失败");
-      }
-      setStatus("");
-
-      const message = err && err.message ? err.message : String(err);
-      if (message.includes("429") || message.includes("限流")) {
-        setError("请求过快，触发 429 限流。请稍后再点 查询/刷新。 ");
-      } else {
-        setError("查询失败：" + message + "。请稍后再试。 ");
-      }
-    } finally {
-      if (queryId === activeQueryId) {
-        queryBtn.disabled = false;
-        queryBtn.textContent = "查询/刷新";
-      }
-    }
-  }
-
-  async function updateCurrentAddress() {
-    const updateBtn = document.getElementById("updateBalanceBtn");
-    const address = document.getElementById("addressInput").value.trim();
-
-    setStatus("");
-    setError("");
-    setCopyBalanceChanged(false);
-    resetCopyBalanceText();
-    clearNewTransactionTags(false);
-
-    if (!isTronAddress(address)) {
-      setError("请先输入或查询一个正确的 TRON 地址。 ");
-      return;
-    }
-
-    const previousBalanceValue = currentBalanceValue;
-
-    activeQueryId++;
-    const queryId = activeQueryId;
-    updateBtn.disabled = true;
-    setButtonLabel("updateBalanceBtn", "更新中");
-
-    const cachedTransactions = loadTransactionCache(address);
-    allTransactions = cachedTransactions;
-    currentPage = 1;
-    currentQueryAddress = address;
-    document.getElementById("addressBox").textContent = address;
-
-    if (cachedTransactions.length) {
-      renderTransactions(cachedTransactions, address);
-    } else {
-      updatePageText(0);
-      renderEmpty("正在查询...");
-    }
-
-    try {
-      setStatus("正在更新余额和最新交易记录...");
-      await refreshOnce(address, queryId, cachedTransactions, true, true, previousBalanceValue, true);
-      setStatus("余额和最新交易记录已更新。 ");
-    } catch (err) {
-      const message = err && err.message ? err.message : String(err);
-      setStatus("");
-      setError("更新失败：" + message + "。请稍后再试。 ");
-    } finally {
-      if (queryId === activeQueryId) {
-        updateBtn.disabled = false;
-        setButtonLabel("updateBalanceBtn", "更新交易");
-      }
-    }
-  }
-
-</script>
-
-</body>
-</html>
+        document.getElementById("balance
