@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>计算器</title>
+  <meta name="theme-color" content="#f4f5f7">
+  <link rel="manifest" href="calc.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="calc-icon-192.png">
+  <link rel="apple-touch-icon" href="calc-icon-192.png">
+  <style>
+    :root {
+      --accent: #2f5bd8;
+      --bg: #f4f5f7;
+      --surface: #ffffff;
+      --surface-2: #f7f8fa;
+      --ink: #1d2433;
+      --ink-2: #5b6474;
+      --ink-3: #9aa1ad;
+      --line: #e6e8ec;
+      --error: #d92d20;
+      color-scheme: light;
+    }
+
+    /* 深色模式：跟随系统 */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --accent: #6e93ff;
+        --bg: #121418;
+        --surface: #1b1e24;
+        --surface-2: #22262d;
+        --ink: #e8eaee;
+        --ink-2: #a5abb6;
+        --ink-3: #6f7682;
+        --line: #2c3038;
+        --error: #ff7b70;
+        color-scheme: dark;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
+      padding: 24px 18px;
+    }
+
+    .app-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .app-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+    }
+
+    .app-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+    }
+
+    /* 输入 */
+    .input-panel {
+      padding: 14px;
+    }
+
+    .input-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink-2);
+      font-size: 13px;
+    }
+
+    #calcInput {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      outline: none;
+      background: var(--surface-2);
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 16px;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    #calcInput::placeholder {
+      color: var(--ink-3);
+      font-size: 14px;
+    }
+
+    #calcInput:focus {
+      border-color: var(--accent);
+      background: var(--surface);
+    }
+
+    .input-hint {
+      margin-top: 8px;
+      color: var(--error);
+      font-size: 12px;
+    }
+
+    .input-hint:empty {
+      display: none;
+    }
+
+    /* 结果：一张卡片，三行 */
+    .result-panel {
+      margin-top: 12px;
+    }
+
+    .result-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 64px;
+      padding: 10px 12px 10px 16px;
+    }
+
+    .result-row + .result-row {
+      border-top: 1px solid var(--line);
+    }
+
+    .result-label {
+      flex: 0 0 56px;
+      color: var(--ink-2);
+      font-size: 13px;
+    }
+
+    .edit-tip {
+      display: block;
+      margin-top: 2px;
+      color: var(--ink-3);
+      font-size: 11px;
+    }
+
+    .result-value {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      color: var(--ink);
+      font-family: "SF Pro Display", "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.3;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .result-value.is-empty {
+      color: var(--ink-3);
+      cursor: default;
+    }
+
+    /* 美金：可直接修改 */
+    .result-input {
+      width: 100%;
+      padding: 0 0 1px;
+      border: none;
+      border-bottom: 1px dashed var(--line);
+      border-radius: 0;
+      outline: none;
+      background: transparent;
+      cursor: text;
+    }
+
+    .result-input:hover {
+      border-bottom-color: var(--ink-3);
+    }
+
+    .result-input:focus {
+      border-bottom: 1px solid var(--accent);
+    }
+
+    .result-input.is-edited {
+      color: var(--accent);
+    }
+
+    .result-input::placeholder {
+      color: var(--ink-3);
+    }
+
+    .result-input:disabled {
+      border-bottom-color: transparent;
+      color: var(--ink-3);
+      cursor: default;
+    }
+
+    .copy-btn {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--ink-3);
+      cursor: pointer;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .copy-btn:hover:not(:disabled),
+    .copy-btn.is-copied {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .copy-btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .copy-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .result-hint {
+      margin: 10px 4px 0;
+      color: var(--ink-3);
+      font-size: 12px;
+    }
+
+    .result-hint button {
+      padding: 0;
+      border: none;
+      background: none;
+      color: var(--accent);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .result-hint button:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .app-foot {
+      margin-top: 16px;
+      color: var(--ink-3);
+      font-size: 11.5px;
+      text-align: center;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 50;
+      max-width: calc(100% - 32px);
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: rgba(29, 36, 51, 0.92);
+      color: #ffffff;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 10px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <header class="app-head">
+    <img class="app-icon" src="calc-icon-192.png" alt="">
+    <h1 class="app-title">汇率计算器</h1>
+  </header>
+
+  <div class="panel input-panel">
+    <label class="input-label" for="calcInput">人民币　原始汇率　扣除值</label>
+    <input id="calcInput" placeholder="例如：20w 6.65 0.2" autocomplete="off" spellcheck="false" autofocus>
+    <div id="inputHint" class="input-hint"></div>
+  </div>
+
+  <div class="panel result-panel">
+    <div class="result-row">
+      <div class="result-label">汇率</div>
+      <div id="rateValue" class="result-value is-empty" title="点击复制">-</div>
+      <button class="copy-btn" type="button" data-target="rateValue" title="复制汇率" aria-label="复制汇率" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></svg>
+      </button>
+    </div>
+    <div class="result-row">
+      <div class="result-label">人民币</div>
+      <div id="rmbValue" class="result-value is-empty" title="点击复制">-</div>
+      <button class="copy-btn" type="button" data-target="rmbValue" title="复制人民币" aria-label="复制人民币" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></svg>
+      </button>
+    </div>
+    <div class="result-row">
+      <div class="result-label">美金<span class="edit-tip">可修改</span></div>
+      <input id="usdValue" class="result-value result-input" title="可直接修改美金金额" inputmode="numeric" autocomplete="off" placeholder="-" disabled>
+      <button class="copy-btn" type="button" data-target="usdValue" title="复制美金" aria-label="复制美金" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="resultHint" class="result-hint" hidden>
+    美金已手动修改 · <button id="resetUsdBtn" type="button">恢复自动计算</button>
+  </div>
+
+  <div class="app-foot">单击数字复制 · Esc 清空</div>
+</div>
+
+<div id="toast" class="toast" role="status"></div>
+
+<script>
+  // 把 "6.65" 这样的数字转成 { int: 665n, scale: 2 }，用整数计算，避免小数误差
+  function parseDecimal(text) {
+    if (!/^\d+(\.\d+)?$/.test(text)) return null;
+    const [intPart, decimalPart = ""] = text.split(".");
+    return { int: BigInt(intPart + decimalPart), scale: decimalPart.length };
+  }
+
+  function pow10(n) {
+    return 10n ** BigInt(n);
+  }
+
+  // 统一小数位数
+  function alignDecimals(a, b) {
+    const scale = Math.max(a.scale, b.scale);
+    return {
+      a: a.int * pow10(scale - a.scale),
+      b: b.int * pow10(scale - b.scale),
+      scale
+    };
+  }
+
+  function formatDecimal(intValue, scale) {
+    const negative = intValue < 0n;
+    const digits = (negative ? -intValue : intValue).toString().padStart(scale + 1, "0");
+    const head = digits.slice(0, digits.length - scale);
+    // 去掉小数末尾多余的 0，例如 6.440 显示为 6.44
+    const decimals = scale ? digits.slice(-scale).replace(/0+$/, "") : "";
+    const tail = decimals ? "." + decimals : "";
+    return (negative ? "-" : "") + head + tail;
+  }
+
+  // 正数除法向上取整
+  function ceilDiv(a, b) {
+    return (a + b - 1n) / b;
+  }
+
+  // 四舍五入除法（人民币结果取整用）
+  function roundDiv(a, b) {
+    return (a * 2n + b) / (b * 2n);
+  }
+
+  function calculate(text) {
+    const parts = text.trim().split(/\s+/).filter(Boolean);
+    if (parts.length !== 3) {
+      return { error: parts.length ? "需要三个参数，用空格隔开，例如：20w 6.65 0.21" : "" };
+    }
+
+    // 第一个参数：人民币，只有带 w 才乘以 10000
+    const rmbMatch = parts[0].match(/^(\d+(?:\.\d+)?)([wW])?$/);
+    const rmbNumber = rmbMatch && parseDecimal(rmbMatch[1]);
+    if (!rmbNumber) return { error: "第一个参数（人民币）格式不正确" };
+    let rmbInt = rmbNumber.int;
+    let rmbScale = rmbNumber.scale;
+    if (rmbMatch[2]) {
+      rmbInt *= 10000n;
+    }
+
+    const rawRate = parseDecimal(parts[1]);
+    if (!rawRate) return { error: "第二个参数（原始汇率）格式不正确" };
+    const deduction = parseDecimal(parts[2]);
+    if (!deduction) return { error: "第三个参数（扣除值）格式不正确" };
+
+    // 汇率 = 原始汇率 - 扣除值
+    const aligned = alignDecimals(rawRate, deduction);
+    const rateInt = aligned.a - aligned.b;
+    const rateScale = aligned.scale;
+    if (rateInt <= 0n) return { error: "汇率必须大于 0（原始汇率要大于扣除值）" };
+
+    // 美金 = 人民币 ÷ 汇率，向上取整到 100 的倍数
+    // 人民币 = rmbInt / 10^rmbScale，汇率 = rateInt / 10^rateScale
+    const numerator = rmbInt * pow10(rateScale);
+    const denominator = rateInt * pow10(rmbScale) * 100n;
+    const usd = ceilDiv(numerator, denominator) * 100n;
+
+    // 人民币 = 美金 × 汇率，取整数
+    const rmb = roundDiv(usd * rateInt, pow10(rateScale));
+
+    return {
+      rate: formatDecimal(rateInt, rateScale),
+      rmb: rmb.toString(),
+      usd: usd.toString(),
+      rateInt,
+      rateScale
+    };
+  }
+
+  // 当前计算结果（修改美金时用它重新算人民币）
+  let current = null;
+
+  function setValue(id, value) {
+    const box = document.getElementById(id);
+    box.textContent = value || "-";
+    box.classList.toggle("is-empty", !value);
+    document.querySelector(`.copy-btn[data-target="${id}"]`).disabled = !value;
+  }
+
+  function setUsdValue(value, edited) {
+    const usdInput = document.getElementById("usdValue");
+    usdInput.value = value || "";
+    usdInput.disabled = !current;
+    usdInput.classList.toggle("is-edited", Boolean(edited));
+    document.querySelector('.copy-btn[data-target="usdValue"]').disabled = !value;
+    document.getElementById("resultHint").hidden = !edited;
+  }
+
+  function render() {
+    const input = document.getElementById("calcInput");
+    const hint = document.getElementById("inputHint");
+    const result = calculate(input.value);
+
+    // 参数不完整或有误时清空结果，不沿用上一次
+    current = result.error === undefined ? result : null;
+    setValue("rateValue", result.rate);
+    setValue("rmbValue", result.rmb);
+    setUsdValue(result.usd, false);
+
+    hint.textContent = result.error || "";
+    hint.classList.toggle("is-error", Boolean(result.error));
+  }
+
+  // 手动修改美金：人民币 = 美金 × 汇率（取整），汇率不变
+  function onUsdEdited() {
+    if (!current) return;
+    const usdInput = document.getElementById("usdValue");
+    const digits = usdInput.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+    if (digits !== usdInput.value) usdInput.value = digits;
+
+    const edited = digits !== current.usd;
+    usdInput.classList.toggle("is-edited", edited);
+    document.getElementById("resultHint").hidden = !edited;
+    document.querySelector('.copy-btn[data-target="usdValue"]').disabled = !digits;
+
+    const rmb = digits ? roundDiv(BigInt(digits) * current.rateInt, pow10(current.rateScale)).toString() : "";
+    setValue("rmbValue", rmb);
+  }
+
+  function resetUsd() {
+    if (!current) return;
+    setValue("rmbValue", current.rmb);
+    setUsdValue(current.usd, false);
+  }
+
+  let toastTimer = null;
+
+  function showToast(text) {
+    const toast = document.getElementById("toast");
+    toast.textContent = text;
+    toast.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 1400);
+  }
+
+  function copyFrom(id) {
+    const box = document.getElementById(id);
+    const text = (box.tagName === "INPUT" ? box.value : box.textContent).trim();
+    if (!text || text === "-") return;
+    const button = document.querySelector(`.copy-btn[data-target="${id}"]`);
+
+    navigator.clipboard.writeText(text).then(() => {
+      showToast("已复制：" + text);
+      button.classList.add("is-copied");
+      setTimeout(() => button.classList.remove("is-copied"), 1000);
+    }).catch(() => {
+      showToast("复制失败，请长按数字手动复制");
+    });
+  }
+
+  document.getElementById("calcInput").addEventListener("input", render);
+  document.getElementById("usdValue").addEventListener("input", onUsdEdited);
+  document.getElementById("resetUsdBtn").addEventListener("click", resetUsd);
+
+  // 汇率、人民币单击数字复制；美金是输入框，用旁边的复制图标复制
+  document.querySelectorAll("div.result-value").forEach(box => {
+    box.addEventListener("click", () => copyFrom(box.id));
+  });
+
+  document.querySelectorAll(".copy-btn").forEach(button => {
+    button.addEventListener("click", () => copyFrom(button.dataset.target));
+  });
+
+  // Esc 清空输入框
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      const input = document.getElementById("calcInput");
+      input.value = "";
+      render();
+      input.focus();
+    }
+  });
+
+  render();
+
+  // 注册离线缓存，安装成桌面应用后断网也能打开
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    navigator.serviceWorker.register("calc-sw.js", { scope: "./calc.html" }).catch(() => {});
+  }
+</script>
+
+</body>
+</html>
