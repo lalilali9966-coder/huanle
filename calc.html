@@ -3,37 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>计算器</title>
-  <meta name="theme-color" content="#f4f5f7">
+  <title>汇率计算器</title>
+  <meta name="theme-color" content="#f3f4f6">
   <link rel="manifest" href="calc.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="calc-icon-192.png">
   <link rel="apple-touch-icon" href="calc-icon-192.png">
   <style>
     :root {
-      --accent: #2f5bd8;
-      --bg: #f4f5f7;
+      --gold: #b08d57;
+      --gold-soft: rgba(176, 141, 87, 0.14);
+      --warn: #d64545;
+      --bg-top: #f3f4f6;
+      --bg-bottom: #e4e7ec;
       --surface: #ffffff;
-      --surface-2: #f7f8fa;
-      --ink: #1d2433;
-      --ink-2: #5b6474;
-      --ink-3: #9aa1ad;
-      --line: #e6e8ec;
-      --error: #d92d20;
+      --ink: #111318;
+      --ink-2: #6b7280;
+      --ink-3: #a3a8b3;
+      --line: #eceef2;
+      --screen-top: #1c2230;
+      --screen-bottom: #11151e;
+      --screen-ink: #f4f5f7;
+      --screen-label: #7d8596;
+      --card-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 2px 4px rgba(15, 23, 42, 0.04), 0 28px 60px -24px rgba(15, 23, 42, 0.28);
+      --num-font: "SF Pro Display", "Segoe UI", "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
       color-scheme: light;
     }
 
     /* 深色模式：跟随系统 */
     @media (prefers-color-scheme: dark) {
       :root {
-        --accent: #6e93ff;
-        --bg: #121418;
-        --surface: #1b1e24;
-        --surface-2: #22262d;
-        --ink: #e8eaee;
-        --ink-2: #a5abb6;
-        --ink-3: #6f7682;
-        --line: #2c3038;
-        --error: #ff7b70;
+        --gold: #d1ad74;
+        --gold-soft: rgba(209, 173, 116, 0.16);
+        --warn: #ff7070;
+        --bg-top: #101217;
+        --bg-bottom: #07080b;
+        --surface: #171a21;
+        --ink: #f1f2f4;
+        --ink-2: #9aa1ad;
+        --ink-3: #5f6672;
+        --line: #252932;
+        --screen-top: #0d1016;
+        --screen-bottom: #090b10;
+        --screen-ink: #f4f5f7;
+        --screen-label: #646c7a;
+        --card-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 2px 4px rgba(0, 0, 0, 0.3), 0 30px 70px -20px rgba(0, 0, 0, 0.7);
         color-scheme: dark;
       }
     }
@@ -44,7 +57,8 @@
 
     body {
       margin: 0;
-      background: var(--bg);
+      min-height: 100vh;
+      background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom)) fixed;
       color: var(--ink);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
       font-size: 14px;
@@ -52,76 +66,97 @@
     }
 
     .app {
-      width: 100%;
-      max-width: 440px;
+      width: calc(100% - 32px);
+      max-width: 360px;
       margin: 0 auto;
-      padding: 24px 18px;
+      padding: 30px 0 20px;
     }
 
-    .app-head {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .app-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-    }
-
-    .app-title {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .panel {
+    .card {
+      overflow: hidden;
+      padding: 10px;
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 24px;
       background: var(--surface);
+      box-shadow: var(--card-shadow);
     }
 
-    /* 输入 */
-    .input-panel {
-      padding: 14px;
-    }
-
-    .input-label {
+    /* 输入：深色显示屏 */
+    .display {
+      position: relative;
       display: block;
-      margin-bottom: 8px;
-      color: var(--ink-2);
-      font-size: 13px;
+      padding: 10px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, var(--screen-top), var(--screen-bottom));
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 8px 18px -10px rgba(0, 0, 0, 0.45);
+      cursor: text;
     }
 
-    #calcInput {
+    /* 屏幕顶部一道很淡的高光 */
+    .display::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 50%;
+      border-radius: 16px 16px 0 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent);
+      pointer-events: none;
+    }
+
+    /* 三个输入格：人民币 / 汇率 / 下浮 */
+    .fields {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .field {
+      display: block;
+      min-width: 0;
+      padding: 9px 11px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.04);
+      cursor: text;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .field:focus-within {
+      border-color: var(--gold);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--screen-label);
+      font-size: 11px;
+      letter-spacing: 2px;
+    }
+
+    .field-input {
       width: 100%;
-      height: 44px;
-      padding: 0 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
+      padding: 0;
+      border: none;
       outline: none;
-      background: var(--surface-2);
-      color: var(--ink);
-      font-family: inherit;
-      font-size: 16px;
-      transition: border-color 0.15s ease, background 0.15s ease;
+      background: transparent;
+      color: var(--screen-ink);
+      caret-color: var(--gold);
+      font-family: var(--num-font);
+      font-size: 21px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
     }
 
-    #calcInput::placeholder {
-      color: var(--ink-3);
-      font-size: 14px;
-    }
-
-    #calcInput:focus {
-      border-color: var(--accent);
-      background: var(--surface);
+    .field-input::placeholder {
+      color: #444b58;
     }
 
     .input-hint {
-      margin-top: 8px;
-      color: var(--error);
+      position: relative;
+      margin: 8px 4px 2px;
+      color: #ff8a80;
       font-size: 12px;
     }
 
@@ -129,17 +164,17 @@
       display: none;
     }
 
-    /* 结果：一张卡片，三行 */
-    .result-panel {
-      margin-top: 12px;
+    /* 结果 */
+    .results {
+      padding: 4px 12px 2px;
     }
 
     .result-row {
       display: flex;
-      align-items: center;
-      gap: 12px;
-      min-height: 64px;
-      padding: 10px 12px 10px 16px;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 0 14px;
     }
 
     .result-row + .result-row {
@@ -147,30 +182,30 @@
     }
 
     .result-label {
-      flex: 0 0 56px;
+      flex: 0 0 auto;
       color: var(--ink-2);
-      font-size: 13px;
-    }
-
-    .edit-tip {
-      display: block;
-      margin-top: 2px;
-      color: var(--ink-3);
-      font-size: 11px;
+      font-size: 12px;
+      letter-spacing: 2px;
     }
 
     .result-value {
-      flex: 1;
       min-width: 0;
       overflow: hidden;
       color: var(--ink);
-      font-family: "SF Pro Display", "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
-      font-size: 24px;
-      font-weight: 600;
-      line-height: 1.3;
+      font-family: var(--num-font);
+      font-size: 30px;
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: 0.3px;
+      text-align: right;
       text-overflow: ellipsis;
       white-space: nowrap;
       cursor: pointer;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+
+    div.result-value:hover {
+      opacity: 0.65;
     }
 
     .result-value.is-empty {
@@ -178,83 +213,84 @@
       cursor: default;
     }
 
-    /* 美金：可直接修改 */
+    div.result-value.is-empty:hover {
+      opacity: 1;
+    }
+
+    /* 单击复制后数字闪一下金色 */
+    .result-value.is-copied {
+      color: var(--gold);
+    }
+
+    /* 人民币带小数：说明 U 的金额对不上 */
+    .result-value.is-fraction {
+      color: var(--warn);
+    }
+
+    /* U：可直接修改 */
     .result-input {
+      flex: 1;
       width: 100%;
-      padding: 0 0 1px;
+      padding: 0 0 2px;
       border: none;
-      border-bottom: 1px dashed var(--line);
+      border-bottom: 1px solid transparent;
       border-radius: 0;
       outline: none;
       background: transparent;
+      caret-color: var(--gold);
       cursor: text;
+      transition: border-color 0.2s ease, color 0.2s ease;
     }
 
     .result-input:hover {
-      border-bottom-color: var(--ink-3);
+      border-bottom-color: var(--line);
     }
 
     .result-input:focus {
-      border-bottom: 1px solid var(--accent);
+      border-bottom-color: var(--gold);
     }
 
     .result-input.is-edited {
-      color: var(--accent);
+      color: var(--gold);
     }
 
     .result-input::placeholder {
       color: var(--ink-3);
     }
 
+    .result-input::selection {
+      background: var(--gold-soft);
+    }
+
     .result-input:disabled {
-      border-bottom-color: transparent;
       color: var(--ink-3);
       cursor: default;
-    }
-
-    .copy-btn {
-      flex: 0 0 auto;
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      padding: 0;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: transparent;
-      color: var(--ink-3);
-      cursor: pointer;
-      transition: color 0.15s ease, border-color 0.15s ease;
-    }
-
-    .copy-btn:hover:not(:disabled),
-    .copy-btn.is-copied {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .copy-btn:disabled {
-      opacity: 0.4;
-      cursor: default;
-    }
-
-    .copy-btn svg {
-      width: 16px;
-      height: 16px;
     }
 
     .result-hint {
-      margin: 10px 4px 0;
-      color: var(--ink-3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 4px 2px 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--gold-soft);
+      color: var(--ink-2);
       font-size: 12px;
+    }
+
+    .result-hint[hidden] {
+      display: none;
     }
 
     .result-hint button {
       padding: 0;
       border: none;
       background: none;
-      color: var(--accent);
+      color: var(--gold);
       font: inherit;
+      font-weight: 600;
+      letter-spacing: 0.5px;
       cursor: pointer;
     }
 
@@ -266,25 +302,28 @@
     .app-foot {
       margin-top: 16px;
       color: var(--ink-3);
-      font-size: 11.5px;
+      font-size: 11px;
+      letter-spacing: 1px;
       text-align: center;
     }
 
     .toast {
       position: fixed;
       left: 50%;
-      bottom: 24px;
+      bottom: 22px;
       z-index: 50;
       max-width: calc(100% - 32px);
-      padding: 8px 14px;
-      border-radius: 8px;
-      background: rgba(29, 36, 51, 0.92);
-      color: #ffffff;
-      font-size: 13px;
+      padding: 8px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      background: rgba(17, 19, 24, 0.94);
+      color: #f4f5f7;
+      font-size: 12.5px;
+      letter-spacing: 0.5px;
       opacity: 0;
       pointer-events: none;
       transform: translate(-50%, 10px);
-      transition: opacity 0.18s ease, transform 0.18s ease;
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
 
     .toast.show {
@@ -296,46 +335,47 @@
 <body>
 
 <div class="app">
-  <header class="app-head">
-    <img class="app-icon" src="calc-icon-192.png" alt="">
-    <h1 class="app-title">汇率计算器</h1>
-  </header>
+  <div class="card">
+    <div class="display">
+      <div class="fields">
+        <label class="field">
+          <span class="field-label">人民币</span>
+          <input id="rmbInput" class="field-input" placeholder="20w" autocomplete="off" spellcheck="false" autofocus>
+        </label>
+        <label class="field">
+          <span class="field-label">汇率</span>
+          <input id="rateInput" class="field-input" placeholder="6.65" inputmode="decimal" autocomplete="off" spellcheck="false">
+        </label>
+        <label class="field">
+          <span class="field-label">下浮</span>
+          <input id="downInput" class="field-input" placeholder="0.2" inputmode="decimal" autocomplete="off" spellcheck="false">
+        </label>
+      </div>
+      <div id="inputHint" class="input-hint"></div>
+    </div>
 
-  <div class="panel input-panel">
-    <label class="input-label" for="calcInput">人民币　原始汇率　扣除值</label>
-    <input id="calcInput" placeholder="例如：20w 6.65 0.2" autocomplete="off" spellcheck="false" autofocus>
-    <div id="inputHint" class="input-hint"></div>
+    <div class="results">
+      <div class="result-row">
+        <div class="result-label">汇率</div>
+        <div id="rateValue" class="result-value is-empty" title="单击复制">-</div>
+      </div>
+      <div class="result-row">
+        <div class="result-label">人民币</div>
+        <div id="rmbValue" class="result-value is-empty" title="单击复制">-</div>
+      </div>
+      <div class="result-row">
+        <div class="result-label">U</div>
+        <input id="usdValue" class="result-value result-input" title="单击复制，可直接修改" inputmode="numeric" autocomplete="off" placeholder="-" disabled>
+      </div>
+    </div>
+
+    <div id="resultHint" class="result-hint" hidden>
+      <span>U 已手动修改</span>
+      <button id="resetUsdBtn" type="button">恢复自动计算</button>
+    </div>
   </div>
 
-  <div class="panel result-panel">
-    <div class="result-row">
-      <div class="result-label">汇率</div>
-      <div id="rateValue" class="result-value is-empty" title="点击复制">-</div>
-      <button class="copy-btn" type="button" data-target="rateValue" title="复制汇率" aria-label="复制汇率" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></svg>
-      </button>
-    </div>
-    <div class="result-row">
-      <div class="result-label">人民币</div>
-      <div id="rmbValue" class="result-value is-empty" title="点击复制">-</div>
-      <button class="copy-btn" type="button" data-target="rmbValue" title="复制人民币" aria-label="复制人民币" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></svg>
-      </button>
-    </div>
-    <div class="result-row">
-      <div class="result-label">美金<span class="edit-tip">可修改</span></div>
-      <input id="usdValue" class="result-value result-input" title="可直接修改美金金额" inputmode="numeric" autocomplete="off" placeholder="-" disabled>
-      <button class="copy-btn" type="button" data-target="usdValue" title="复制美金" aria-label="复制美金" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></svg>
-      </button>
-    </div>
-  </div>
-
-  <div id="resultHint" class="result-hint" hidden>
-    美金已手动修改 · <button id="resetUsdBtn" type="button">恢复自动计算</button>
-  </div>
-
-  <div class="app-foot">单击数字复制 · Esc 清空</div>
+  <div class="app-foot">空格 / Tab 下一格 · 单击数字复制 · Esc 清空</div>
 </div>
 
 <div id="toast" class="toast" role="status"></div>
@@ -377,11 +417,6 @@
     return (a + b - 1n) / b;
   }
 
-  // 四舍五入除法（人民币结果取整用）
-  function roundDiv(a, b) {
-    return (a * 2n + b) / (b * 2n);
-  }
-
   function calculate(text) {
     const parts = text.trim().split(/\s+/).filter(Boolean);
     if (parts.length !== 3) {
@@ -391,7 +426,7 @@
     // 第一个参数：人民币，只有带 w 才乘以 10000
     const rmbMatch = parts[0].match(/^(\d+(?:\.\d+)?)([wW])?$/);
     const rmbNumber = rmbMatch && parseDecimal(rmbMatch[1]);
-    if (!rmbNumber) return { error: "第一个参数（人民币）格式不正确" };
+    if (!rmbNumber) return { error: "人民币格式不正确" };
     let rmbInt = rmbNumber.int;
     let rmbScale = rmbNumber.scale;
     if (rmbMatch[2]) {
@@ -399,15 +434,15 @@
     }
 
     const rawRate = parseDecimal(parts[1]);
-    if (!rawRate) return { error: "第二个参数（原始汇率）格式不正确" };
+    if (!rawRate) return { error: "汇率格式不正确" };
     const deduction = parseDecimal(parts[2]);
-    if (!deduction) return { error: "第三个参数（扣除值）格式不正确" };
+    if (!deduction) return { error: "下浮格式不正确" };
 
     // 汇率 = 原始汇率 - 扣除值
     const aligned = alignDecimals(rawRate, deduction);
     const rateInt = aligned.a - aligned.b;
     const rateScale = aligned.scale;
-    if (rateInt <= 0n) return { error: "汇率必须大于 0（原始汇率要大于扣除值）" };
+    if (rateInt <= 0n) return { error: "汇率必须大于下浮" };
 
     // 美金 = 人民币 ÷ 汇率，向上取整到 100 的倍数
     // 人民币 = rmbInt / 10^rmbScale，汇率 = rateInt / 10^rateScale
@@ -415,12 +450,12 @@
     const denominator = rateInt * pow10(rmbScale) * 100n;
     const usd = ceilDiv(numerator, denominator) * 100n;
 
-    // 人民币 = 美金 × 汇率，取整数
-    const rmb = roundDiv(usd * rateInt, pow10(rateScale));
+    // 人民币 = 美金 × 汇率，精确显示，有小数就显示小数
+    const rmb = formatDecimal(usd * rateInt, rateScale);
 
     return {
       rate: formatDecimal(rateInt, rateScale),
-      rmb: rmb.toString(),
+      rmb,
       usd: usd.toString(),
       rateInt,
       rateScale
@@ -434,7 +469,8 @@
     const box = document.getElementById(id);
     box.textContent = value || "-";
     box.classList.toggle("is-empty", !value);
-    document.querySelector(`.copy-btn[data-target="${id}"]`).disabled = !value;
+    // 人民币带小数时标橙色，提醒 U 的金额对不上
+    box.classList.toggle("is-fraction", id === "rmbValue" && Boolean(value) && value.includes("."));
   }
 
   function setUsdValue(value, edited) {
@@ -442,14 +478,20 @@
     usdInput.value = value || "";
     usdInput.disabled = !current;
     usdInput.classList.toggle("is-edited", Boolean(edited));
-    document.querySelector('.copy-btn[data-target="usdValue"]').disabled = !value;
     document.getElementById("resultHint").hidden = !edited;
   }
 
+  const FIELD_IDS = ["rmbInput", "rateInput", "downInput"];
+
+  function getFields() {
+    return FIELD_IDS.map(id => document.getElementById(id));
+  }
+
   function render() {
-    const input = document.getElementById("calcInput");
     const hint = document.getElementById("inputHint");
-    const result = calculate(input.value);
+    const values = getFields().map(field => field.value.trim());
+    // 三格没填全就不出结果，也不提示错误
+    const result = values.some(value => !value) ? { error: "" } : calculate(values.join(" "));
 
     // 参数不完整或有误时清空结果，不沿用上一次
     current = result.error === undefined ? result : null;
@@ -471,9 +513,8 @@
     const edited = digits !== current.usd;
     usdInput.classList.toggle("is-edited", edited);
     document.getElementById("resultHint").hidden = !edited;
-    document.querySelector('.copy-btn[data-target="usdValue"]').disabled = !digits;
 
-    const rmb = digits ? roundDiv(BigInt(digits) * current.rateInt, pow10(current.rateScale)).toString() : "";
+    const rmb = digits ? formatDecimal(BigInt(digits) * current.rateInt, current.rateScale) : "";
     setValue("rmbValue", rmb);
   }
 
@@ -497,37 +538,76 @@
     const box = document.getElementById(id);
     const text = (box.tagName === "INPUT" ? box.value : box.textContent).trim();
     if (!text || text === "-") return;
-    const button = document.querySelector(`.copy-btn[data-target="${id}"]`);
 
     navigator.clipboard.writeText(text).then(() => {
-      showToast("已复制：" + text);
-      button.classList.add("is-copied");
-      setTimeout(() => button.classList.remove("is-copied"), 1000);
+      showToast("已复制 " + text);
+      box.classList.add("is-copied");
+      setTimeout(() => box.classList.remove("is-copied"), 600);
     }).catch(() => {
       showToast("复制失败，请长按数字手动复制");
     });
   }
 
-  document.getElementById("calcInput").addEventListener("input", render);
+  // 空格 / 回车跳到下一格；空格里按退格回到上一格；粘贴整串自动拆进三格
+  getFields().forEach((field, index) => {
+    const fields = getFields();
+
+    field.addEventListener("input", () => {
+      if (/\s/.test(field.value)) {
+        field.value = field.value.replace(/\s+/g, "");
+      }
+      render();
+    });
+
+    field.addEventListener("keydown", event => {
+      if ((event.key === " " || event.key === "Enter") && !event.isComposing) {
+        event.preventDefault();
+        if (fields[index + 1]) {
+          fields[index + 1].focus();
+          fields[index + 1].select();
+        }
+      } else if (event.key === "Backspace" && !field.value && index > 0) {
+        event.preventDefault();
+        const previous = fields[index - 1];
+        previous.focus();
+        previous.setSelectionRange(previous.value.length, previous.value.length);
+      }
+    });
+
+    field.addEventListener("paste", event => {
+      const text = (event.clipboardData || window.clipboardData).getData("text");
+      const parts = text.trim().split(/\s+/).filter(Boolean);
+      if (parts.length < 2) return;
+      event.preventDefault();
+      parts.slice(0, fields.length - index).forEach((part, offset) => {
+        fields[index + offset].value = part;
+      });
+      render();
+      const nextEmpty = fields.find(item => !item.value) || fields[Math.min(index + parts.length, fields.length) - 1];
+      nextEmpty.focus();
+    });
+  });
   document.getElementById("usdValue").addEventListener("input", onUsdEdited);
   document.getElementById("resetUsdBtn").addEventListener("click", resetUsd);
 
-  // 汇率、人民币单击数字复制；美金是输入框，用旁边的复制图标复制
+  // 单击数字复制；U 单击时复制当前金额，同时可以直接修改
   document.querySelectorAll("div.result-value").forEach(box => {
     box.addEventListener("click", () => copyFrom(box.id));
   });
-
-  document.querySelectorAll(".copy-btn").forEach(button => {
-    button.addEventListener("click", () => copyFrom(button.dataset.target));
+  document.getElementById("usdValue").addEventListener("click", event => {
+    copyFrom("usdValue");
+    // 选中整个金额，直接输入就是新的 U
+    event.target.select();
   });
 
   // Esc 清空输入框
   document.addEventListener("keydown", event => {
     if (event.key === "Escape") {
-      const input = document.getElementById("calcInput");
-      input.value = "";
+      getFields().forEach(field => {
+        field.value = "";
+      });
       render();
-      input.focus();
+      getFields()[0].focus();
     }
   });
 
