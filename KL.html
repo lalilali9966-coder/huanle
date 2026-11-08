@@ -4,627 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KL</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiNmZmZmZmYiLz4KICA8cGF0aCBkPSJNMjAgMTZ2MjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzE1OTdlZCIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggZD0iTTQzIDE2djIyIiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjUyNjEiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik0yMCA0NnYtNWMwLTcgNS0xMSAxMi0xMWgxMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZiOTE0IiBzdHJva2Utd2lkdGg9IjExIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICA8Y2lyY2xlIGN4PSI0NCIgY3k9IjQ4IiByPSI2IiBmaWxsPSIjNDJiZjRmIi8+Cjwvc3ZnPg==">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fff'/%3E%3Cg fill='none' stroke-width='10' stroke-linecap='round'%3E%3Cpath d='M20 16v22' stroke='%231597ed'/%3E%3Cpath d='M43 16v22' stroke='%23ff5261'/%3E%3Cpath d='M20 46v-5c0-7 5-11 12-11h13' stroke='%23ffb914' stroke-width='11' stroke-linejoin='round'/%3E%3C/g%3E%3Ccircle cx='44' cy='48' r='6' fill='%2342bf4f'/%3E%3C/svg%3E">
+  <link rel="preload" href="inter-500.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="notosc-400.woff2" as="font" type="font/woff2" crossorigin>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    /* 自带字体（与本页放在同一目录）：英文数字用 Inter，中文用思源黑体，都有真正的中粗体，
+       Windows 上不会再发细。字体文件缺失时自动退回系统字体，页面照常可用。 */
+    @font-face { font-family: "HL Sans"; src: url("inter-400.woff2") format("woff2"); font-weight: 400; font-display: swap; unicode-range: U+0020-007E, U+00A0, U+00B7, U+00D7, U+2013-2014, U+2026, U+2191, U+2193, U+2212; }
+    @font-face { font-family: "HL Sans"; src: url("inter-500.woff2") format("woff2"); font-weight: 500; font-display: swap; unicode-range: U+0020-007E, U+00A0, U+00B7, U+00D7, U+2013-2014, U+2026, U+2191, U+2193, U+2212; }
+    @font-face { font-family: "HL Sans"; src: url("inter-600.woff2") format("woff2"); font-weight: 600; font-display: swap; unicode-range: U+0020-007E, U+00A0, U+00B7, U+00D7, U+2013-2014, U+2026, U+2191, U+2193, U+2212; }
+    @font-face { font-family: "HL Sans"; src: url("notosc-400.woff2") format("woff2"); font-weight: 400; font-display: swap; unicode-range: U+2018-2019, U+201C-201D, U+3000-303F, U+4E00-9FFF, U+FF00-FFEF; }
+    @font-face { font-family: "HL Sans"; src: url("notosc-500.woff2") format("woff2"); font-weight: 500; font-display: swap; unicode-range: U+2018-2019, U+201C-201D, U+3000-303F, U+4E00-9FFF, U+FF00-FFEF; }
 
-    body {
-      margin: 0;
-      background: #f5f7fb;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
-      color: #001a4d;
-      font-size: 14px;
-    }
-
-    .page {
-      width: calc(100% - 28px);
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 14px 0;
-    }
-
-    .search-panel {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 14px;
-      padding: 14px;
-      background: #ffffff;
-      border: 1px solid #dfe6f2;
-      border-radius: 8px;
-      box-shadow: 0 6px 18px rgba(32, 56, 100, 0.06);
-    }
-
-    .search-panel input {
-      flex: 1;
-      height: 40px;
-      padding: 0 13px;
-      border: 1px solid #d4dbea;
-      border-radius: 5px;
-      outline: none;
-      color: #001a4d;
-      font-size: 14px;
-    }
-
-    .search-panel input:focus {
-      border-color: #4169ff;
-      box-shadow: 0 0 0 3px rgba(65, 105, 255, 0.08);
-    }
-
-    .search-panel button {
-      width: 104px;
-      height: 40px;
-      border: none;
-      border-radius: 5px;
-      background: #4169ff;
-      color: #ffffff;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .search-panel button:hover {
-      background: #3155d9;
-    }
-
-    .search-panel button:disabled {
-      background: #9aa8c2;
-      cursor: not-allowed;
-    }
-
-    .panel {
-      background: #ffffff;
-      border: 1px solid #dfe6f2;
-      border-radius: 8px;
-      margin-bottom: 14px;
-      overflow: hidden;
-      box-shadow: 0 6px 18px rgba(32, 56, 100, 0.06);
-    }
-
-    .panel-title {
-      height: 56px;
-      display: flex;
-      align-items: center;
-      padding: 0 18px;
-      border-bottom: 1px solid #e7edf6;
-      font-size: 17px;
-      font-weight: 700;
-      color: #001a4d;
-    }
-
-    .address-info {
-      position: relative;
-      min-height: 162px;
-      padding: 22px 330px 20px 22px;
-    }
-
-    .address-main {
-      min-width: 0;
-    }
-
-    .address-primary-row {
-      display: flex;
-      align-items: center;
-      min-width: 0;
-    }
-
-    .wallet-icon {
-      width: 58px;
-      height: 58px;
-      flex: 0 0 58px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 14px;
-      border-radius: 12px;
-      background: linear-gradient(145deg, #f5f8ff, #e8eefc);
-      border: 1px solid #dbe4f4;
-      color: #4169ff;
-    }
-
-    .wallet-icon svg {
-      width: 31px;
-      height: 31px;
-    }
-
-    .address-text-wrap {
-      min-width: 0;
-    }
-
-    .address-line {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-    }
-
-    .main-address {
-      display: inline-block;
-      color: #001a4d;
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 0;
-      white-space: nowrap;
-    }
-
-    .inline-copy-btn {
-      width: 26px;
-      height: 26px;
-      flex: 0 0 26px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: none;
-      border-radius: 5px;
-      background: transparent;
-      color: #5f76a3;
-      cursor: pointer;
-      padding: 0;
-    }
-
-    .inline-copy-btn:hover {
-      color: #4169ff;
-      background: #f2f5ff;
-    }
-
-    .inline-copy-btn svg {
-      width: 17px;
-      height: 17px;
-    }
-
-    .address-caption {
-      margin-top: 7px;
-      color: #7889a7;
-      font-size: 13px;
-    }
-
-    .balance-block {
-      margin-top: 21px;
-      padding-left: 72px;
-    }
-
-    .balance-label {
-      margin-bottom: 4px;
-      color: #7889a7;
-      font-size: 13px;
-    }
-
-    #balanceBox {
-      display: inline-block;
-      padding: 2px 0;
-      color: #001a4d;
-      font-size: 18px;
-      line-height: 1.4;
-      font-weight: 700;
-    }
-
-    .copy-text {
-      cursor: pointer;
-    }
-
-    .copy-text:hover {
-      color: #4169ff;
-    }
-
-    .address-quick-actions {
-      position: absolute;
-      top: 24px;
-      right: 176px;
-      display: flex;
-      align-items: center;
-      gap: 22px;
-      white-space: nowrap;
-    }
-
-    .quick-action {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: none;
-      background: transparent;
-      color: #4169ff;
-      cursor: pointer;
-      padding: 4px 0;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .quick-action:hover {
-      color: #3155d9;
-    }
-
-    .quick-action svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .address-actions {
-      position: absolute;
-      top: 16px;
-      right: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      width: 140px;
-    }
-
-    .address-action-btn {
-      width: 100%;
-      height: 38px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      border: 1px solid #4169ff;
-      border-radius: 5px;
-      background: #ffffff;
-      color: #4169ff;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .address-action-btn:hover {
-      background: #f3f6ff;
-    }
-
-    .address-action-btn svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .address-action-btn.secondary {
-      border-color: #d4dbea;
-      color: #4169ff;
-    }
-
-    .address-action-btn.balance-updated {
-      background: #e9edf3;
-    }
-
-    .address-action-btn.balance-updated:hover {
-      background: #eceff3;
-    }
-
-    .address-action-btn:disabled {
-      border-color: #d4dbea;
-      background: #f1f3f7;
-      color: #9aa8c2;
-      cursor: not-allowed;
-    }
-
-    .address-feedback {
-      position: absolute;
-      top: 108px;
-      left: 300px;
-      right: 330px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .address-feedback .status-line {
-      width: 100%;
-      min-width: 0;
-      padding: 0;
-      color: #6b7b99;
-      font-size: 13px;
-      line-height: 30px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .address-feedback .status-line:empty {
-      display: none;
-    }
-
-    .address-feedback .error-line {
-      color: #d93025;
-    }
-
-    .api-row {
-      display: none;
-      padding: 0 18px 14px;
-    }
-
-    .api-row.show {
-      display: block;
-    }
-
-    .api-row input {
-      width: 100%;
-      height: 34px;
-      padding: 0 10px;
-      border: 1px solid #d4dbea;
-      border-radius: 3px;
-      outline: none;
-    }
-
-    .table-top {
-      height: 54px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      border-bottom: 1px solid #e7edf6;
-    }
-
-    .table-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #001a4d;
-    }
-
-    .table-summary {
-      font-size: 13px;
-      color: #5f76a3;
-      white-space: nowrap;
-    }
-
-    .table-summary span {
-      margin-left: 6px;
-    }
-
-    .page-btn {
-      color: #5f76a3;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .page-btn:hover {
-      color: #4169ff;
-    }
-
-    .page-disabled {
-      color: #b7c1d4;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    .table-scroll {
-      width: 100%;
-      overflow: visible;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-      font-variant-numeric: tabular-nums;
-    }
-
-    thead th {
-      height: 42px;
-      background: linear-gradient(180deg, #f7f9fe, #eef3fb);
-      color: #526b99;
-      font-weight: 600;
-      text-align: left;
-      padding: 0 8px;
-      border-bottom: 1px solid #e7edf6;
-      white-space: nowrap;
-    }
-
-    tbody td {
-      height: 62px;
-      padding: 10px 8px;
-      border-bottom: 1px solid #e9eef6;
-      color: #001a4d;
-      vertical-align: middle;
-      overflow: visible;
-    }
-
-    tbody tr:hover {
-      background: #fafcff;
-    }
-
-    .hash-col {
-      width: 16%;
-    }
-
-    .time-col {
-      width: 13%;
-      white-space: nowrap;
-    }
-
-    .type-col {
-      width: 8%;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .addr-col {
-      width: 24.5%;
-      white-space: nowrap;
-    }
-
-    thead th.addr-col {
-      text-align: center;
-    }
-
-    tbody td.addr-col {
-      text-align: left;
-    }
-
-    tbody td.addr-col:nth-child(4) {
-      padding-right: 12px;
-    }
-
-    tbody td.addr-col:nth-child(5) {
-      padding-left: 12px;
-    }
-
-    .amount-col {
-      width: 8%;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .amount-value {
-      display: inline-block;
-      width: 8ch;
-      text-align: center;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .status-col {
-      width: 6%;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .hash-text {
-      display: inline-block;
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: #4169ff;
-      cursor: pointer;
-      vertical-align: middle;
-      font-weight: 400;
-    }
-
-    .hash-text:hover {
-      text-decoration: underline;
-    }
-
-    .addr-full {
-      display: inline-block;
-      width: auto;
-      max-width: none;
-      cursor: pointer;
-      white-space: nowrap;
-      line-height: 1.4;
-      font-size: 14.5px;
-      font-weight: 400;
-      letter-spacing: -0.28px;
-      text-decoration: none;
-    }
-
-    .find-hidden-address::before {
-      content: attr(data-address);
-    }
-
-    .addr-self {
-      color: #001a4d;
-      font-weight: 500;
-    }
-
-    .addr-other {
-      color: #4169ff;
-    }
-
-    .addr-other:hover,
-    .addr-self:hover {
-      text-decoration: none;
-    }
-
-    .type-tag {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 66px;
-      height: 28px;
-      padding: 0 10px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .type-in {
-      color: #16803a;
-      background: #e9f7ee;
-    }
-
-    .type-out {
-      color: #d93025;
-      background: #fdeeee;
-    }
-
-    .amount-in {
-      color: #16a34a;
-      font-weight: 700;
-    }
-
-    .amount-out {
-      color: #e60000;
-      font-weight: 700;
-    }
-
-    .pending-tag,
-    .ok-tag {
-      display: inline-block;
-      margin-left: 0;
-      padding: 3px 9px;
-      border-radius: 10px;
-      font-size: 12px;
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-
-    .pending-tag {
-      background: #fff4d6;
-      color: #8a5a00;
-    }
-
-    .ok-tag {
-      background: #e8f7ee;
-      color: #16803a;
-    }
-
-    .new-tx-tag {
-      display: inline-block;
-      margin-left: 0;
-      padding: 3px 9px;
-      border-radius: 10px;
-      font-size: 12px;
-      vertical-align: middle;
-      white-space: nowrap;
-      background: #FFFF00;
-      color: #001a4d;
-    }
-
-    .empty {
-      height: 80px;
-      text-align: center;
-      color: #8a9ab7;
-    }
-
-    @media (max-width: 1180px) {
-      .page {
-        width: calc(100% - 20px);
-      }
-
-      .address-info {
-        padding-right: 310px;
-      }
-
-      .address-quick-actions {
-        right: 166px;
-        gap: 14px;
-      }
-
-      thead th,
-      tbody td {
-        padding-left: 6px;
-        padding-right: 6px;
-      }
-
-      .addr-full {
-        font-size: 13.8px;
-        letter-spacing: -0.45px;
-      }
-
-      .main-address {
-        font-size: 16px;
-      }
-    }
-
-    /* ===== 质感优化：只调配色、边框、阴影、字重，布局保持原样 ===== */
     :root {
       --brand: #2f5bd8;
       --brand-dark: #2449b8;
@@ -632,194 +23,286 @@
       --ink: #142039;
       --ink-2: #475467;
       --ink-3: #8590a2;
+      --ink-4: #a3abb9;
       --line: #e4e8ef;
       --line-2: #eef1f5;
+      --in: #079455;
+      --out: #d92d20;
+      --gutter: 16px;
+      --font-ui: "HL Sans", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+      --font-num: "HL Sans", "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      /* 地址、哈希、数量：Inter 在各系统宽度一致，地址才能稳定一行放下（缺字体时退回更窄的 Arial） */
+      --font-data: "HL Sans", Arial, "Helvetica Neue", sans-serif;
+      --font-time: "HL Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
     }
+
+    * { box-sizing: border-box; }
 
     body {
-      background: #f3f5f8;
+      margin: 0;
+      background: #f4f6f9;
       color: var(--ink);
-      -webkit-font-smoothing: antialiased;
+      font: 400 14px/1.5 var(--font-ui);
+      text-rendering: optimizeLegibility;
     }
 
-    .search-panel,
-    .panel {
-      border-color: var(--line);
-      border-radius: 12px;
-      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 2px 8px rgba(16, 24, 40, 0.03);
+    button { font: inherit; }
+    h2, p { margin: 0; }
+
+    .page {
+      width: min(1240px, 100% - 2 * var(--gutter));
+      margin: 0 auto;
+      padding: 16px 0 40px;
     }
 
-    .search-panel input {
+    .icon { width: 16px; height: 16px; flex: none; }
+
+    .icon-btn {
+      display: inline-grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--ink-4);
+      cursor: pointer;
+    }
+
+    .icon-btn:hover { background: var(--brand-soft); color: var(--brand); }
+    .icon-btn .icon { width: 15px; height: 15px; }
+
+    /* ===== 搜索栏 ===== */
+    .search {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       height: 42px;
-      border-color: #d5dbe5;
-      border-radius: 8px;
+      padding: 0 6px 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    /* 搜索框放在“地址信息”标题行右侧 */
+    .page > .card:first-child { margin-top: 0; }
+    .head-search { align-items: center; padding-top: 9px; padding-bottom: 9px; }
+    .head-search .search { width: min(440px, 50%); height: 34px; margin-left: auto; padding: 0 4px 0 12px; border-radius: 8px; }
+    .head-search .search input { font-size: 13.5px; }
+    .head-search .search-go { height: 26px; }
+    .head-search .search-clear { width: 26px; height: 26px; }
+
+    .search:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(47, 91, 216, .1); }
+    .search > .icon { color: var(--ink-3); }
+
+    .search input {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      padding: 0 4px;
+      border: 0;
+      outline: 0;
+      background: transparent;
       color: var(--ink);
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      font: 400 14px var(--font-ui);
+      -webkit-appearance: none;
+      appearance: none;
     }
 
-    .search-panel input::placeholder {
-      color: #98a2b3;
-    }
+    .search input::placeholder { color: #98a2b3; }
+    .search input::-webkit-search-cancel-button { display: none; }
+    .search-go, .search-clear { display: none; }
+    .search.is-address .search-go { display: inline-flex; }
+    .search.has-value .search-clear { display: inline-grid; }
 
-    .search-panel input:focus {
-      border-color: var(--brand);
-      box-shadow: 0 0 0 3px rgba(47, 91, 216, 0.12);
-    }
-
-    .search-panel button {
-      height: 42px;
-      border-radius: 8px;
-      background: var(--brand);
-      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
-      transition: background 0.15s ease;
-    }
-
-    .search-panel button:hover {
-      background: var(--brand-dark);
-    }
-
-    .search-panel button:disabled {
-      background: #a8b4d4;
-      box-shadow: none;
-    }
-
-    .panel-title {
-      height: 52px;
-      border-bottom-color: var(--line-2);
-      color: var(--ink);
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .wallet-icon {
-      border: none;
-      border-radius: 12px;
+    .search-go {
+      align-items: center;
+      gap: 6px;
+      height: 28px;
+      padding: 0 8px 0 10px;
+      border: 0;
+      border-radius: 6px;
       background: var(--brand-soft);
       color: var(--brand);
-    }
-
-    .main-address {
-      color: var(--ink);
-      font-weight: 600;
-    }
-
-    .inline-copy-btn {
-      color: #98a2b3;
-    }
-
-    .inline-copy-btn:hover {
-      background: var(--brand-soft);
-      color: var(--brand);
-    }
-
-    .address-caption,
-    .balance-label {
-      color: var(--ink-3);
-    }
-
-    #balanceBox {
-      color: var(--ink);
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    #balanceBox .balance-unit {
-      margin-left: 6px;
-      color: var(--ink-3);
       font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0;
+      white-space: nowrap;
+      cursor: pointer;
     }
 
-    .copy-text:hover {
-      color: var(--brand);
+    .search-go:hover { background: #e3ebff; }
+    .search-go .icon { width: 14px; height: 14px; opacity: .75; }
+    .search-clear { width: 28px; height: 28px; color: var(--ink-3); }
+    .search-clear:hover { background: #f2f4f7; color: var(--ink); }
+
+    /* ===== 卡片 ===== */
+    .card {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, .03);
     }
 
-    .quick-action {
-      color: var(--brand);
-      font-weight: 500;
+    .card-head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 13px 20px 12px;
+      border-bottom: 1px solid var(--line-2);
     }
 
-    .quick-action:hover {
-      color: var(--brand-dark);
+    .card-title { font-size: 15px; font-weight: 500; line-height: 22px; }
+
+    /* 交易记录右侧：全部 / 收入 / 支出 */
+    .seg { display: flex; align-self: center; margin: -4px 0 -4px auto; padding: 2px; border-radius: 8px; background: #f1f3f7; }
+
+    .seg-btn {
+      height: 26px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 6px;
+      background: none;
+      color: #667085;
+      font-size: 12.5px;
+      cursor: pointer;
     }
 
-    .address-action-btn {
-      border: 1px solid var(--brand);
-      border-radius: 8px;
-      background: var(--brand);
-      color: #ffffff;
-      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
-      transition: background 0.15s ease, border-color 0.15s ease;
+    .seg-btn:hover { color: var(--ink); }
+    .seg-btn.is-on { background: #fff; color: var(--ink); font-weight: 500; box-shadow: 0 1px 2px rgba(16, 24, 40, .1); }
+    .card-meta { color: var(--ink-3); font-size: 13px; }
+
+    /* ===== 地址信息 ===== */
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px 24px;
+      padding: 18px 20px 20px;
     }
 
-    .address-action-btn:hover {
-      border-color: var(--brand-dark);
-      background: var(--brand-dark);
+    .identity {
+      display: grid;
+      grid-template-columns: 40px auto;
+      column-gap: 12px;
+      align-items: center;
+      min-width: 0;
     }
 
-    .address-action-btn.secondary {
-      border-color: #d5dbe5;
-      background: #ffffff;
-      color: #344054;
-      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    .identity-icon {
+      width: 40px;
+      height: 40px;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
     }
 
-    .address-action-btn.secondary:hover {
-      border-color: #c4ccd9;
-      background: #f8fafc;
-    }
+    .identity-icon img { display: block; width: 100%; height: 100%; }
+    .addr-line { display: flex; align-items: center; gap: 4px; min-height: 40px; }
+    .addr-main { font: 600 18px/24px var(--font-data); white-space: nowrap; }
+    .balance-line, .status-line { grid-column: 2; }
+    .balance-line { display: flex; align-items: baseline; gap: 6px; margin-top: 4px; }
+    /* 余额：标签、数字、单位大小接近，不过分突出数字 */
+    .label { color: #667085; font-size: 14px; }
 
-    .address-action-btn.balance-updated,
-    .address-action-btn.balance-updated:hover {
-      border-color: #f5c26b;
-      background: #fffaeb;
-      color: #93370d;
-    }
-
-    .address-action-btn:disabled {
-      border-color: var(--line);
-      background: #f2f4f7;
-      color: #98a2b3;
-      box-shadow: none;
-    }
-
-    .address-feedback .status-line {
-      color: var(--ink-3);
-    }
-
-    .address-feedback .error-line {
-      color: #d92d20;
-    }
-
-    .table-top {
-      height: 56px;
-      border-bottom-color: var(--line-2);
-    }
-
-    .table-title {
+    .balance {
+      margin-left: -4px;
+      padding: 0 4px;
+      border: 0;
+      border-radius: 6px;
+      background: none;
       color: var(--ink);
-      font-size: 15px;
-      font-weight: 600;
+      font: 600 19px/30px var(--font-num);
+      cursor: pointer;
     }
 
-    .table-summary,
-    .page-btn {
-      color: var(--ink-2);
-    }
+    /* 鼠标移上去只高亮数字本身 */
+    .balance:hover { background: var(--brand-soft); }
+    .balance-unit { margin-left: -2px; color: #667085; font-size: 14px; font-weight: 500; }
+    .balance-unit[hidden] { display: none; }
+    .status-line { margin-top: 2px; color: var(--ink-3); font-size: 12.5px; }
+    .status-line:empty, .status-line:has(> .error-line:empty) { display: none; }
+    .error-line { color: var(--out); }
 
-    .page-btn:hover {
+    /* 右侧操作：更新交易、复制余额上下叠放在最右边，“在区块链上查看”在更新交易左侧 */
+    .actions { display: flex; align-items: flex-start; gap: 16px; margin-left: auto; }
+    .action-stack { display: flex; flex-direction: column; gap: 8px; width: 136px; }
+    .action-stack .btn { width: 100%; }
+    /* 按钮下方居中：更新时间和结果（如“15:52:21 已更新 · 无新交易”），查询中显示“查询中…” */
+    .updated-at { align-self: center; width: max-content; min-height: 18px; margin-top: 2px; color: var(--ink-3); font-size: 12px; line-height: 18px; white-space: nowrap; }
+    .updated-at.is-busy #updatedAt { display: none; }
+    #statusBox.has-new { color: var(--brand); font-weight: 500; }
+
+
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 34px;
+      padding: 0 2px;
+      border: 0;
+      background: none;
       color: var(--brand);
+      font-size: 13.5px;
+      white-space: nowrap;
+      cursor: pointer;
     }
 
-    .page-disabled {
-      color: #c8ced9;
+    .link-btn .icon { width: 14px; height: 14px; }
+    .link-btn:hover { color: var(--brand-dark); text-decoration: underline; text-underline-offset: 3px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 34px;
+      padding: 0 14px;
+      border: 1px solid #d5dbe5;
+      border-radius: 8px;
+      background: #fff;
+      color: #344054;
+      font-size: 13.5px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
     }
 
-    thead th {
-      height: 44px;
+    .btn .icon { width: 15px; height: 15px; color: var(--ink-3); }
+    .btn:hover { border-color: #c4ccd9; background: #f8fafc; }
+    .btn-primary { border-color: var(--brand); background: var(--brand); color: #fff; font-weight: 500; }
+    .btn-primary .icon { color: #fff; }
+    .btn-primary:hover { border-color: var(--brand-dark); background: var(--brand-dark); }
+    .btn-primary:disabled { border-color: #8ea6ea; background: #8ea6ea; cursor: default; }
+    .btn-primary:disabled .icon { animation: spin 1s linear infinite; }
+    .btn.balance-updated { border-color: #f5c26b; background: #fffaeb; color: #93370d; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== 交易记录 ===== */
+    .tx-card { overflow: hidden; }
+    .tx-scroll { overflow-x: auto; }
+    .tx-table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+
+    /* 固定列宽：翻页、筛选时列不跳动；两列地址平分剩下的宽度 */
+    .c-hash { width: 136px; }
+    .c-time { width: 152px; }
+    .c-type { width: 48px; }
+    .c-amt { width: 120px; }
+    .c-rc { width: 44px; }
+    .c-st { width: 72px; }
+
+    .tx-table th,
+    .tx-table td {
+      padding: 0 8px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .tx-table th {
+      height: 40px;
       border-bottom: 1px solid var(--line);
       background: #f8fafc;
       color: #667085;
@@ -827,897 +310,402 @@
       font-weight: 500;
     }
 
-    tbody td {
-      border-bottom-color: var(--line-2);
-      color: var(--ink);
-    }
+    .tx-table td { height: 52px; border-bottom: 1px solid var(--line-2); }
+    .tx-table tbody tr:hover { background: #fafbfd; }
+    /* 新交易：浅黄底 + 左侧蓝条，和蓝色“新交易”标签区分开 */
+    .tx-table tbody tr.is-new { background: #fff8e1; }
+    .tx-table tbody tr.is-new > td:first-child { box-shadow: inset 3px 0 0 var(--brand); }
+    .td-time { font: 500 13.5px var(--font-time); }
+    .type { font-size: 13.5px; font-weight: 500; }
+    .type-in, .amt-in { color: var(--in); }
+    .type-out, .amt-out { color: var(--out); }
+    .hash { color: var(--brand); font: 500 13.5px var(--font-data); text-decoration: none; }
+    .hash:hover { color: var(--brand-dark); }
+    /* 对方地址蓝色、本地址黑色，一眼分清；悬停只变色，不加下划线 */
+    .addr { color: var(--brand); font: 500 13.5px var(--font-data); text-decoration: none; cursor: pointer; }
+    .addr.is-self { color: var(--ink); }
+    /* 鼠标移到地址上：浅蓝底稍微亮一下（用阴影扩边，不挤动排版） */
+    .addr { border-radius: 4px; transition: background-color .12s, box-shadow .12s; }
+    .addr:hover { color: var(--brand-dark); background: #e6edff; box-shadow: 0 0 0 3px #e6edff; }
+    .addr.is-self:hover { color: #000; }
+    .find-hidden-address::before { content: attr(data-address); }
+    .amt { padding: 3px 4px; border-radius: 6px; font: 600 14.5px var(--font-data); cursor: pointer; }
+    .amt:hover { background: var(--brand-soft); }
+    .amt-long { font-size: 12.5px; }
+    .amt-xlong { font-size: 11.5px; }
+    .rc-btn { vertical-align: middle; }
 
-    tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    tbody tr:hover {
-      background: #f9fbff;
-    }
-
-    tbody tr.row-new,
-    tbody tr.row-new:hover {
-      background: #f3f6ff;
-    }
-
-    .hash-text,
-    .addr-other {
-      color: var(--brand);
-    }
-
-    /* 输出地址和接收地址：字号、粗细一致，只用颜色区分 */
-    .addr-self,
-    .addr-other {
+    .tag {
+      display: inline-block;
+      min-width: 52px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      color: #fff;
+      font-size: 12px;
       font-weight: 500;
+      line-height: 16px;
+      letter-spacing: .5px;
     }
 
-    .addr-self {
-      color: var(--ink);
+    .tag-ok { background: #17a364; }
+    .tag-wait { background: #f0a400; }
+    .tag-new { background: #2f5bd8; }
+    .tx-table .empty { height: 120px; color: #98a2b3; white-space: normal; }
+
+    /* 上移 1px 盖住最后一行的分隔线 */
+    .tx-foot {
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: -1px;
+      padding: 12px 20px;
+      border-top: 1px solid var(--line-2);
+      background: #fff;
     }
 
-    .time-date {
-      color: var(--ink-3);
-    }
+    .pager { display: flex; align-items: center; gap: 6px; }
 
-    .type-tag {
-      height: 26px;
+    .pager button {
+      min-width: 28px;
+      height: 28px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
       border-radius: 6px;
+      background: #fff;
+      color: var(--ink-2);
       font-size: 12.5px;
-      font-weight: 600;
-    }
-
-    .type-in {
-      background: #ecfdf3;
-      color: #067647;
-      box-shadow: inset 0 0 0 1px #d1fadf;
-    }
-
-    .type-out {
-      background: #fef3f2;
-      color: #b42318;
-      box-shadow: inset 0 0 0 1px #fee4e2;
-    }
-
-    .amount-in {
-      color: #079455;
-    }
-
-    .amount-out {
-      color: #d92d20;
-    }
-
-    .ok-tag {
-      background: #ecfdf3;
-      color: #067647;
-    }
-
-    .pending-tag {
-      background: #fffaeb;
-      color: #b54708;
-    }
-
-    .new-tx-tag {
-      background: #fde68a;
-      color: #78350f;
-      font-weight: 600;
-    }
-
-    .empty {
-      color: #98a2b3;
-    }
-
-    .copy-amount {
       cursor: pointer;
-      border-radius: 4px;
-      transition: background 0.12s ease;
     }
 
-    .copy-amount:hover {
-      background: rgba(47, 91, 216, 0.08);
+    .pager button:hover:not(:disabled) { border-color: #c4ccd9; color: var(--brand); }
+    .pager button:disabled { color: #c8ced9; cursor: default; }
+    .page-no { padding: 0 6px; font: 500 13px var(--font-data); font-variant-numeric: tabular-nums; }
+
+    /* ===== 交易凭证弹窗 ===== */
+    .tx-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
+
+    .tx-modal[hidden] { display: none; }
+    .tx-modal-backdrop { position: absolute; inset: 0; background: rgba(15, 23, 42, .45); }
+
+    .tx-modal-dialog {
+      position: relative;
+      width: min(520px, 100%);
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, .25);
+      animation: modal-in .18s ease-out;
+    }
+
+    @keyframes modal-in { from { opacity: 0; transform: translateY(8px); } }
+
+    .tx-modal-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 0 20px; }
+    .tx-modal-head h2 { font-size: 15px; font-weight: 500; }
+    .tx-modal-close { width: 32px; height: 32px; color: var(--ink-3); }
+    .tx-sheet { margin: 12px 20px 0; padding: 18px 18px 14px; border: 1px solid var(--line); border-radius: 12px; }
+    /* 币种标识：币种图标 + 右下角 TRON 小标，旁边是币种名和网络 */
+    .tx-token { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .tx-token-logo { position: relative; flex: none; width: 36px; height: 36px; }
+    .tx-token-logo > .coin, .tx-token-logo > svg { display: block; width: 36px; height: 36px; border-radius: 50%; }
+    .tx-token-logo .chain { position: absolute; right: -5px; bottom: -4px; width: 19px; height: 19px; border: 2px solid #fff; border-radius: 50%; background: #fff; }
+    .tx-token-name { font: 600 15px/20px var(--font-ui); }
+    .tx-token-net { color: var(--ink-3); font-size: 12px; line-height: 16px; }
+    .tx-sheet-amount { font: 600 30px/1.2 var(--font-num); }
+    .tx-sheet-amount.is-in { color: var(--in); }
+    .tx-sheet-amount.is-out { color: var(--out); }
+    .tx-sheet-amount .unit { margin-left: 6px; color: var(--ink-3); font-size: 14px; font-weight: 500; }
+    .tx-flow { margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: #f8fafc; }
+    .tx-flow-row, .tx-fields > div { display: flex; align-items: baseline; gap: 12px; }
+    .tx-flow-arrow { margin: 4px 0 4px 3px; color: var(--ink-3); font-size: 12px; }
+    .tx-flow-label, .tx-fields dt { flex: 0 0 36px; color: var(--ink-3); font-size: 12.5px; }
+    .tx-flow-addr, .tx-fields dd { min-width: 0; margin: 0; font-size: 13.5px; word-break: break-all; }
+    .tx-flow-addr, #txHash { font-family: var(--font-data); font-weight: 500; }
+    .tx-copyable { cursor: pointer; }
+    .tx-copyable:hover { color: var(--brand); }
+    .tx-fields { margin: 12px 0 0; }
+    .tx-fields > div { padding: 10px 0; border-top: 1px solid var(--line-2); }
+    .tx-fields > div:first-child { border-top: 0; }
+    /* 右上角交易状态：已成功 / 确认中 / 失败 */
+    .tx-result { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; padding: 3px 10px 3px 8px; border-radius: 999px; background: #ecfdf3; color: #067647; font-size: 12.5px; font-weight: 500; line-height: 18px; white-space: nowrap; }
+    .tx-result svg { width: 14px; height: 14px; flex: none; }
+    .tx-result.is-pending { background: #fffaeb; color: #b54708; }
+    .tx-result.is-failed { background: #fef3f2; color: #b42318; }
+    .tx-sheet-foot { margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--line-2); color: var(--ink-3); font-size: 11.5px; }
+    /* 两个按钮：左边 在 Tronscan 查看，右边 复制图片，等宽 */
+    .tx-modal-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 16px 20px 20px; }
 
     .toast {
       position: fixed;
       left: 50%;
       bottom: 32px;
-      z-index: 50;
+      z-index: 70;
       max-width: calc(100% - 32px);
       padding: 10px 16px;
       border-radius: 10px;
-      background: rgba(20, 32, 57, 0.92);
-      color: #ffffff;
+      background: rgba(20, 32, 57, .92);
+      color: #fff;
       font-size: 13px;
       opacity: 0;
       pointer-events: none;
       transform: translate(-50%, 12px);
-      transition: opacity 0.18s ease, transform 0.18s ease;
+      transition: opacity .18s, transform .18s;
     }
 
-    .toast.show {
-      opacity: 1;
-      transform: translate(-50%, 0);
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    /* ===== 1000–1279px：收紧列宽和字号；地址字号随窗口缩放，保证一行完整显示 ===== */
+    @media (min-width: 1000px) and (max-width: 1279px) {
+      :root { --gutter: 12px; }
+      .c-hash { width: 120px; }
+      .c-time { width: 132px; }
+      .c-type { width: 36px; }
+      .c-amt { width: 108px; }
+      .c-rc { width: 36px; }
+      .c-st { width: 56px; }
+      .tx-table th, .tx-table td { padding: 0 5px; }
+      .tx-table .td-from, .tx-table .td-to { padding: 0 3px; }
+      .tx-table :is(th, td):first-child { padding-left: 10px; }
+      .tx-table :is(th, td):last-child { padding-right: 10px; }
+      .tx-table th, .td-time, .hash { font-size: 12px; }
+      .type { font-size: 12.5px; }
+      .amt { padding: 3px 2px; font-size: 13px; }
+      .amt-long { font-size: 11.5px; }
+      .amt-xlong { font-size: 10.5px; }
+      .addr { font-size: min(13.5px, (50vw - 266px) / 23.2); }
+      .tag { min-width: 0; padding: 3px 4px; font-size: 11px; letter-spacing: 0; }
+      .addr-main { font-size: 17px; }
     }
 
-    /* 电脑端：表头和内容居中；窗口太窄时表格左右滑动，地址始终一行完整显示 */
-    @media (min-width: 701px) {
-      thead th,
-      thead th.addr-col,
-      tbody td,
-      tbody td.addr-col {
-        text-align: center;
-      }
+    /* ===== 1000px 以下：每笔交易一块，无横向滚动 ===== */
+    @media (max-width: 999px) {
+      .tx-table, .tx-table tbody { display: block; }
+      .tx-table thead, .tx-table colgroup { display: none; }
 
-      .table-scroll {
-        overflow-x: auto;
-      }
-
-      .table-scroll table {
-        min-width: 1180px;
-      }
-
-      .hash-col {
-        width: 12%;
-      }
-
-      .type-col {
-        width: 7%;
-      }
-
-      .amount-col {
-        width: 11%;
-      }
-
-      .status-col {
-        width: 8%;
-      }
-
-      .amount-value {
-        width: auto;
-      }
-
-      tbody td.addr-col:nth-child(4),
-      tbody td.addr-col:nth-child(5) {
-        padding-left: 4px;
-        padding-right: 4px;
-      }
-
-      .addr-full {
-        font-size: 14px;
-        letter-spacing: -0.25px;
-      }
-
-      /* 状态提示放到余额下方，与文字左对齐 */
-      .address-feedback {
-        position: static;
-        height: auto;
-        min-height: 20px;
-        margin: 6px 0 0 72px;
-      }
-
-      .address-feedback .status-line {
-        line-height: 20px;
-      }
-    }
-
-    /* 中等宽度：时间分两行显示，腾出宽度，保证金额和状态不被挤出屏幕 */
-    @media (min-width: 701px) and (max-width: 1279px) {
-      .table-scroll table {
-        min-width: 960px;
-      }
-
-      thead th,
-      tbody td,
-      tbody td.addr-col:nth-child(4),
-      tbody td.addr-col:nth-child(5) {
-        padding-left: 8px;
-        padding-right: 8px;
-      }
-
-      .hash-col {
-        width: 12%;
-      }
-
-      .time-col {
-        width: 9%;
-      }
-
-      .type-col {
-        width: 7%;
-      }
-
-      .addr-col {
-        width: 26.5%;
-      }
-
-      .amount-col {
-        width: 10%;
-      }
-
-      .status-col {
-        width: 9%;
-      }
-
-      .time-date {
-        display: block;
-        font-size: 12px;
-      }
-
-      .hash-text {
-        font-size: 12px;
-        letter-spacing: -0.2px;
-      }
-
-      .addr-full {
-        font-size: 12px;
-        letter-spacing: -0.3px;
-      }
-
-      .amount-value {
-        font-size: 13.5px;
-      }
-
-      .type-tag {
-        min-width: 0;
-        padding: 0 8px;
-      }
-    }
-
-    /* 地址左侧用网站图标：白底细边框，图标铺满 */
-    .wallet-icon {
-      background: #ffffff;
-      box-shadow: inset 0 0 0 1px var(--line);
-    }
-
-    .wallet-logo {
-      width: 44px;
-      height: 44px;
-    }
-
-    /* 交易表：数字换成更圆润的字体，标题和表头加粗 */
-    .table-title {
-      font-weight: 700;
-    }
-
-    thead th {
-      color: #475467;
-      font-weight: 600;
-    }
-
-    .amount-value,
-    .time-col,
-    .hash-text {
-      font-family: "SF Pro Display", "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
-      font-variant-numeric: normal;
-    }
-
-    .amount-value {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-    }
-
-    /* 状态标签：实心色块 + 白字 */
-    .status-tag {
-      display: inline-block;
-      min-width: 54px;
-      padding: 4px 9px;
-      border: none;
-      border-radius: 6px;
-      color: #ffffff;
-      font-size: 12px;
-      font-weight: 600;
-      line-height: 16px;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .ok-tag {
-      background: #17a364;
-    }
-
-    .pending-tag {
-      background: #f0a400;
-    }
-
-    .new-tx-tag {
-      background: #2f5bd8;
-    }
-
-    @media (min-width: 701px) and (max-width: 1279px) {
-      .status-tag {
-        min-width: 48px;
-        padding: 3px 7px;
-        font-size: 11.5px;
-      }
-    }
-
-    /* 整体字重调细，余额字号调小 */
-    #balanceBox {
-      font-size: 21px;
-      font-weight: 500;
-      letter-spacing: 0;
-    }
-
-    #balanceBox .balance-unit {
-      font-weight: 500;
-    }
-
-    .main-address,
-    .panel-title,
-    .table-title,
-    thead th,
-    .amount-value,
-    .type-tag,
-    .address-action-btn,
-    .quick-action {
-      font-weight: 500;
-    }
-
-    /* 状态标签文字调细 */
-    .status-tag {
-      font-weight: 400;
-      letter-spacing: 0.5px;
-    }
-
-    /* 时间：年月日和时分秒用同一种黑体、同一个颜色 */
-    .time-col,
-    .time-col .time-date,
-    .time-col .time-clock {
-      color: var(--ink);
-      font-family: "Microsoft YaHei", "PingFang SC", "Heiti SC", "Hiragino Sans GB", sans-serif;
-      font-weight: 400;
-    }
-
-    /* 手机端专用布局：无横向滚动，每页 5 条交易 */
-    @media (max-width: 700px) {
-      html,
-      body {
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
-      }
-
-      body {
-        font-size: 12px;
-      }
-
-      .page {
-        width: calc(100% - 12px);
-        max-width: none;
-        padding: 6px 0 calc(10px + env(safe-area-inset-bottom));
-      }
-
-      .search-panel {
-        gap: 6px;
-        margin-bottom: 7px;
-        padding: 7px;
-        border-radius: 9px;
-      }
-
-      .search-panel input {
-        min-width: 0;
-        height: 36px;
-        padding: 0 9px;
-        font-size: 12px;
-      }
-
-      .search-panel button {
-        width: 82px;
-        height: 36px;
-        flex: 0 0 82px;
-        font-size: 12px;
-      }
-
-      .panel {
-        margin-bottom: 7px;
-        border-radius: 9px;
-        box-shadow: 0 3px 12px rgba(32, 56, 100, 0.05);
-      }
-
-      .panel-title {
-        height: 40px;
-        padding: 0 12px;
-        font-size: 15px;
-      }
-
-      .address-info {
-        min-height: 0;
-        padding: 11px;
-      }
-
-      .address-primary-row {
-        align-items: flex-start;
-      }
-
-      .wallet-icon {
-        width: 42px;
-        height: 42px;
-        flex: 0 0 42px;
-        margin-right: 9px;
-        border-radius: 9px;
-      }
-
-      .wallet-icon svg {
-        width: 23px;
-        height: 23px;
-      }
-
-      .address-text-wrap,
-      .address-line {
-        min-width: 0;
-        width: 100%;
-      }
-
-      .address-line {
-        align-items: flex-start;
-        gap: 4px;
-        white-space: normal;
-      }
-
-      .main-address {
-        min-width: 0;
-        font-size: 12px;
-        line-height: 1.45;
-        white-space: normal;
-        overflow-wrap: anywhere;
-        word-break: break-all;
-      }
-
-      .inline-copy-btn {
-        width: 24px;
-        height: 24px;
-        flex: 0 0 24px;
-      }
-
-      .address-caption,
-      .balance-label {
-        font-size: 11px;
-      }
-
-      .address-caption {
-        margin-top: 3px;
-      }
-
-      .balance-block {
-        display: flex;
-        align-items: baseline;
-        gap: 7px;
-        margin-top: 10px;
-        padding-left: 51px;
-      }
-
-      .balance-label {
-        margin: 0;
-      }
-
-      #balanceBox {
-        font-size: 15px;
-      }
-
-      .address-quick-actions {
-        position: static;
+      .tx-table tr {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 6px;
-        margin-top: 11px;
-      }
-
-      .quick-action {
-        justify-content: center;
-        min-width: 0;
-        height: 32px;
-        padding: 0 5px;
-        border: 1px solid #e1e7f1;
-        border-radius: 6px;
-        background: #f8faff;
-        font-size: 11px;
-      }
-
-      .quick-action svg {
-        width: 14px;
-        height: 14px;
-      }
-
-      .address-actions {
-        position: static;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 6px;
-        width: auto;
-        margin-top: 6px;
-      }
-
-      .address-action-btn {
-        height: 34px;
-        font-size: 11px;
-      }
-
-      .address-feedback {
-        position: static;
-        height: auto;
-        min-height: 0;
-        margin-top: 6px;
-        pointer-events: auto;
-      }
-
-      .address-feedback .status-line {
-        font-size: 11px;
-        line-height: 1.4;
-        white-space: normal;
-      }
-
-      .table-top {
-        min-height: 44px;
-        height: auto;
-        gap: 8px;
-        padding: 7px 10px;
-      }
-
-      .table-title {
-        flex: 0 0 auto;
-        font-size: 14px;
-      }
-
-      .table-summary {
-        display: flex;
-        flex: 1;
-        align-items: center;
-        justify-content: flex-end;
-        flex-wrap: wrap;
-        gap: 3px 7px;
-        min-width: 0;
-        font-size: 10px;
-        line-height: 1.25;
-      }
-
-      .table-summary span {
-        margin-left: 0;
-      }
-
-      .table-scroll {
-        width: 100%;
-        max-width: 100%;
-        overflow: hidden;
-      }
-
-      table,
-      tbody {
-        display: block;
-        width: 100%;
-      }
-
-      table {
-        table-layout: auto;
-      }
-
-      thead {
-        display: none;
-      }
-
-      tbody {
-        padding: 5px;
-      }
-
-      tbody tr {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto auto;
+        grid-template-columns: auto auto 1fr auto auto;
         grid-template-areas:
-          "hash type amount"
-          "time status status"
-          "from from from"
-          "to to to";
-        column-gap: 6px;
-        row-gap: 2px;
-        margin-bottom: 5px;
-        padding: 7px 8px;
-        border: 1px solid #e4eaf3;
-        border-radius: 8px;
-        background: #ffffff;
+          "hash hash time time time"
+          "type amt  .    rc   st"
+          "from from from from from"
+          "to   to   to   to   to";
+        align-items: center;
+        column-gap: 8px;
+        row-gap: 4px;
+        padding: 12px 20px;
+        border-bottom: 1px solid var(--line-2);
       }
 
-      tbody tr:last-child {
-        margin-bottom: 0;
+      .tx-table tr.empty-row { display: block; padding: 0; }
+      .tx-table td { display: block; height: auto; padding: 0; border: 0; text-align: left; }
+      .tx-table .empty { height: auto; padding: 40px 16px; text-align: center; }
+      .td-hash { grid-area: hash; }
+      .td-time { grid-area: time; justify-self: end; color: var(--ink-2); font-size: 12.5px; }
+      .td-type { grid-area: type; }
+      .td-amt { grid-area: amt; }
+      .td-rc { grid-area: rc; }
+      .td-st { grid-area: st; }
+      .td-from { grid-area: from; margin-top: 4px; }
+      .td-to { grid-area: to; }
+      .hash { font-size: 13px; }
+      .amt { margin-left: -6px; padding: 2px 6px; font-size: min(17px, 4.5vw); }
+      .amt-long { font-size: min(15px, 4vw); }
+      .amt::after { content: " USDT"; color: var(--ink-3); font-size: 11.5px; font-weight: 400; }
+
+      .td-from::before,
+      .td-to::before {
+        content: attr(data-label);
+        display: inline-block;
+        width: 56px;
+        color: var(--ink-3);
+        font: 400 12px var(--font-ui);
       }
 
-      tbody tr:hover {
-        background: #ffffff;
-      }
-
-      tbody td {
-        width: auto !important;
-        height: auto;
-        min-width: 0;
-        padding: 0 !important;
-        border: 0;
-        font-size: 10.5px;
-        line-height: 1.35;
-        overflow: hidden;
-      }
-
-      tbody td.hash-col {
-        grid-area: hash;
-        align-self: center;
-      }
-
-      tbody td.time-col {
-        grid-area: time;
-        color: #7889a7;
-        font-size: 9.5px;
-      }
-
-      tbody td.type-col {
-        grid-area: type;
-      }
-
-      tbody td.addr-col:nth-child(4) {
-        grid-area: from;
-        margin-top: 4px;
-        padding-top: 5px !important;
-        border-top: 1px dashed #e3e9f2;
-      }
-
-      tbody td.addr-col:nth-child(5) {
-        grid-area: to;
-      }
-
-      tbody td.addr-col {
-        display: flex;
-        align-items: flex-start;
-        gap: 5px;
-        text-align: left;
-        overflow: visible;
-      }
-
-      tbody td.addr-col::before {
-        flex: 0 0 46px;
-        color: #7889a7;
-        font-size: 9.5px;
-        line-height: 1.45;
-      }
-
-      tbody td.addr-col:nth-child(4)::before {
-        content: "输出地址";
-      }
-
-      tbody td.addr-col:nth-child(5)::before {
-        content: "接收地址";
-      }
-
-      tbody td.amount-col {
-        grid-area: amount;
-        align-self: center;
-        text-align: right;
-        font-size: 11px;
-      }
-
-      tbody td.status-col {
-        grid-area: status;
-        align-self: center;
-        justify-self: end;
-      }
-
-      .hash-text {
-        max-width: 100%;
-        font-size: 10px;
-      }
-
-      .addr-full {
-        display: block;
-        width: auto;
-        max-width: 100%;
-        min-width: 0;
-        flex: 1;
-        color: #2f5bd8;
-        font-size: 10.5px;
-        line-height: 1.45;
-        letter-spacing: -0.25px;
-        white-space: normal;
-        overflow-wrap: anywhere;
-        word-break: break-all;
-      }
-
-      .addr-self {
-        color: #142039;
-      }
-
-      .type-tag {
-        min-width: 52px;
-        height: 22px;
-        padding: 0 6px;
-        border-radius: 5px;
-        font-size: 10px;
-      }
-
-      .amount-value {
-        width: auto;
-        max-width: 78px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .pending-tag,
-      .ok-tag,
-      .new-tx-tag {
-        padding: 2px 6px;
-        font-size: 9px;
-      }
-
-      tbody tr.empty-row {
-        display: block;
-        margin: 0;
-        padding: 0;
-        border: 0;
-      }
-
-      tbody tr.empty-row .empty {
-        display: block;
-        width: 100% !important;
-        height: 74px;
-        padding: 26px 8px !important;
-        text-align: center;
-        color: #8a9ab7;
-      }
-
-      #balanceBox .balance-unit {
-        margin-left: 4px;
-        color: #7889a7;
-        font-size: 12px;
-      }
-
-      .toast {
-        bottom: calc(20px + env(safe-area-inset-bottom));
-        font-size: 12px;
-      }
+      .addr { font-size: min(14px, (100vw - 108px) / 23.4); line-height: 20px; }
     }
 
+    /* ===== 手机 ===== */
     @media (max-width: 700px) {
-      .status-tag {
-        min-width: 0;
-        padding: 2px 7px;
-        border-radius: 5px;
-        font-size: 10px;
-        line-height: 14px;
-      }
-
-      .wallet-logo {
-        width: 32px;
-        height: 32px;
-      }
+      :root { --gutter: 10px; }
+      .page { padding-top: 10px; }
+      .search { height: 40px; padding-left: 12px; }
+      .updated-at { display: none; }
+      .search input { font-size: 16px; }
+      .search input::placeholder { font-size: min(14px, (100vw - 70px) / 19); }
+      .card { margin-top: 10px; }
+      .head-search { flex-wrap: wrap; row-gap: 8px; }
+      .head-search .search { width: 100%; }
+      .card-head { padding: 11px 14px 10px; }
+      .summary { display: block; padding: 12px 14px 14px; }
+      .identity { grid-template-columns: 28px minmax(0, 1fr); column-gap: 8px; }
+      .identity-icon { width: 28px; height: 28px; padding: 3px; border-radius: 7px; }
+      .addr-line { min-height: 28px; gap: 2px; }
+      .addr-main { font-size: min(14px, (100vw - 118px) / 23.8); line-height: 20px; white-space: normal; overflow-wrap: anywhere; }
+      .balance { font-size: 18px; }
+      .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+      .action-stack { display: contents; }
+      .link-btn { grid-column: 1 / -1; order: 1; justify-content: center; height: 30px; }
+      .btn { height: 38px; padding: 0 8px; }
+      .tx-table tr { column-gap: 6px; padding: 12px 14px; }
+      .tx-foot { justify-content: center; padding: 10px 14px; }
+      .tx-modal { align-items: flex-end; padding: 0; }
+      .tx-modal-dialog { width: 100%; max-height: 92vh; border-radius: 14px 14px 0 0; }
+      .tx-sheet { margin: 10px 14px 0; padding: 16px 14px 12px; }
+      .tx-sheet-amount { font-size: 26px; }
+      .tx-flow { padding: 10px 12px; }
+      .tx-flow-row, .tx-fields > div { gap: 8px; }
+      .tx-flow-label, .tx-fields dt { flex-basis: 30px; }
+      .tx-fields dd { font-size: 12.5px; }
+      /* 转出 / 转入地址随屏宽缩小，保证一行放下 */
+      .tx-flow-addr { font-size: min(12.5px, (100vw - 120px) / 23.2); }
+      .tx-modal-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 14px 14px calc(14px + env(safe-area-inset-bottom)); }
+      .tx-modal-actions .btn { padding: 0 4px; font-size: 12.5px; white-space: nowrap; }
+      .toast { bottom: calc(20px + env(safe-area-inset-bottom)); }
     }
   </style>
 </head>
 
 <body>
 
-<div class="page">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></symbol>
+  <symbol id="i-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10l-4 4 4 4"/><path d="M19 5v5a4 4 0 0 1-4 4H5"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6v5h-5"/><path d="M4 18v-5h5"/><path d="M6.1 9a7 7 0 0 1 11.5-2.6L20 11"/><path d="M17.9 15a7 7 0 0 1-11.5 2.6L4 13"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h5v5"/><path d="M10 14 19 5"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h12v17l-3-2-3 2-3-2-3 2z"/><path d="M9 8.5h6M9 12.5h6"/></symbol>
+</svg>
 
-  <!-- 查询地址改为写在网址里（?address=T...），这里只保留给脚本用的隐藏元素 -->
-  <div hidden>
-    <input id="addressInput" type="hidden">
-    <button id="queryBtn" type="button" onclick="queryData()">查询/刷新</button>
-  </div>
+<main class="page">
 
-  <div class="panel">
-    <div id="addressTitle" class="panel-title">地址信息</div>
+  <section class="card">
+    <header class="card-head head-search">
+      <h2 id="addressTitle" class="card-title">地址信息</h2>
+      <!-- 搜索：按 Enter 筛选下方交易；输入另一个 TRON 地址时 Enter 查询该地址 -->
+      <div id="searchBox" class="search" role="search">
+        <svg class="icon"><use href="#i-search"/></svg>
+        <input id="searchInput" type="search" enterkeyhint="search" autocomplete="off" spellcheck="false" placeholder="搜索哈希 / 地址 / 金额" aria-label="搜索交易或查询地址">
+        <button id="searchGo" class="search-go" type="button" title="按 Enter 查询">查询此地址<svg class="icon"><use href="#i-enter"/></svg></button>
+        <button id="searchClear" class="icon-btn search-clear" type="button" title="清空" aria-label="清空"><svg class="icon"><use href="#i-x"/></svg></button>
+      </div>
+    </header>
 
-    <div class="address-info">
-      <div class="address-main">
-        <div class="address-primary-row">
-          <div class="wallet-icon" aria-hidden="true">
-            <img id="brandIcon" class="wallet-logo" alt="">
-          </div>
-
-          <div class="address-text-wrap">
-            <div class="address-line">
-              <span id="addressBox" class="main-address">-</span>
-              <button class="inline-copy-btn" type="button" onclick="copyCurrentAddress()" title="复制地址" aria-label="复制地址">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="9" y="9" width="11" height="11" rx="2"/>
-                  <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/>
-                </svg>
-              </button>
-            </div>
-            <div class="address-caption">普通地址</div>
-          </div>
+    <div class="summary">
+      <div class="identity">
+        <div class="identity-icon" aria-hidden="true"><img id="brandIcon" alt=""></div>
+        <div class="addr-line">
+          <span id="addressBox" class="addr-main">-</span>
+          <button class="icon-btn" type="button" onclick="copyCurrentAddress()" title="复制地址" aria-label="复制地址"><svg class="icon"><use href="#i-copy"/></svg></button>
         </div>
+        <div class="balance-line">
+          <span class="label">余额</span>
+          <button id="balanceBox" class="balance" type="button" onclick="copyBalance()" title="点击复制余额">-</button>
+          <span id="balanceUnit" class="balance-unit" hidden>USDT</span>
+        </div>
+        <p class="status-line" aria-live="polite"><span id="errorBox" class="error-line"></span></p>
+      </div>
 
-        <div class="balance-block">
-          <div class="balance-label">余额</div>
-          <span id="balanceBox" class="copy-text" onclick="copyBalance()">-</span>
+      <div class="actions">
+        <button class="link-btn" type="button" onclick="openCurrentAddress()"><svg class="icon"><use href="#i-external"/></svg>在区块链上查看</button>
+        <div class="action-stack">
+          <button id="updateBalanceBtn" class="btn btn-primary" type="button" onclick="updateCurrentAddress()"><svg class="icon"><use href="#i-refresh"/></svg><span class="btn-text">更新交易</span></button>
+          <button id="copyBalanceBtn" class="btn" type="button" onclick="copyBalance()"><svg class="icon"><use href="#i-copy"/></svg><span class="btn-text">复制余额</span></button>
+          <div id="updatedLine" class="updated-at" aria-live="polite"><span id="updatedAt"></span><span id="statusBox"></span></div>
         </div>
       </div>
-
-      <div class="address-quick-actions">
-        <button class="quick-action" type="button" onclick="copyCurrentAddress()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="9" y="9" width="11" height="11" rx="2"/>
-            <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/>
-          </svg>
-          复制地址
-        </button>
-
-        <button class="quick-action" type="button" onclick="openCurrentAddress()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 5h5v5"/>
-            <path d="M10 14 19 5"/>
-            <path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/>
-          </svg>
-          在区块链上查看
-        </button>
-      </div>
-
-      <div class="address-actions">
-        <button id="updateBalanceBtn" class="address-action-btn" type="button" onclick="updateCurrentAddress()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 6v5h-5"/>
-            <path d="M4 18v-5h5"/>
-            <path d="M6.1 9a7 7 0 0 1 11.5-2.6L20 11"/>
-            <path d="M17.9 15a7 7 0 0 1-11.5 2.6L4 13"/>
-          </svg>
-          <span class="btn-text">更新交易</span>
-        </button>
-        <button id="copyBalanceBtn" class="address-action-btn secondary" type="button" onclick="copyBalance()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="9" y="9" width="11" height="11" rx="2"/>
-            <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/>
-          </svg>
-          <span class="btn-text">复制余额</span>
-        </button>
-      </div>
-
-      <div class="address-feedback" aria-live="polite">
-        <div id="statusBox" class="status-line"></div>
-        <div id="errorBox" class="status-line error-line"></div>
-      </div>
     </div>
+  </section>
 
-    <div class="api-row" id="apiRow" style="display:none;">
-      <input id="apiKeyInput" type="hidden" autocomplete="off">
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="table-top">
-      <div class="table-title">交易</div>
-
-      <div class="table-summary">
-        <span id="firstPageBtn" class="page-btn" onclick="goFirstPage()">首页</span>
-        <span id="prevPageBtn" class="page-btn" onclick="goPrevPage()">&lt;</span>
-        <span id="pageText">1 / 1</span>
-        <span id="nextPageBtn" class="page-btn" onclick="goNextPage()">&gt;</span>
-        <span id="lastPageBtn" class="page-btn" onclick="goLastPage()">尾页</span>
-        <span id="totalText">共 0 条</span>
+  <section class="card tx-card">
+    <header class="card-head">
+      <h2 class="card-title">交易记录</h2>
+      <span id="totalText" class="card-meta">共 0 条</span>
+      <div class="seg" role="group" aria-label="交易类型">
+        <button class="seg-btn is-on" type="button" data-type="all">全部</button>
+        <button class="seg-btn" type="button" data-type="in">收入</button>
+        <button class="seg-btn" type="button" data-type="out">支出</button>
       </div>
-    </div>
+    </header>
 
-    <div class="table-scroll">
-      <table>
+    <div class="tx-scroll">
+      <table class="tx-table">
+        <colgroup>
+          <col class="c-hash"><col class="c-time"><col class="c-type"><col><col><col class="c-amt"><col class="c-rc"><col class="c-st">
+        </colgroup>
         <thead>
           <tr>
-            <th class="hash-col">交易哈希</th>
-            <th class="time-col">时间</th>
-            <th class="type-col">类型</th>
-            <th class="addr-col">输出地址</th>
-            <th class="addr-col">接收地址</th>
-            <th class="amount-col">数量</th>
-            <th class="status-col">状态</th>
+            <th>交易哈希</th>
+            <th>时间</th>
+            <th>类型</th>
+            <th>输出地址</th>
+            <th>接收地址</th>
+            <th>数量</th>
+            <th>凭证</th>
+            <th>状态</th>
           </tr>
         </thead>
-
         <tbody id="txBody">
-          <tr class="empty-row">
-            <td colspan="7" class="empty">请输入地址查询</td>
-          </tr>
+          <tr class="empty-row"><td colspan="8" class="empty">请输入地址查询</td></tr>
         </tbody>
       </table>
     </div>
-  </div>
 
+    <footer class="tx-foot">
+      <nav class="pager" aria-label="分页">
+        <button id="firstPageBtn" type="button" onclick="goToPage(1)">首页</button>
+        <button id="prevPageBtn" type="button" onclick="goToPage(currentPage - 1)" aria-label="上一页">&lt;</button>
+        <span id="pageText" class="page-no">1 / 1</span>
+        <button id="nextPageBtn" type="button" onclick="goToPage(currentPage + 1)" aria-label="下一页">&gt;</button>
+        <button id="lastPageBtn" type="button" onclick="goToPage(Infinity)">尾页</button>
+      </nav>
+    </footer>
+  </section>
+
+</main>
+
+<div id="txModal" class="tx-modal" hidden>
+  <div class="tx-modal-backdrop" data-close></div>
+  <div class="tx-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="txModalTitle">
+    <div class="tx-modal-head">
+      <h2 id="txModalTitle">交易凭证</h2>
+      <button class="icon-btn tx-modal-close" type="button" data-close aria-label="关闭"><svg class="icon"><use href="#i-x"/></svg></button>
+    </div>
+
+    <div class="tx-sheet">
+      <div class="tx-token">
+        <div id="txTokenLogo" class="tx-token-logo"></div>
+        <div><div id="txTokenName" class="tx-token-name">USDT</div><div class="tx-token-net">TRON Mainnet</div></div>
+        <span id="txResult" class="tx-result"></span>
+      </div>
+      <div id="txAmount" class="tx-sheet-amount">-</div>
+      <div class="tx-flow">
+        <div class="tx-flow-row"><span class="tx-flow-label">转出</span><span id="txFrom" class="tx-flow-addr tx-copyable" title="单击复制"></span></div>
+        <div class="tx-flow-arrow">↓</div>
+        <div class="tx-flow-row"><span class="tx-flow-label">转入</span><span id="txTo" class="tx-flow-addr tx-copyable" title="单击复制"></span></div>
+      </div>
+      <dl class="tx-fields">
+        <div><dt>哈希</dt><dd id="txHash" class="tx-copyable" title="单击复制"></dd></div>
+        <div><dt>区块</dt><dd id="txBlock">-</dd></div>
+        <div><dt>时间</dt><dd id="txTime"></dd></div>
+      </dl>
+      <div class="tx-sheet-foot">数据来自 TRON 链上记录 · 可用哈希在 tronscan.org 核验</div>
+    </div>
+
+    <div class="tx-modal-actions">
+      <button id="txOpenBtn" class="btn" type="button">在 Tronscan 查看</button>
+      <button id="txCopyImgBtn" class="btn btn-primary" type="button">复制图片</button>
+    </div>
+  </div>
 </div>
 
 <div id="toast" class="toast" role="status"></div>
@@ -1734,78 +722,78 @@
   const TRANSACTION_CACHE_PREFIX = "TRON_USDT_TRANSACTIONS_";
   const INITIAL_TRANSACTION_LIMIT = 50;
   const UPDATE_TRANSACTION_LIMIT = 50;
+  const PAGE_SIZE = 10;
+  const MAX_CACHED_TRANSACTIONS = 500;
+  const MAX_UPDATE_PAGES = 20;
+  const REQUEST_TIMEOUT_MS = 12000;
+  const RESULT_TEXT = { success: "已成功", pending: "确认中", failed: "失败" };
+  const RESULT_ICON = {
+    success: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.4"/><path d="m5.3 8.2 1.8 1.8 3.6-3.8"/></svg>',
+    pending: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.4"/><path d="M8 4.8V8l2.2 1.4"/></svg>',
+    failed: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6.4"/><path d="m5.8 5.8 4.4 4.4M10.2 5.8l-4.4 4.4"/></svg>'
+  };
+  const RESULT_COLORS = {
+    success: { bg: "#ecfdf3", fg: "#067647" },
+    pending: { bg: "#fffaeb", fg: "#b54708" },
+    failed: { bg: "#fef3f2", fg: "#b42318" }
+  };
 
   let allTransactions = [];
   let currentPage = 1;
-  const MOBILE_QUERY = window.matchMedia("(max-width: 700px)");
-  let pageSize = MOBILE_QUERY.matches ? 5 : 10;
-  const MAX_CACHED_TRANSACTIONS = 500;
-  const MAX_UPDATE_PAGES = 20;
   let currentQueryAddress = "";
   let currentBalanceValue = "";
+  let searchText = "";
+  let typeFilter = "all"; // all / in / out
 
   let activeQueryId = 0;
-  let queryBtnOwnerId = 0;
   let updateBtnOwnerId = 0;
   let copyBalanceTextTimer = null;
   let newTransactionHashes = new Set();
   let newTransactionTimer = null;
-
-  const REQUEST_TIMEOUT_MS = 12000;
+  let toastTimer = null;
+  let detailData = null;
+  let detailRequestId = 0;
+  let detailReturnFocus = null;
 
   window.addEventListener("DOMContentLoaded", () => {
     const iconLink = document.querySelector('link[rel="icon"]');
     if (iconLink) {
       document.getElementById("brandIcon").src = iconLink.href;
     }
+    initSearch();
+    initTypeFilter();
+    initShortcuts();
+    initTransactionEvents();
     updatePageText(0);
 
-    const apiKeyInput = document.getElementById("apiKeyInput");
-    const savedApiKey = localStorage.getItem("TRONGRID_API_KEY") || DEFAULT_TRONGRID_API_KEY;
-    apiKeyInput.value = savedApiKey;
-    if (!localStorage.getItem("TRONGRID_API_KEY") && DEFAULT_TRONGRID_API_KEY) {
-      localStorage.setItem("TRONGRID_API_KEY", DEFAULT_TRONGRID_API_KEY);
-    }
-    apiKeyInput.addEventListener("input", () => {
-      localStorage.setItem("TRONGRID_API_KEY", apiKeyInput.value.trim());
-    });
-
-    document.getElementById("addressInput").addEventListener("keydown", (event) => {
-      if (event.key === "Enter") queryData();
-    });
-
-    MOBILE_QUERY.addEventListener("change", () => {
-      pageSize = MOBILE_QUERY.matches ? 5 : 10;
-      currentPage = 1;
-      if (currentQueryAddress) {
-        renderTransactions(allTransactions, currentQueryAddress);
-      }
-    });
-
-    // 网址里带了地址（?address=T...）就直接查询
-    updateAddressTitle();
-    const urlAddress = getAddressFromUrl();
-    if (urlAddress) {
-      queryData(urlAddress);
+    // 打开页面时自动查询上次查过的地址（记在本浏览器里）；没有就留空，等在搜索框输入地址
+    const lastAddress = loadLastAddress();
+    if (lastAddress) {
+      queryData(lastAddress);
     } else {
-      renderEmpty("请在网址最后加上要查询的地址，例如：?T开头的地址/名字（名字可不填）");
+      renderEmpty("");
     }
   });
 
-  // 只改了网址里 # 后面的地址时页面不会刷新，这里重新查询
-  window.addEventListener("hashchange", () => {
-    updateAddressTitle();
-    const urlAddress = getAddressFromUrl();
-    if (urlAddress && urlAddress !== currentQueryAddress) {
-      queryData(urlAddress);
+  function getApiKey() {
+    try {
+      return (localStorage.getItem("TRONGRID_API_KEY") || DEFAULT_TRONGRID_API_KEY).trim();
+    } catch (err) {
+      return DEFAULT_TRONGRID_API_KEY;
     }
-  });
-
-  function setStatus(text) {
-    document.getElementById("statusBox").textContent = text || "";
   }
 
-  let toastTimer = null;
+  // 状态写在按钮下方：以“…”结尾的是进行中（只显示这句），其他的接在更新时间后面
+  function setStatus(text) {
+    const statusBox = document.getElementById("statusBox");
+    statusBox.textContent = text || "";
+    statusBox.classList.toggle("has-new", /新增/.test(text || ""));
+    document.getElementById("updatedLine").classList.toggle("is-busy", /…$/.test(text || ""));
+  }
+
+  function setError(text) {
+    document.getElementById("errorBox").textContent = text || "";
+  }
 
   function showToast(text) {
     const toast = document.getElementById("toast");
@@ -1817,40 +805,23 @@
 
   function setBalanceText(value) {
     const balanceBox = document.getElementById("balanceBox");
-    if (/^\d/.test(value)) {
-      // 余额不加千分位逗号，直接显示原始数字
-      balanceBox.innerHTML = `${escapeHtml(value)}<span class="balance-unit">USDT</span>`;
-    } else {
-      balanceBox.textContent = value;
-    }
-  }
-
-  function setError(text) {
-    document.getElementById("errorBox").textContent = text || "";
+    // 余额不加千分位逗号，直接显示原始数字；USDT 放在按钮外，鼠标移上去只高亮数字
+    balanceBox.textContent = value;
+    document.getElementById("balanceUnit").hidden = !/^\d/.test(value);
   }
 
   function setCopyBalanceChanged(changed) {
-    const copyBalanceBtn = document.getElementById("copyBalanceBtn");
-    if (!copyBalanceBtn) return;
-    copyBalanceBtn.classList.toggle("balance-updated", Boolean(changed));
+    document.getElementById("copyBalanceBtn").classList.toggle("balance-updated", Boolean(changed));
   }
 
   function setButtonLabel(buttonId, text) {
-    const button = document.getElementById(buttonId);
-    if (!button) return;
-    const label = button.querySelector(".btn-text");
-    if (label) {
-      label.textContent = text;
-    }
+    const label = document.querySelector(`#${buttonId} .btn-text`);
+    if (label) label.textContent = text;
   }
 
   function showCopyBalanceCopiedText() {
     setButtonLabel("copyBalanceBtn", "已复制");
-
-    if (copyBalanceTextTimer) {
-      clearTimeout(copyBalanceTextTimer);
-    }
-
+    if (copyBalanceTextTimer) clearTimeout(copyBalanceTextTimer);
     copyBalanceTextTimer = setTimeout(() => {
       setButtonLabel("copyBalanceBtn", "复制余额");
       copyBalanceTextTimer = null;
@@ -1871,21 +842,19 @@
       newTransactionTimer = null;
     }
     newTransactionHashes = new Set();
-
-    if (shouldRender && currentQueryAddress) {
-      renderTransactions(allTransactions, currentQueryAddress);
-    }
+    if (shouldRender) renderTransactions();
   }
 
   function showNewTransactionTags(hashes, queryId) {
     clearNewTransactionTags(false);
-
     if (!hashes.length) return;
 
     newTransactionHashes = new Set(hashes);
+    // 3 秒后“新交易”标签和按钮下方的“新增 N 笔”一起消失，只留更新时间
     newTransactionTimer = setTimeout(() => {
       if (queryId === activeQueryId) {
         clearNewTransactionTags(true);
+        if (document.getElementById("statusBox").classList.contains("has-new")) setStatus("");
       }
     }, 3000);
   }
@@ -1900,11 +869,11 @@
     return /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(address);
   }
 
-  function formatTime(timestamp) {
+  function formatTime(timestamp, sep = "/") {
     if (!timestamp) return "-";
     const date = new Date(timestamp);
     const pad = value => String(value).padStart(2, "0");
-    return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+    return `${date.getFullYear()}${sep}${pad(date.getMonth() + 1)}${sep}${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   }
 
   function formatTokenAmount(value, decimals = 6) {
@@ -1914,7 +883,7 @@
       const base = BigInt(10) ** BigInt(decimals);
       const integerPart = bigValue / base;
       const decimalPart = bigValue % base;
-      let decimalStr = decimalPart.toString().padStart(decimals, "0").replace(/0+$/, "");
+      const decimalStr = decimalPart.toString().padStart(decimals, "0").replace(/0+$/, "");
       const intStr = integerPart.toString();
       return decimalStr ? `${intStr}.${decimalStr}` : intStr;
     } catch (err) {
@@ -1922,10 +891,32 @@
     }
   }
 
+  // 交易数量：不加千分位逗号、不带正负号
+  function getTxAmount(tx) {
+    const decimals = tx.token_info && tx.token_info.decimals ? Number(tx.token_info.decimals) : 6;
+    return formatTokenAmount(tx.value, decimals);
+  }
+
+  // 写入剪贴板；旧浏览器没有剪贴板接口时用隐藏输入框复制
+  function writeClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    return new Promise((resolve, reject) => {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.style.cssText = "position:fixed;top:0;opacity:0";
+      document.body.appendChild(area);
+      area.select();
+      const ok = document.execCommand("copy");
+      area.remove();
+      if (ok) resolve();
+      else reject(new Error("复制失败"));
+    });
+  }
+
   function copyText(text) {
     if (!text || text === "-") return Promise.resolve(false);
 
-    return navigator.clipboard.writeText(text).then(() => {
+    return writeClipboard(text).then(() => {
       showToast("已复制：" + shortText(text, 8, 8));
       return true;
     }).catch(() => {
@@ -1935,8 +926,7 @@
   }
 
   function copyCurrentAddress() {
-    const address = document.getElementById("addressBox").textContent.trim();
-    copyText(address);
+    copyText(document.getElementById("addressBox").textContent.trim());
   }
 
   function copyBalance() {
@@ -1944,19 +934,158 @@
     setCopyBalanceChanged(false);
 
     copyText(currentBalanceValue).then(success => {
-      if (success) {
-        showCopyBalanceCopiedText();
-      }
+      if (success) showCopyBalanceCopiedText();
     });
   }
 
   function openCurrentAddress() {
-    const address = currentQueryAddress || document.getElementById("addressInput").value.trim();
-    if (!isTronAddress(address)) {
-      setError("请先输入或查询一个正确的 TRON 地址。 ");
+    if (!isTronAddress(currentQueryAddress)) {
+      setError("请先在上方搜索框输入 TRON 地址。");
       return;
     }
-    window.open(EXPLORER_ADDRESS_URL + address, "_blank", "noopener,noreferrer");
+    window.open(EXPLORER_ADDRESS_URL + currentQueryAddress, "_blank", "noopener,noreferrer");
+  }
+
+  // ---------- 搜索：边输入边自动筛选；粘贴完整地址或哈希立即搜索；
+  //            输入的是另一个 TRON 地址时，点“查询此地址”、按 Enter 或点“更新交易”查询该地址 ----------
+  let searchTimer = null;
+
+  function initSearch() {
+    const input = document.getElementById("searchInput");
+    input.addEventListener("input", () => {
+      clearTimeout(searchTimer);
+      updateSearchBox();
+      const value = input.value.trim();
+      // 清空、完整地址、完整哈希：立即搜索；其他（如金额）停顿一下再搜，避免每按一个键都刷新
+      if (!value || isTronAddress(value) || /^[0-9a-fA-F]{64}$/.test(value)) {
+        setSearchText(input.value);
+      } else {
+        searchTimer = setTimeout(() => setSearchText(input.value), 250);
+      }
+    });
+    input.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        // 中文输入法选字时按的回车不算搜索
+        if (event.isComposing || event.keyCode === 229) return;
+        event.preventDefault();
+        runSearch();
+      } else if (event.key === "Escape") {
+        // 阻止浏览器自带的 Esc 清空；凭证弹窗开着时 Esc 只关弹窗
+        event.preventDefault();
+        if (input.value && document.getElementById("txModal").hidden) clearSearch();
+      }
+    });
+    document.getElementById("searchGo").addEventListener("click", querySearchAddress);
+    document.getElementById("searchClear").addEventListener("click", () => {
+      clearSearch();
+      input.focus();
+    });
+  }
+
+  function runSearch() {
+    clearTimeout(searchTimer);
+    if (getSearchAddress()) {
+      querySearchAddress();
+      return;
+    }
+    setSearchText(document.getElementById("searchInput").value);
+  }
+
+  function setSearchText(text) {
+    searchText = text;
+    currentPage = 1;
+    renderTransactions();
+  }
+
+  function clearSearch() {
+    clearTimeout(searchTimer);
+    document.getElementById("searchInput").value = "";
+    setSearchText("");
+  }
+
+  function getSearchAddress() {
+    const value = document.getElementById("searchInput").value.trim();
+    return isTronAddress(value) && value !== currentQueryAddress ? value : "";
+  }
+
+  function updateSearchBox() {
+    const box = document.getElementById("searchBox");
+    box.classList.toggle("has-value", document.getElementById("searchInput").value.trim() !== "");
+    box.classList.toggle("is-address", getSearchAddress() !== "");
+  }
+
+  function querySearchAddress() {
+    const address = getSearchAddress();
+    if (!address) return;
+    clearSearch();
+    queryData(address);
+  }
+
+  // ---------- 全部 / 收入 / 支出 ----------
+  function initTypeFilter() {
+    document.querySelectorAll(".seg-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (btn.dataset.type === typeFilter) return;
+        setTypeFilter(btn.dataset.type);
+        currentPage = 1;
+        renderTransactions();
+      });
+    });
+  }
+
+  function setTypeFilter(type) {
+    typeFilter = type;
+    document.querySelectorAll(".seg-btn").forEach(btn => btn.classList.toggle("is-on", btn.dataset.type === type));
+  }
+
+  // ---------- 快捷键：R 更新交易，C 复制余额（正在输入或弹窗打开时不响应） ----------
+  function initShortcuts() {
+    document.addEventListener("keydown", event => {
+      if (event.ctrlKey || event.metaKey || event.altKey || event.repeat || event.isComposing) return;
+      if (!document.getElementById("txModal").hidden) return;
+      const target = event.target;
+      if (target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
+
+      const key = event.key.toLowerCase();
+      if (key === "r") {
+        event.preventDefault();
+        if (!document.getElementById("updateBalanceBtn").disabled) updateCurrentAddress();
+      } else if (key === "c") {
+        event.preventDefault();
+        copyBalance();
+      }
+    });
+  }
+
+  function markUpdatedTime() {
+    const now = new Date();
+    const pad = value => String(value).padStart(2, "0");
+    document.getElementById("updatedAt").textContent =
+      `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} 已更新`;
+  }
+
+  // 先按 全部 / 收入 / 支出 筛选，再按哈希、地址、金额搜索（不区分大小写）
+  function getVisibleTransactions() {
+    let list = allTransactions;
+    if (typeFilter === "in") list = list.filter(tx => tx.to === currentQueryAddress);
+    else if (typeFilter === "out") list = list.filter(tx => tx.from === currentQueryAddress);
+
+    const keyword = searchText.trim().toLowerCase();
+    if (!keyword) return list;
+    // 纯数字按金额找，只显示金额完全相等的：214 只找 214，不显示 214.5、1214；也不去哈希、地址里找数字
+    const amountKeyword = normalizeAmountKeyword(keyword);
+    if (amountKeyword) {
+      return list.filter(tx => String(getTxAmount(tx)) === amountKeyword);
+    }
+    return list.filter(tx => [getTransactionHash(tx), tx.from, tx.to].some(value => String(value || "").toLowerCase().includes(keyword)));
+  }
+
+  // 金额关键词：去掉逗号和空格（1,500.65 → 1500.65），去掉小数末尾的 0（300.00 → 300、58.20 → 58.2）；
+  // 不是纯数字（如哈希片段 9f88d3）返回空，按哈希、地址查找
+  function normalizeAmountKeyword(keyword) {
+    const text = keyword.replace(/[,，\s]/g, "");
+    if (!/^\d*\.?\d+$|^\d+\.$/.test(text)) return "";
+    return text.includes(".") ? text.replace(/0+$/, "").replace(/\.$/, "") : text;
   }
 
   function getTransactionCacheKey(address) {
@@ -1982,7 +1111,11 @@
       to: tx.to,
       value: tx.value
     };
-    if (tx.token_info && tx.token_info.decimals) slim.token_info = { decimals: tx.token_info.decimals };
+    if (tx.token_info && tx.token_info.decimals) {
+      slim.token_info = { decimals: tx.token_info.decimals };
+      if (tx.token_info.symbol) slim.token_info.symbol = tx.token_info.symbol;
+      if (tx.token_info.address) slim.token_info.address = tx.token_info.address;
+    }
     if (tx.confirmed === false) slim.confirmed = false;
     if (tx.result) slim.result = tx.result;
     return slim;
@@ -2029,12 +1162,419 @@
     );
   }
 
-  function openTransactionDetail(hash) {
-    if (!hash || hash === "-") return;
-    copyText(hash);
-    window.open(EXPLORER_TX_URL + hash, "_blank", "noopener,noreferrer");
+  // ---------- 交易凭证弹窗：点“凭证”图标打开，数据来自 TRON 链上 ----------
+  function initTransactionEvents() {
+    // 表格点击：凭证图标打开弹窗；哈希、地址、数量单击复制（哈希同时在新标签页打开 Tronscan）
+    document.getElementById("txBody").addEventListener("click", event => {
+      const receipt = event.target.closest("[data-receipt]");
+      if (receipt) {
+        openTransactionDetail(receipt.dataset.receipt);
+        return;
+      }
+      const item = event.target.closest("[data-copy], [data-address]");
+      if (item) copyText(item.dataset.copy || item.dataset.address);
+    });
+
+    document.querySelectorAll("#txModal [data-close]").forEach(item => item.addEventListener("click", closeTransactionDetail));
+    document.getElementById("txCopyImgBtn").addEventListener("click", copyTransactionImage);
+    document.getElementById("txOpenBtn").addEventListener("click", () => {
+      if (detailData) window.open(EXPLORER_TX_URL + detailData.hash, "_blank", "noopener,noreferrer");
+    });
+    ["txFrom", "txTo", "txHash"].forEach(id => {
+      document.getElementById(id).addEventListener("click", event => copyText(event.target.textContent.trim()));
+    });
+    // 弹窗开着时：Esc 关闭；Tab 只在弹窗的按钮之间切换
+    document.addEventListener("keydown", event => {
+      const modal = document.getElementById("txModal");
+      if (modal.hidden) return;
+      if (event.key === "Escape") {
+        closeTransactionDetail();
+      } else if (event.key === "Tab") {
+        event.preventDefault();
+        const buttons = [...modal.querySelectorAll("button")];
+        const index = buttons.indexOf(document.activeElement);
+        const step = event.shiftKey ? -1 : 1;
+        const next = index === -1 ? (step > 0 ? 0 : buttons.length - 1) : (index + step + buttons.length) % buttons.length;
+        buttons[next].focus();
+      }
+    });
   }
 
+  function openTransactionDetail(hash) {
+    if (!hash || hash === "-") return;
+    const tx = allTransactions.find(item => getTransactionHash(item) === hash);
+    if (!tx) {
+      window.open(EXPLORER_TX_URL + hash, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    detailData = {
+      hash,
+      from: tx.from || "-",
+      to: tx.to || "-",
+      amount: getTxAmount(tx),
+      isIn: tx.to === currentQueryAddress,
+      timestamp: Number(tx.block_timestamp),
+      result: isConfirmedTx(tx) ? "success" : "pending",
+      block: "",
+      symbol: getTxSymbol(tx),
+      contract: getTxContract(tx)
+    };
+    renderTransactionDetail();
+    loadImageFonts();
+    detailReturnFocus = document.activeElement;
+    document.getElementById("txModal").hidden = false;
+    document.querySelector(".tx-modal-close").focus();
+
+    // 区块号和执行结果需要再查一次
+    const requestId = ++detailRequestId;
+    queryTransactionInfo(hash).then(info => {
+      if (requestId !== detailRequestId || !detailData || !info) return;
+      if (info.blockNumber) detailData.block = String(info.blockNumber);
+      if (Object.keys(info).length) {
+        const failed = info.result === "FAILED" || (info.receipt && info.receipt.result && info.receipt.result !== "SUCCESS");
+        detailData.result = failed ? "failed" : "success";
+      }
+      renderTransactionDetail();
+    }).catch(() => {});
+  }
+
+  function closeTransactionDetail() {
+    document.getElementById("txModal").hidden = true;
+    detailData = null;
+    detailRequestId++;
+    // 焦点还给打开弹窗的按钮（表格重绘过就不管了）
+    if (detailReturnFocus && detailReturnFocus.isConnected) detailReturnFocus.focus();
+    detailReturnFocus = null;
+  }
+
+  function queryTransactionInfo(hash) {
+    return requestJson(TRONGRID_BASE + "/wallet/gettransactioninfobyid", 0, { value: hash });
+  }
+
+
+  // ---------- 币种标识：按交易实际的币种（合约地址）显示官方图标 ----------
+  // 图标来自 Trust Wallet 公开的币种图标库；USDT 和 TRON 内置在页面里，其他币种按合约地址在线加载，加载不到显示首字母
+  const TRON_LOGO = "data:image/png;base64,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";
+  const TOKEN_LOGOS = {
+    [USDT_CONTRACT]: "data:image/png;base64,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"
+  };
+
+  function getTxSymbol(tx) {
+    const symbol = tx && tx.token_info && tx.token_info.symbol;
+    return symbol ? String(symbol).toUpperCase() : "USDT";
+  }
+
+  // 本页只查 USDT，没有合约地址时按 USDT 处理
+  function getTxContract(tx) {
+    return (tx && tx.token_info && tx.token_info.address) || USDT_CONTRACT;
+  }
+
+  function getTokenLogoUrl(contract) {
+    return TOKEN_LOGOS[contract]
+      || `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tron/assets/${encodeURIComponent(contract)}/logo.png`;
+  }
+
+  function getTokenLetterSvg(symbol) {
+    return `<svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="18" fill="#667085"/>` +
+      `<text x="18" y="23.5" text-anchor="middle" fill="#fff" font-size="16" font-weight="600" font-family="Arial, sans-serif">${escapeHtml(symbol.charAt(0))}</text></svg>`;
+  }
+
+  function renderTokenLogo(box, data) {
+    box.innerHTML = `<img class="coin" alt="${escapeHtml(data.symbol)}" src="${getTokenLogoUrl(data.contract)}">` +
+      `<img class="chain" alt="TRON" src="${TRON_LOGO}">`;
+    box.querySelector(".coin").addEventListener("error", event => {
+      event.target.outerHTML = getTokenLetterSvg(data.symbol);
+    }, { once: true });
+  }
+
+  function loadImage(src) {
+    return new Promise(resolve => {
+      const img = new Image();
+      if (!src.startsWith("data:")) img.crossOrigin = "anonymous";
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = src;
+      setTimeout(() => resolve(null), 3000);
+    });
+  }
+
+  // 画图前先把币种图标和 TRON 图标加载好
+  async function loadTokenImages(data) {
+    const [coin, chain] = await Promise.all([loadImage(getTokenLogoUrl(data.contract)), loadImage(TRON_LOGO)]);
+    return { coin, chain };
+  }
+
+  // 在图片上画右上角的状态标签（right 是右边缘，cy 是垂直中心）
+  function drawResultPill(ctx, right, cy, result, text, fontFamily) {
+    const colors = RESULT_COLORS[result] || RESULT_COLORS.pending;
+    ctx.save();
+    ctx.font = `500 13px ${fontFamily}`;
+    const textWidth = ctx.measureText(text).width;
+    const h = 26, w = textWidth + 40, x = right - w, y = cy - h / 2;
+    ctx.fillStyle = colors.bg;
+    ctx.beginPath();
+    ctx.moveTo(x + h / 2, y);
+    ctx.arc(x + w - h / 2, cy, h / 2, -Math.PI / 2, Math.PI / 2);
+    ctx.arc(x + h / 2, cy, h / 2, Math.PI / 2, Math.PI * 1.5);
+    ctx.fill();
+    // 图标：圆圈 + 勾 / 时钟 / 叉
+    const ix = x + 17, iy = cy;
+    ctx.strokeStyle = colors.fg;
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    ctx.arc(ix, iy, 6, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    if (result === "success") {
+      ctx.moveTo(ix - 2.6, iy + 0.2); ctx.lineTo(ix - 0.8, iy + 2); ctx.lineTo(ix + 2.8, iy - 1.8);
+    } else if (result === "failed") {
+      ctx.moveTo(ix - 2.2, iy - 2.2); ctx.lineTo(ix + 2.2, iy + 2.2);
+      ctx.moveTo(ix + 2.2, iy - 2.2); ctx.lineTo(ix - 2.2, iy + 2.2);
+    } else {
+      ctx.moveTo(ix, iy - 3.2); ctx.lineTo(ix, iy); ctx.lineTo(ix + 2.2, iy + 1.4);
+    }
+    ctx.stroke();
+    ctx.fillStyle = colors.fg;
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x + 28, cy + 0.5);
+    ctx.restore();
+  }
+
+  // 在图片上画币种图标（36×36，x、y 是左上角），右下角叠 TRON 小图标
+  function drawTokenLogo(ctx, x, y, symbol, images) {
+    ctx.save();
+    if (images && images.coin) {
+      ctx.drawImage(images.coin, x, y, 36, 36);
+    } else {
+      ctx.fillStyle = "#667085";
+      ctx.beginPath();
+      ctx.arc(x + 18, y + 18, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.font = "600 16px Arial, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(symbol.charAt(0), x + 18, y + 23.5);
+    }
+    if (images && images.chain) {
+      // 白色描边圈，让小图标和币种图标分开
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(x + 31.5, y + 30.5, 9.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.drawImage(images.chain, x + 23.5, y + 22.5, 16, 16);
+    }
+    ctx.restore();
+  }
+
+  function getDetailTexts(data) {
+    return {
+      result: RESULT_TEXT[data.result],
+      // 只显示准确的交易时间，不显示“几天前”
+      time: formatTime(data.timestamp, "-")
+    };
+  }
+
+  function renderTransactionDetail() {
+    const data = detailData;
+    if (!data) return;
+    const texts = getDetailTexts(data);
+    const amountBox = document.getElementById("txAmount");
+    amountBox.className = "tx-sheet-amount " + (data.isIn ? "is-in" : "is-out");
+    amountBox.innerHTML = `${escapeHtml(data.amount)}<span class="unit">${escapeHtml(data.symbol)}</span>`;
+    document.getElementById("txTokenName").textContent = data.symbol;
+    renderTokenLogo(document.getElementById("txTokenLogo"), data);
+    document.getElementById("txFrom").textContent = data.from;
+    document.getElementById("txTo").textContent = data.to;
+    document.getElementById("txHash").textContent = data.hash;
+    const result = document.getElementById("txResult");
+    result.innerHTML = RESULT_ICON[data.result] + `<span>${texts.result}</span>`;
+    result.className = "tx-result" + (data.result === "success" ? "" : " is-" + data.result);
+    document.getElementById("txBlock").textContent = data.block || "-";
+    document.getElementById("txTime").textContent = texts.time;
+  }
+
+  // 画图前先把要用到的字体加载好，图片里的字和网页上一致（最多等 1.5 秒，超时就用系统字体）
+  function loadImageFonts() {
+    if (!document.fonts || !document.fonts.load) return Promise.resolve();
+    const text = "交易凭证转出转入哈希结果区块时间数据来自链上记录可用在核验已成功确认中失败" + document.title +
+      " 0123456789.-:·↓✓✕USDTabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const jobs = ["400 13px", "500 15px", "600 38px"].map(font => document.fonts.load(`${font} "HL Sans"`, text));
+    return Promise.race([Promise.all(jobs), new Promise(resolve => setTimeout(resolve, 1500))]).catch(() => {});
+  }
+
+  // 把交易凭证画成一张图片（PNG）
+  function drawTransactionImage(data, images) {
+    const texts = getDetailTexts(data);
+    const scale = 2;
+    const width = 600;
+    const pad = 36;
+    const sans = '"HL Sans", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif';
+    const numFont = sans;
+    const valueX = pad + 64;
+    const valueWidth = width - valueX - pad;
+
+    const measureCanvas = document.createElement("canvas").getContext("2d");
+    const wrap = (text, font, maxWidth) => {
+      measureCanvas.font = font;
+      const lines = [];
+      let line = "";
+      for (const char of text) {
+        if (measureCanvas.measureText(line + char).width > maxWidth && line) {
+          lines.push(line);
+          line = char;
+        } else {
+          line += char;
+        }
+      }
+      if (line) lines.push(line);
+      return lines;
+    };
+
+    const valueFont = `500 15px ${sans}`;
+    const fromLines = wrap(data.from, valueFont, valueWidth);
+    const toLines = wrap(data.to, valueFont, valueWidth);
+    const hashLines = wrap(data.hash, valueFont, valueWidth);
+    const lineHeight = 22;
+    const flowHeight = 24 + (fromLines.length + toLines.length) * lineHeight + 26;
+    const rowsHeight = (hashLines.length * lineHeight + 22) + 2 * (lineHeight + 22);
+    const height = pad + 26 + 72 + 18 + flowHeight + 10 + rowsHeight + 52 + pad - 10;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+    ctx.textBaseline = "alphabetic";
+
+    const roundRect = (x, y, w, h, r) => {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    };
+
+    ctx.fillStyle = "#f3f5f8";
+    ctx.fillRect(0, 0, width, height);
+    roundRect(12, 12, width - 24, height - 24, 18);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+    ctx.strokeStyle = "#e4e8ef";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // 左上角：币种图标 + 币种名 + 网络；右上角：交易凭证 / 页面名
+    let y = pad + 14;
+    drawTokenLogo(ctx, pad, pad - 6, data.symbol, images);
+    ctx.fillStyle = "#142039";
+    ctx.font = `600 16px ${sans}`;
+    ctx.fillText(data.symbol, pad + 48, pad + 9);
+    ctx.fillStyle = "#8590a2";
+    ctx.font = `12px ${sans}`;
+    ctx.fillText("TRON Mainnet", pad + 48, pad + 26);
+    drawResultPill(ctx, width - pad, pad + 12, data.result, texts.result, sans);
+
+    y += 66;
+    ctx.font = `600 38px ${numFont}`;
+    ctx.fillStyle = data.isIn ? "#079455" : "#d92d20";
+    ctx.fillText(data.amount, pad, y);
+    const amountWidth = ctx.measureText(data.amount).width;
+    ctx.font = `500 16px ${numFont}`;
+    ctx.fillStyle = "#8590a2";
+    ctx.fillText(data.symbol, pad + amountWidth + 8, y);
+
+    y += 22;
+    roundRect(pad, y, width - pad * 2, flowHeight, 10);
+    ctx.fillStyle = "#f8fafc";
+    ctx.fill();
+    let flowY = y + 30;
+    const drawFlowLines = (label, lines) => {
+      ctx.font = `13px ${sans}`;
+      ctx.fillStyle = "#8590a2";
+      ctx.fillText(label, pad + 16, flowY);
+      ctx.font = valueFont;
+      ctx.fillStyle = "#142039";
+      lines.forEach((line, index) => ctx.fillText(line, valueX, flowY + index * lineHeight));
+      flowY += lines.length * lineHeight;
+    };
+    drawFlowLines("转出", fromLines);
+    ctx.font = `13px ${sans}`;
+    ctx.fillStyle = "#8590a2";
+    ctx.fillText("↓", pad + 18, flowY + 2);
+    flowY += 26;
+    drawFlowLines("转入", toLines);
+
+    y += flowHeight + 10;
+    const drawRow = (label, lines, color, isFirst) => {
+      if (!isFirst) {
+        ctx.fillStyle = "#eef1f5";
+        ctx.fillRect(pad, y, width - pad * 2, 1);
+      }
+      const baseY = y + 30;
+      ctx.font = `13px ${sans}`;
+      ctx.fillStyle = "#8590a2";
+      ctx.fillText(label, pad, baseY);
+      ctx.font = valueFont;
+      ctx.fillStyle = color;
+      lines.forEach((line, index) => ctx.fillText(line, valueX, baseY + index * lineHeight));
+      y += lines.length * lineHeight + 22;
+    };
+    drawRow("哈希", hashLines, "#142039", true);
+    drawRow("区块", [data.block || "-"], "#142039");
+    drawRow("时间", [texts.time], "#142039");
+
+    ctx.fillStyle = "#eef1f5";
+    ctx.fillRect(pad, y + 6, width - pad * 2, 1);
+    ctx.font = `12px ${sans}`;
+    ctx.fillStyle = "#98a2b3";
+    ctx.fillText("数据来自 TRON 链上记录 · 可用哈希在 tronscan.org 核验", pad, y + 32);
+
+    return canvas;
+  }
+
+  async function getTransactionImageBlob() {
+    const [, images] = await Promise.all([loadImageFonts(), loadTokenImages(detailData)]);
+    return new Promise((resolve, reject) => {
+      drawTransactionImage(detailData, images).toBlob(blob => (blob ? resolve(blob) : reject(new Error("生成图片失败"))), "image/png");
+    });
+  }
+
+  async function saveTransactionImage() {
+    if (!detailData) return;
+    try {
+      const blob = await getTransactionImageBlob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `tx-${detailData.hash.slice(0, 8)}.png`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    } catch (err) {
+      showToast("保存图片失败");
+    }
+  }
+
+  async function copyTransactionImage() {
+    if (!detailData) return;
+    let blob;
+    try {
+      blob = await getTransactionImageBlob();
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      showToast("图片已复制，可以直接粘贴");
+    } catch (err) {
+      // 不支持复制图片（如部分手机浏览器）：改为保存图片
+      if (blob) await saveTransactionImage();
+      showToast("当前浏览器不能复制图片，已保存图片");
+    }
+  }
+
+  // ---------- 请求 TronGrid ----------
   function buildUrl(path, params = {}) {
     const url = new URL(TRONGRID_BASE + path);
     Object.entries(params).forEach(([key, value]) => {
@@ -2046,10 +1586,12 @@
     return url.toString();
   }
 
-  async function requestJson(url, retryTimes = 2) {
-    const apiKey = document.getElementById("apiKeyInput").value.trim();
+  // 默认 GET；传了 body 就用 POST 发 JSON
+  async function requestJson(url, retryTimes = 2, body = null) {
+    const apiKey = getApiKey();
     const headers = { "Accept": "application/json" };
     if (apiKey) headers["TRON-PRO-API-KEY"] = apiKey;
+    if (body) headers["Content-Type"] = "application/json";
 
     let lastError = null;
 
@@ -2059,8 +1601,9 @@
 
       try {
         const response = await fetch(url, {
-          method: "GET",
+          method: body ? "POST" : "GET",
           headers,
+          body: body ? JSON.stringify(body) : undefined,
           cache: "no-store",
           signal: controller.signal
         });
@@ -2089,8 +1632,7 @@
   }
 
   async function queryBalance(address) {
-    const url = buildUrl(`/v1/accounts/${address}`);
-    const data = await requestJson(url);
+    const data = await requestJson(buildUrl(`/v1/accounts/${address}`));
     let balance = "0";
 
     if (data && data.data && data.data.length > 0) {
@@ -2142,29 +1684,35 @@
     });
   }
 
+  // ---------- 交易列表 ----------
   function renderEmpty(text) {
-    document.getElementById("txBody").innerHTML = `<tr class="empty-row"><td colspan="7" class="empty">${text}</td></tr>`;
+    updateSearchBox();
+    document.getElementById("txBody").innerHTML = `<tr class="empty-row"><td colspan="8" class="empty">${text}</td></tr>`;
   }
 
   function updatePageText(total) {
-    const totalPage = Math.max(1, Math.ceil(total / pageSize));
+    const totalPage = Math.max(1, Math.ceil(total / PAGE_SIZE));
     if (currentPage > totalPage) currentPage = totalPage;
 
     document.getElementById("pageText").textContent = `${currentPage} / ${totalPage}`;
-    document.getElementById("totalText").textContent = `共 ${total} 条`;
+    document.getElementById("totalText").textContent = (searchText.trim() || typeFilter !== "all") && currentQueryAddress
+      ? `匹配 ${total} / ${allTransactions.length} 条`
+      : `共 ${total} 条`;
 
     const isFirst = currentPage <= 1;
     const isLast = currentPage >= totalPage;
-    togglePageBtn("firstPageBtn", isFirst);
-    togglePageBtn("prevPageBtn", isFirst);
-    togglePageBtn("nextPageBtn", isLast);
-    togglePageBtn("lastPageBtn", isLast);
+    document.getElementById("firstPageBtn").disabled = isFirst;
+    document.getElementById("prevPageBtn").disabled = isFirst;
+    document.getElementById("nextPageBtn").disabled = isLast;
+    document.getElementById("lastPageBtn").disabled = isLast;
   }
 
-  function togglePageBtn(id, disabled) {
-    const btn = document.getElementById(id);
-    if (disabled) btn.classList.add("page-disabled");
-    else btn.classList.remove("page-disabled");
+  function goToPage(page) {
+    const totalPage = Math.max(1, Math.ceil(getVisibleTransactions().length / PAGE_SIZE));
+    const target = Math.min(Math.max(1, page), totalPage);
+    if (!currentQueryAddress || target === currentPage) return;
+    currentPage = target;
+    renderTransactions();
   }
 
   function escapeHtml(text) {
@@ -2177,120 +1725,65 @@
     }[char]));
   }
 
-  function getAddressClass(rowAddress, searchAddress) {
-    return rowAddress === searchAddress ? "addr-self" : "addr-other";
-  }
-
   function isConfirmedTx(tx) {
     if (tx.confirmed === false) return false;
     if (tx.result && String(tx.result).toUpperCase() !== "SUCCESS") return false;
     return true;
   }
 
-  function renderTransactions(txs, address) {
-    const txBody = document.getElementById("txBody");
-    txBody.innerHTML = "";
+  // 列顺序：交易哈希 | 时间 | 类型 | 输出地址 | 接收地址 | 数量 | 凭证 | 状态
+  function buildTransactionRow(tx, address) {
+    const hash = getTransactionHash(tx) || "-";
+    const from = tx.from || "-";
+    const to = tx.to || "-";
+    const amount = escapeHtml(getTxAmount(tx));
+    const isIn = to === address;
+    const isNew = newTransactionHashes.has(hash);
+    const [tagClass, tagText] = isNew ? ["tag-new", "新交易"] : isConfirmedTx(tx) ? ["tag-ok", "已确认"] : ["tag-wait", "待确认"];
+    const safeHash = escapeHtml(hash);
+    // 地址用 ::before 显示 data-address（find-hidden-address），点击复制
+    const addressCell = (cellClass, label, value) => {
+      const safe = escapeHtml(value);
+      return `<td class="${cellClass}" data-label="${label}"><span class="addr find-hidden-address${value === address ? " is-self" : ""}" data-address="${safe}" title="${safe}"></span></td>`;
+    };
+
+    return `<tr${isNew ? ' class="is-new"' : ""}>
+      <td class="td-hash"><a class="hash" href="${EXPLORER_TX_URL}${safeHash}" target="_blank" rel="noopener noreferrer" data-copy="${safeHash}" title="复制哈希并在 Tronscan 查看">${escapeHtml(shortText(hash, 6, 6))}</a></td>
+      <td class="td-time">${escapeHtml(formatTime(tx.block_timestamp))}</td>
+      <td class="td-type"><span class="type ${isIn ? "type-in" : "type-out"}">${isIn ? "接收" : "发送"}</span></td>
+      ${addressCell("td-from", "输出地址", from)}
+      ${addressCell("td-to", "接收地址", to)}
+      <td class="td-amt"><span class="amt ${isIn ? "amt-in" : "amt-out"}${amount.length > 11 ? " amt-long" : ""}${amount.length > 13 ? " amt-xlong" : ""}" data-copy="${amount}" title="点击复制">${amount}</span></td>
+      <td class="td-rc"><button class="icon-btn rc-btn" type="button" data-receipt="${safeHash}" title="交易凭证" aria-label="交易凭证"><svg class="icon"><use href="#i-receipt"/></svg></button></td>
+      <td class="td-st"><span class="tag ${tagClass}">${tagText}</span></td>
+    </tr>`;
+  }
+
+  // 按当前搜索词筛选后分页显示，每页 10 条
+  function renderTransactions() {
+    updateSearchBox();
+    if (!currentQueryAddress) return;
+
+    const txs = getVisibleTransactions();
+    updatePageText(txs.length);
 
     if (!txs.length) {
-      renderEmpty("暂无 USDT 交易记录");
-      updatePageText(0);
+      if (!allTransactions.length) renderEmpty("暂无 USDT 交易记录");
+      else if (searchText.trim()) renderEmpty(getSearchAddress() ? "没有匹配的交易，按 Enter 查询这个地址" : "没有匹配的交易");
+      else renderEmpty(typeFilter === "in" ? "暂无收入记录" : "暂无支出记录");
       return;
     }
 
-    const startIndex = (currentPage - 1) * pageSize;
-    const pageData = txs.slice(startIndex, startIndex + pageSize);
-
-    pageData.forEach(tx => {
-      const time = formatTime(tx.block_timestamp);
-      const hash = tx.transaction_id || tx.transactionId || tx.hash || "-";
-      const from = tx.from || "-";
-      const to = tx.to || "-";
-      const decimals = tx.token_info && tx.token_info.decimals ? Number(tx.token_info.decimals) : 6;
-      const amount = formatTokenAmount(tx.value, decimals);
-      const isIn = to === address;
-      const amountClass = isIn ? "amount-in" : "amount-out";
-      const typeClass = isIn ? "type-in" : "type-out";
-      const typeText = isIn ? "接收 ↓" : "发送 ↑";
-      const fromClass = getAddressClass(from, address);
-      const toClass = getAddressClass(to, address);
-      const confirmed = isConfirmedTx(tx);
-      const isNewTransaction = newTransactionHashes.has(hash);
-      const tag = isNewTransaction
-        ? `<span class="status-tag new-tx-tag">新交易</span>`
-        : confirmed
-          ? `<span class="status-tag ok-tag">已确认</span>`
-          : `<span class="status-tag pending-tag">待确认</span>`;
-
-      const row = document.createElement("tr");
-      if (isNewTransaction) row.className = "row-new";
-      const [datePart, clockPart = ""] = time.split(" ");
-      const safeHash = escapeHtml(hash);
-      const safeShortHash = escapeHtml(shortText(hash, 6, 6));
-      const safeFrom = escapeHtml(from);
-      const safeTo = escapeHtml(to);
-      const safeTime = `<span class="time-date">${escapeHtml(datePart)}</span> <span class="time-clock">${escapeHtml(clockPart)}</span>`;
-      // 数量不加千分位逗号；点击复制纯数字（不带 +/− 号）
-      const safeAmount = escapeHtml(amount);
-      const amountArg = JSON.stringify(amount);
-      const safeTypeText = escapeHtml(typeText);
-      const hashArg = JSON.stringify(hash);
-      const fromArg = JSON.stringify(from);
-      const toArg = JSON.stringify(to);
-
-      row.innerHTML = `
-        <td class="hash-col">
-          <span class="hash-text" title="${safeHash}" onclick='openTransactionDetail(${hashArg})'>
-            ${safeShortHash}
-          </span>
-        </td>
-        <td class="time-col">${safeTime}</td>
-        <td class="type-col"><span class="type-tag ${typeClass}">${safeTypeText}</span></td>
-        <td class="addr-col"><span class="addr-full ${fromClass} find-hidden-address" data-address="${safeFrom}" title="${safeFrom}" onclick='copyText(${fromArg})'></span></td>
-        <td class="addr-col"><span class="addr-full ${toClass} find-hidden-address" data-address="${safeTo}" title="${safeTo}" onclick='copyText(${toArg})'></span></td>
-        <td class="amount-col ${amountClass}"><span class="amount-value copy-amount" title="点击复制 ${escapeHtml(amount)}" onclick='copyText(${amountArg})'>${safeAmount}</span></td>
-        <td class="status-col">${tag}</td>
-      `;
-      txBody.appendChild(row);
-    });
-
-    updatePageText(txs.length);
-  }
-
-  function goFirstPage() {
-    if (!allTransactions.length || currentPage === 1) return;
-    currentPage = 1;
-    renderTransactions(allTransactions, currentQueryAddress);
-  }
-
-  function goPrevPage() {
-    if (!allTransactions.length || currentPage <= 1) return;
-    currentPage--;
-    renderTransactions(allTransactions, currentQueryAddress);
-  }
-
-  function goNextPage() {
-    if (!allTransactions.length) return;
-    const totalPage = Math.ceil(allTransactions.length / pageSize);
-    if (currentPage >= totalPage) return;
-    currentPage++;
-    renderTransactions(allTransactions, currentQueryAddress);
-  }
-
-  function goLastPage() {
-    if (!allTransactions.length) return;
-    const totalPage = Math.ceil(allTransactions.length / pageSize);
-    if (currentPage === totalPage) return;
-    currentPage = totalPage;
-    renderTransactions(allTransactions, currentQueryAddress);
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    document.getElementById("txBody").innerHTML = txs.slice(startIndex, startIndex + PAGE_SIZE)
+      .map(tx => buildTransactionRow(tx, currentQueryAddress)).join("");
   }
 
   async function refreshOnce(address, queryId, cachedTransactions = [], silent = false, trackBalanceChange = false, previousBalanceValue = "", trackNewTransactions = false) {
     if (queryId !== activeQueryId) return 0;
 
     if (!silent) {
-      setStatus(cachedTransactions.length
-        ? "正在更新余额和最新交易记录..."
-        : "正在查询余额和最近 50 笔交易记录...");
+      setStatus(cachedTransactions.length ? "更新中…" : "查询中…");
     }
 
     const minTimestamp = getLatestTransactionTimestamp(cachedTransactions);
@@ -2315,11 +1808,11 @@
       if (addedCount > 0) currentPage = 1;
       saveTransactionCache(address, allTransactions);
       showNewTransactionTags(newHashes, queryId);
-      renderTransactions(allTransactions, currentQueryAddress);
+      renderTransactions();
     } else if (cachedTransactions.length) {
       allTransactions = cachedTransactions;
       currentQueryAddress = address;
-      renderTransactions(allTransactions, currentQueryAddress);
+      renderTransactions();
     }
 
     const balanceResult = await balancePending;
@@ -2343,72 +1836,29 @@
     return addedCount;
   }
 
-  // 把当前查询的地址写到网址最后（?address=...），不刷新页面
-  function setAddressInUrl(address) {
-    // 网址里已经是这个地址就不改写，保留手动输入的样子（包括后面的名字）
-    if (address && getAddressFromUrl() === address) return;
+  // ---------- 记住上次查询的地址（每个页面分开记） ----------
+  const LAST_ADDRESS_KEY = "LAST_QUERY_ADDRESS:" + location.pathname;
+
+  function loadLastAddress() {
     try {
-      const url = new URL(window.location.href);
-      if (address) {
-        url.search = "";
-        url.hash = "";
-        url.searchParams.set("address", address);
-      } else {
-        url.searchParams.delete("address");
-      }
-      history.replaceState(null, "", url.toString());
+      const address = (localStorage.getItem(LAST_ADDRESS_KEY) || "").trim();
+      return isTronAddress(address) ? address : "";
+    } catch (err) {
+      return "";
+    }
+  }
+
+  function saveLastAddress(address) {
+    try {
+      localStorage.setItem(LAST_ADDRESS_KEY, address);
     } catch (err) {}
   }
 
-  // 读取网址最后的“地址/名字”：支持 #T.../名字、?address=T.../名字、?T.../名字（# 优先）
-  function getUrlTarget() {
-    let raw = "";
-    try {
-      const url = new URL(window.location.href);
-      const decode = text => {
-        try {
-          return decodeURIComponent(text);
-        } catch (err) {
-          return text;
-        }
-      };
-      raw = decode(url.hash.slice(1)).trim()
-        || (url.searchParams.get("address") || "").trim();
-      if (!raw) {
-        const search = decode(url.search.slice(1).split("&")[0]).trim();
-        raw = search.includes("=") ? "" : search;
-      }
-    } catch (err) {}
-
-    const slashIndex = raw.indexOf("/");
-    if (slashIndex === -1) return { address: raw, name: "" };
-    return {
-      address: raw.slice(0, slashIndex).trim(),
-      name: raw.slice(slashIndex + 1).trim()
-    };
-  }
-
-  function getAddressFromUrl() {
-    return getUrlTarget().address;
-  }
-
-  // 网址里写了名字就显示“地址信息 - 名字”，没写只显示“地址信息”
-  function updateAddressTitle() {
-    const name = getUrlTarget().name;
-    document.getElementById("addressTitle").textContent = name ? `地址信息 - ${name}` : "地址信息";
-  }
-
+  // ---------- 查询 / 更新 ----------
   async function queryData(addressOverride) {
-    const queryBtn = document.getElementById("queryBtn");
-    const addressInput = document.getElementById("addressInput");
-    // 搜索框为空时，“查询/刷新”就刷新当前地址
-    const address = (typeof addressOverride === "string" ? addressOverride : addressInput.value.trim()) || currentQueryAddress;
+    const address = (typeof addressOverride === "string" ? addressOverride.trim() : "") || currentQueryAddress;
     activeQueryId++;
     const queryId = activeQueryId;
-
-    queryBtnOwnerId = queryId;
-    queryBtn.disabled = true;
-    queryBtn.textContent = "查询中";
 
     setStatus("");
     setError("");
@@ -2422,13 +1872,18 @@
         currentPage = 1;
         currentQueryAddress = "";
         currentBalanceValue = "";
-        setAddressInUrl("");
         document.getElementById("addressBox").textContent = address || "-";
-        document.getElementById("balanceBox").textContent = "-";
+        setBalanceText("-");
         updatePageText(0);
         renderEmpty("请输入正确的 TRON 地址");
-        setError("地址格式不正确，TRON 地址一般是 T 开头的 34 位地址。 ");
+        setError("地址格式不正确，TRON 地址一般是 T 开头的 34 位地址。");
         return;
+      }
+
+      // 换了地址：筛选回到“全部”，清掉上一个地址的更新时间
+      if (address !== currentQueryAddress) {
+        setTypeFilter("all");
+        document.getElementById("updatedAt").textContent = "";
       }
 
       const cachedTransactions = loadTransactionCache(address);
@@ -2436,51 +1891,54 @@
       currentPage = 1;
       currentQueryAddress = address;
       currentBalanceValue = "";
-
-      // 搜索框不再保留地址，地址改为显示在网址最后
-      addressInput.value = "";
-      setAddressInUrl(address);
+      saveLastAddress(address);
 
       document.getElementById("addressBox").textContent = address;
-      document.getElementById("balanceBox").textContent = "-";
+      setBalanceText("-");
 
       if (cachedTransactions.length) {
-        renderTransactions(cachedTransactions, address);
+        renderTransactions();
       } else {
         updatePageText(0);
         renderEmpty("正在查询...");
       }
 
       await refreshOnce(address, queryId, cachedTransactions, false);
-      setStatus(cachedTransactions.length
-        ? "余额和最新交易记录已更新。 "
-        : "查询完成，交易记录已保存到当前浏览器。 ");
+      if (queryId !== activeQueryId) return;
+      markUpdatedTime();
+      setStatus("");
     } catch (err) {
+      if (queryId !== activeQueryId) return;
       if (!allTransactions.length) {
-        document.getElementById("balanceBox").textContent = "-";
+        setBalanceText("-");
         currentBalanceValue = "";
         renderEmpty("查询失败");
       }
       setStatus("");
+      showRequestError("查询失败：", err);
+    }
+  }
 
-      const message = err && err.message ? err.message : String(err);
-      if (message.includes("429") || message.includes("限流")) {
-        setError("请求过快，触发 429 限流。请稍后再点 查询/刷新。 ");
-      } else {
-        setError("查询失败：" + message + "。请稍后再试。 ");
-      }
-    } finally {
-      if (queryId === queryBtnOwnerId) {
-        queryBtn.disabled = false;
-        queryBtn.textContent = "查询/刷新";
-      }
+  // 429 限流单独提示；其他错误去掉结尾句号再加“请稍后再试”，避免重复
+  function showRequestError(prefix, err) {
+    const message = err && err.message ? err.message : String(err);
+    if (message.includes("429") || message.includes("限流")) {
+      setError("请求过快，触发 429 限流。请稍后再点 更新交易。");
+    } else {
+      setError(prefix + message.replace(/[。.]$/, "") + "。请稍后再试。");
     }
   }
 
   async function updateCurrentAddress() {
     const updateBtn = document.getElementById("updateBalanceBtn");
-    // 搜索框查询后会清空，所以更新的是当前正在查看的地址
-    const address = currentQueryAddress || document.getElementById("addressInput").value.trim();
+    // 更新的是当前正在查看的地址
+    const address = currentQueryAddress;
+
+    // 搜索框里填的是另一个地址：直接查询这个地址
+    if (getSearchAddress()) {
+      querySearchAddress();
+      return;
+    }
 
     setStatus("");
     setError("");
@@ -2489,7 +1947,7 @@
     clearNewTransactionTags(false);
 
     if (!isTronAddress(address)) {
-      setError("请先输入或查询一个正确的 TRON 地址。 ");
+      setError("请先在上方搜索框输入 TRON 地址。");
       return;
     }
 
@@ -2502,16 +1960,12 @@
     setButtonLabel("updateBalanceBtn", "更新中");
 
     // 以页面上已经显示的交易为基础更新，列表保持不动，查到新交易再加到最上方
-    const showingThisAddress = currentQueryAddress === address && allTransactions.length > 0;
-    const cachedTransactions = showingThisAddress ? allTransactions : loadTransactionCache(address);
-
-    if (!showingThisAddress) {
+    const cachedTransactions = allTransactions.length ? allTransactions : loadTransactionCache(address);
+    if (!allTransactions.length) {
       allTransactions = cachedTransactions;
       currentPage = 1;
-      currentQueryAddress = address;
-      document.getElementById("addressBox").textContent = address;
       if (cachedTransactions.length) {
-        renderTransactions(cachedTransactions, address);
+        renderTransactions();
       } else {
         updatePageText(0);
         renderEmpty("正在查询...");
@@ -2519,16 +1973,15 @@
     }
 
     try {
-      setStatus("正在更新余额和最新交易记录...");
+      setStatus("更新中…");
       const added = await refreshOnce(address, queryId, cachedTransactions, true, true, previousBalanceValue, true);
       if (queryId !== activeQueryId) return;
-      setStatus(added > 0 && cachedTransactions.length
-        ? `已更新，发现 ${added} 笔新交易。`
-        : "已更新，暂无新交易。");
+      markUpdatedTime();
+      setStatus(added > 0 && cachedTransactions.length ? ` · 新增 ${added} 笔` : " · 无新交易");
     } catch (err) {
-      const message = err && err.message ? err.message : String(err);
+      if (queryId !== activeQueryId) return;
       setStatus("");
-      setError("更新失败：" + message + "。请稍后再试。 ");
+      showRequestError("更新失败：", err);
     } finally {
       if (queryId === updateBtnOwnerId) {
         updateBtn.disabled = false;
