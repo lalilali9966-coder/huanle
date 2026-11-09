@@ -16,8 +16,8 @@
     @font-face { font-family: "HL Sans"; src: url("inter-600.woff2") format("woff2"); font-weight: 600; font-display: swap; unicode-range: U+0020-007E, U+00A0, U+00B7, U+00D7, U+2013-2014, U+2026, U+2191, U+2193, U+2212; }
     @font-face { font-family: "HL Sans"; src: url("notosc-400.woff2") format("woff2"); font-weight: 400; font-display: swap; unicode-range: U+2018-2019, U+201C-201D, U+3000-303F, U+4E00-9FFF, U+FF00-FFEF; }
     @font-face { font-family: "HL Sans"; src: url("notosc-500.woff2") format("woff2"); font-weight: 500; font-display: swap; unicode-range: U+2018-2019, U+201C-201D, U+3000-303F, U+4E00-9FFF, U+FF00-FFEF; }
-    /* 标题粗体（只含“地址信息 余额 交易记录 凭证”几个字），地址和哈希用等宽字体 JetBrains Mono，逐位对齐方便核对 */
-    @font-face { font-family: "HL Sans"; src: url("notosc-700.woff2") format("woff2"); font-weight: 700; font-display: swap; unicode-range: U+4E00-9FFF; }
+    /* 标题粗体（只含“地址信息 余额 交易记录 凭证 ：”几个字），地址和哈希用等宽字体 JetBrains Mono，逐位对齐方便核对 */
+    @font-face { font-family: "HL Sans"; src: url("notosc-700.woff2") format("woff2"); font-weight: 700; font-display: swap; unicode-range: U+4E00-9FFF, U+FF1A; }
     @font-face { font-family: "HL Mono"; src: url("jbmono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
     @font-face { font-family: "HL Mono"; src: url("jbmono-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
 
@@ -192,10 +192,11 @@
 
     .identity { min-width: 0; }
     .addr-line { display: flex; align-items: center; gap: 6px; min-height: 30px; }
+    .addr-line .label { line-height: 26px; }
     .addr-main { font: 600 18px/26px var(--font-mono); letter-spacing: -.1px; white-space: nowrap; }
-    .balance-line { display: flex; align-items: baseline; gap: 6px; margin-top: 8px; }
-    /* 余额：标签加粗，数字半粗，单位常规 */
-    .label { color: var(--ink-2); font: 700 14px var(--font-ui); }
+    .balance-line { display: flex; align-items: baseline; gap: 6px; margin-top: 6px; }
+    /* “地址：”“余额：”标签加粗、同宽，后面的地址和余额左边对齐 */
+    .label { flex: none; width: 46px; color: var(--ink-2); font: 700 14px var(--font-ui); }
 
     .balance {
       margin-left: -4px;
@@ -204,7 +205,7 @@
       border-radius: 6px;
       background: none;
       color: var(--ink);
-      font: 600 22px/30px var(--font-num);
+      font: 600 18px/28px var(--font-num);
       cursor: pointer;
     }
 
@@ -280,9 +281,9 @@
     .c-hash { width: 128px; }
     .c-time { width: 156px; }
     .c-type { width: 64px; }
-    .c-amt { width: 132px; }
-    .c-rc { width: 48px; }
-    .c-st { width: 84px; }
+    .c-amt { width: 112px; }
+    .c-rc { width: 44px; }
+    .c-st { width: 80px; }
 
     .tx-table th,
     .tx-table td {
@@ -303,7 +304,11 @@
       font-weight: 400;
     }
 
-    .tx-table .th-r, .tx-table .td-amt { text-align: right; }
+    /* 数量左对齐：数字往左挪 4px 抵消悬停底色的留白，和表头“数量”左边对齐 */
+    .tx-table .th-r, .tx-table .td-amt { text-align: left; }
+    .tx-table .td-amt .amt { margin-left: -4px; }
+    /* 数量列收窄：右边只留 4px，靠近凭证图标，不再空一大块 */
+    .tx-table .td-amt { padding-right: 4px; }
     .tx-table .th-c, .tx-table .td-rc, .tx-table .td-st { text-align: center; }
     .tx-table th:nth-child(7), .tx-table .td-rc { padding: 0 8px; }
     .tx-table td { height: 54px; border-bottom: 1px solid var(--line-2); font-size: 13px; }
@@ -321,41 +326,17 @@
     .amt-out { color: var(--out); }
     .hash { color: var(--brand); font: 400 13px var(--font-mono); text-decoration: none; }
     .hash:hover { color: var(--brand-dark); }
-    /* 地址：等宽字体；对方地址深色，本地址（每行都一样）浅灰 */
-    .td-from, .td-to { position: relative; }
-    .addr { border-radius: 4px; color: var(--ink); font: 400 13px var(--font-mono); text-decoration: none; cursor: pointer; transition: background-color .12s, box-shadow .12s; }
-    .addr.is-self { color: var(--self); }
+    /* 地址：等宽字体；查询的地址黑色，其他地址浅蓝色 */
+    .addr { border-radius: 4px; color: #4a7ff0; font: 400 13px var(--font-mono); text-decoration: none; cursor: pointer; transition: background-color .12s, box-shadow .12s; }
+    .addr.is-self { color: var(--ink); }
     .addr:hover { background: #e6edff; box-shadow: 0 0 0 3px #e6edff; color: var(--brand-dark); }
-    .addr.is-self:hover { color: var(--ink-2); }
+    .addr.is-self:hover { color: #000; }
     .find-hidden-address::before { content: attr(data-address); }
-    /* 漏斗：鼠标移到行上才出现，点一下只看这个对方地址的交易 */
-    .flt-btn {
-      position: absolute;
-      top: 50%;
-      right: 4px;
-      display: inline-grid;
-      place-items: center;
-      width: 22px;
-      height: 22px;
-      margin-top: -11px;
-      padding: 0;
-      border: 0;
-      border-radius: 6px;
-      background: var(--brand-soft);
-      color: var(--brand);
-      cursor: pointer;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .12s;
-    }
-
-    .flt-btn .icon { width: 13px; height: 13px; }
-    .tx-table tbody tr:hover .flt-btn, .flt-btn:focus-visible { opacity: 1; pointer-events: auto; }
-    .flt-btn:hover { background: #dbe5ff; }
-    .amt { padding: 3px 4px; border-radius: 6px; font: 600 14.5px var(--font-num); cursor: pointer; }
+    .amt { padding: 3px 4px; border-radius: 6px; font: 600 14.5px var(--font-num); font-variant-numeric: tabular-nums; cursor: pointer; }
     .amt:hover { background: var(--brand-soft); }
     .amt-long { font-size: 12.5px; }
-    .amt-xlong { font-size: 11.5px; }
+    .amt-xlong { font-size: 11px; }
+    .amt-xxlong { font-size: 10px; }
     .rc-btn { vertical-align: middle; color: var(--brand); }
     .rc-btn .icon { width: 17px; height: 17px; }
 
@@ -534,22 +515,23 @@
       .c-hash { width: 110px; }
       .c-time { width: 138px; }
       .c-type { width: 54px; }
-      .c-amt { width: 108px; }
+      .c-amt { width: 104px; }
       .c-rc { width: 40px; }
       .c-st { width: 72px; }
       .tx-table th, .tx-table td { padding: 0 8px; }
       .tx-table th:nth-child(1), .tx-table .td-hash { padding-right: 4px; }
       .tx-table th:nth-child(7), .tx-table .td-rc { padding: 0 6px; }
-      /* 地址列左右只留 4px，右边给漏斗留出位置，不压住地址 */
       .tx-table th:nth-child(4), .tx-table th:nth-child(5), .tx-table .td-from, .tx-table .td-to { padding: 0 4px; }
       .tx-table :is(th, td):first-child { padding-left: 12px; }
       .tx-table :is(th, td):last-child { padding-right: 12px; }
       .tx-table th, .tx-table .td-time, .hash, .type { font-size: 12px; }
       .amt { padding: 3px 2px; font-size: 13px; }
-      .amt-long { font-size: 11px; }
+      .tx-table .td-amt .amt { margin-left: -2px; }
+      .amt-long { font-size: 11.5px; }
       .amt-xlong { font-size: 10px; }
+      .amt-xxlong { font-size: 9.5px; }
       /* 等宽字体：34 位地址宽度正好是 20.4 个字号 */
-      .addr { font-size: min(13px, (50vw - 308px) / 20.6); }
+      .addr { font-size: min(13px, (50vw - 282px) / 20.6); }
       .tag { min-width: 0; padding: 3px 8px; font-size: 11.5px; }
       .addr-main { font-size: 17px; }
     }
@@ -585,12 +567,12 @@
       .td-st { grid-area: st; }
       .td-from { grid-area: from; margin-top: 4px; }
       .tx-table .td-amt, .tx-table .td-rc, .tx-table .td-st { text-align: left; }
-      .flt-btn { display: none; }
       .tx-foot { flex-wrap: wrap; }
       .td-to { grid-area: to; }
       .hash { font-size: 13px; }
       .amt { margin-left: -6px; padding: 2px 6px; font-size: min(17px, 4.5vw); }
-      .amt-long { font-size: min(15px, 4vw); }
+      .tx-table .td-amt .amt { margin-left: -6px; }
+      .amt-long, .amt-xlong, .amt-xxlong { font-size: min(15px, 4vw); }
       .amt::after { content: " USDT"; color: var(--ink-3); font-size: 11.5px; font-weight: 400; }
 
       .td-from::before,
@@ -619,7 +601,8 @@
       .card-head { padding: 11px 14px 10px; }
       .summary { display: block; padding: 12px 14px 14px; }
       .addr-line { min-height: 28px; gap: 2px; }
-      .addr-main { font-size: min(15px, (100vw - 84px) / 20.8); line-height: 22px; white-space: normal; overflow-wrap: anywhere; }
+      .addr-line .label { margin-right: 4px; }
+      .addr-main { font-size: min(15px, (100vw - 136px) / 20.8); line-height: 22px; white-space: normal; overflow-wrap: anywhere; }
       .balance { font-size: 18px; }
       .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
       .action-stack { display: contents; }
@@ -654,7 +637,6 @@
   <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6v5h-5"/><path d="M4 18v-5h5"/><path d="M6.1 9a7 7 0 0 1 11.5-2.6L20 11"/><path d="M17.9 15a7 7 0 0 1-11.5 2.6L4 13"/></symbol>
   <symbol id="i-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h5v5"/><path d="M10 14 19 5"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></symbol>
-  <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></symbol>
   <symbol id="i-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5"/><path d="M3.5 4v4.5H8"/><path d="M12 8v4.5l3 1.8"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
   <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
@@ -678,11 +660,12 @@
     <div class="summary">
       <div class="identity">
         <div class="addr-line">
+          <span class="label">地址：</span>
           <span id="addressBox" class="addr-main">-</span>
           <button class="icon-btn" type="button" onclick="copyCurrentAddress()" title="复制地址" aria-label="复制地址"><svg class="icon"><use href="#i-copy"/></svg></button>
         </div>
         <div class="balance-line">
-          <span class="label">余额</span>
+          <span class="label">余额：</span>
           <button id="balanceBox" class="balance" type="button" onclick="copyBalance()" title="点击复制余额">-</button>
           <span id="balanceUnit" class="balance-unit" hidden>USDT</span>
         </div>
@@ -834,7 +817,6 @@
   let pageSize = loadPageSize();
   let noOlderTransactions = false;
   let loadingOlderFor = "";   // 正在“加载更早”的地址（按地址区分，换地址后不会卡住按钮）
-  let funnelAddress = "";     // 点漏斗填进搜索框的对方地址：只筛选，不当作要切换查询的地址
 
   let activeQueryId = 0;
   let updateBtnOwnerId = 0;
@@ -1042,7 +1024,6 @@
     const input = document.getElementById("searchInput");
     input.addEventListener("input", () => {
       clearTimeout(searchTimer);
-      funnelAddress = "";
       updateSearchBox();
       const value = input.value.trim();
       // 清空、完整地址、完整哈希：立即搜索；其他（如金额）停顿一下再搜，避免每按一个键都刷新
@@ -1088,14 +1069,12 @@
 
   function clearSearch() {
     clearTimeout(searchTimer);
-    funnelAddress = "";
     document.getElementById("searchInput").value = "";
     setSearchText("");
   }
 
   function getSearchAddress() {
     const value = document.getElementById("searchInput").value.trim();
-    if (funnelAddress && value === funnelAddress) return "";
     return isTronAddress(value) && value !== currentQueryAddress ? value : "";
   }
 
@@ -1257,11 +1236,6 @@
   function initTransactionEvents() {
     // 表格点击：凭证图标打开弹窗；哈希、地址、数量单击复制（哈希同时在新标签页打开 Tronscan）
     document.getElementById("txBody").addEventListener("click", event => {
-      const filter = event.target.closest("[data-filter]");
-      if (filter) {
-        filterByAddress(filter.dataset.filter);
-        return;
-      }
       const receipt = event.target.closest("[data-receipt]");
       if (receipt) {
         openTransactionDetail(receipt.dataset.receipt);
@@ -1951,14 +1925,6 @@
   }
 
 
-  // ---------- 点漏斗：只看这个对方地址的交易（搜索框填入该地址） ----------
-  function filterByAddress(address) {
-    const input = document.getElementById("searchInput");
-    funnelAddress = address;
-    input.value = address;
-    setSearchText(address);
-  }
-
   function goToPage(page) {
     const totalPage = Math.max(1, Math.ceil(getVisibleTransactions().length / pageSize));
     const target = Math.min(Math.max(1, page), totalPage);
@@ -1993,12 +1959,11 @@
     const isNew = newTransactionHashes.has(hash);
     const [tagClass, tagText] = isNew ? ["tag-new", "新交易"] : isConfirmedTx(tx) ? ["tag-ok", "已确认"] : ["tag-wait", "待确认"];
     const safeHash = escapeHtml(hash);
-    // 地址用 ::before 显示 data-address（find-hidden-address），点击复制；对方地址右边有漏斗，点它只看这个地址
+    // 地址用 ::before 显示 data-address（find-hidden-address），点击复制
     const addressCell = (cellClass, label, value) => {
       const safe = escapeHtml(value);
       const isSelf = value === address;
-      const filter = isSelf || value === "-" ? "" : `<button class="flt-btn" type="button" data-filter="${safe}" title="只看这个地址的交易" aria-label="只看这个地址的交易"><svg class="icon"><use href="#i-filter"/></svg></button>`;
-      return `<td class="${cellClass}" data-label="${label}"><span class="addr find-hidden-address${isSelf ? " is-self" : ""}" data-address="${safe}" title="${safe}"></span>${filter}</td>`;
+      return `<td class="${cellClass}" data-label="${label}"><span class="addr find-hidden-address${isSelf ? " is-self" : ""}" data-address="${safe}" title="${safe}"></span></td>`;
     };
 
     return `<tr${isNew ? ' class="is-new"' : ""}>
@@ -2007,7 +1972,7 @@
       <td class="td-type"><span class="type ${isIn ? "type-in" : "type-out"}">${isIn ? "收入" : "支出"}</span></td>
       ${addressCell("td-from", "输出地址", from)}
       ${addressCell("td-to", "接收地址", to)}
-      <td class="td-amt"><span class="amt ${isIn ? "amt-in" : "amt-out"}${amount.length > 11 ? " amt-long" : ""}${amount.length > 13 ? " amt-xlong" : ""}" data-copy="${amount}" title="点击复制">${amount}</span></td>
+      <td class="td-amt"><span class="amt ${isIn ? "amt-in" : "amt-out"}${amount.length > 10 ? " amt-long" : ""}${amount.length > 12 ? " amt-xlong" : ""}${amount.length > 14 ? " amt-xxlong" : ""}" data-copy="${amount}" title="点击复制">${amount}</span></td>
       <td class="td-rc"><button class="icon-btn rc-btn" type="button" data-receipt="${safeHash}" title="交易凭证" aria-label="交易凭证"><svg class="icon"><use href="#i-receipt"/></svg></button></td>
       <td class="td-st"><span class="tag ${tagClass}">${tagText}</span></td>
     </tr>`;
