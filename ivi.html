@@ -7,6 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fff'/%3E%3Cg fill='none' stroke-width='10' stroke-linecap='round'%3E%3Cpath d='M20 16v22' stroke='%231597ed'/%3E%3Cpath d='M43 16v22' stroke='%23ff5261'/%3E%3Cpath d='M20 46v-5c0-7 5-11 12-11h13' stroke='%23ffb914' stroke-width='11' stroke-linejoin='round'/%3E%3C/g%3E%3Ccircle cx='44' cy='48' r='6' fill='%2342bf4f'/%3E%3C/svg%3E">
   <link rel="preload" href="inter-500.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="notosc-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="jbmono-400.woff2" as="font" type="font/woff2" crossorigin>
   <style>
     /* 自带字体（与本页放在同一目录）：英文数字用 Inter，中文用思源黑体，都有真正的中粗体，
        Windows 上不会再发细。字体文件缺失时自动退回系统字体，页面照常可用。 */
@@ -15,6 +16,10 @@
     @font-face { font-family: "HL Sans"; src: url("inter-600.woff2") format("woff2"); font-weight: 600; font-display: swap; unicode-range: U+0020-007E, U+00A0, U+00B7, U+00D7, U+2013-2014, U+2026, U+2191, U+2193, U+2212; }
     @font-face { font-family: "HL Sans"; src: url("notosc-400.woff2") format("woff2"); font-weight: 400; font-display: swap; unicode-range: U+2018-2019, U+201C-201D, U+3000-303F, U+4E00-9FFF, U+FF00-FFEF; }
     @font-face { font-family: "HL Sans"; src: url("notosc-500.woff2") format("woff2"); font-weight: 500; font-display: swap; unicode-range: U+2018-2019, U+201C-201D, U+3000-303F, U+4E00-9FFF, U+FF00-FFEF; }
+    /* 标题粗体（只含“地址信息 余额 交易记录 凭证”几个字），地址和哈希用等宽字体 JetBrains Mono，逐位对齐方便核对 */
+    @font-face { font-family: "HL Sans"; src: url("notosc-700.woff2") format("woff2"); font-weight: 700; font-display: swap; unicode-range: U+4E00-9FFF; }
+    @font-face { font-family: "HL Mono"; src: url("jbmono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+    @font-face { font-family: "HL Mono"; src: url("jbmono-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
 
     :root {
       --brand: #2f5bd8;
@@ -34,6 +39,8 @@
       /* 地址、哈希、数量：Inter 在各系统宽度一致，地址才能稳定一行放下（缺字体时退回更窄的 Arial） */
       --font-data: "HL Sans", Arial, "Helvetica Neue", sans-serif;
       --font-time: "HL Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --font-mono: "HL Mono", ui-monospace, Consolas, "Courier New", monospace;
+      --self: #9ca3af;
     }
 
     * { box-sizing: border-box; }
@@ -153,7 +160,7 @@
       border-bottom: 1px solid var(--line-2);
     }
 
-    .card-title { font-size: 15px; font-weight: 500; line-height: 22px; }
+    .card-title { font: 700 16px/24px var(--font-ui); }
 
     /* 交易记录右侧：全部 / 收入 / 支出 */
     .seg { display: flex; align-self: center; margin: -4px 0 -4px auto; padding: 2px; border-radius: 8px; background: #f1f3f7; }
@@ -183,29 +190,12 @@
       padding: 18px 20px 20px;
     }
 
-    .identity {
-      display: grid;
-      grid-template-columns: 40px auto;
-      column-gap: 12px;
-      align-items: center;
-      min-width: 0;
-    }
-
-    .identity-icon {
-      width: 40px;
-      height: 40px;
-      padding: 5px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-    }
-
-    .identity-icon img { display: block; width: 100%; height: 100%; }
-    .addr-line { display: flex; align-items: center; gap: 4px; min-height: 40px; }
-    .addr-main { font: 600 18px/24px var(--font-data); white-space: nowrap; }
-    .balance-line, .status-line { grid-column: 2; }
-    .balance-line { display: flex; align-items: baseline; gap: 6px; margin-top: 4px; }
-    /* 余额：标签、数字、单位大小接近，不过分突出数字 */
-    .label { color: #667085; font-size: 14px; }
+    .identity { min-width: 0; }
+    .addr-line { display: flex; align-items: center; gap: 6px; min-height: 30px; }
+    .addr-main { font: 600 18px/26px var(--font-mono); letter-spacing: -.1px; white-space: nowrap; }
+    .balance-line { display: flex; align-items: baseline; gap: 6px; margin-top: 8px; }
+    /* 余额：标签加粗，数字半粗，单位常规 */
+    .label { color: var(--ink-2); font: 700 14px var(--font-ui); }
 
     .balance {
       margin-left: -4px;
@@ -214,15 +204,15 @@
       border-radius: 6px;
       background: none;
       color: var(--ink);
-      font: 600 19px/30px var(--font-num);
+      font: 600 22px/30px var(--font-num);
       cursor: pointer;
     }
 
     /* 鼠标移上去只高亮数字本身 */
     .balance:hover { background: var(--brand-soft); }
-    .balance-unit { margin-left: -2px; color: #667085; font-size: 14px; font-weight: 500; }
+    .balance-unit { margin-left: -2px; color: var(--ink-2); font-size: 14px; font-weight: 500; }
     .balance-unit[hidden] { display: none; }
-    .status-line { margin-top: 2px; color: var(--ink-3); font-size: 12.5px; }
+    .status-line { margin-top: 4px; color: var(--ink-3); font-size: 12.5px; }
     .status-line:empty, .status-line:has(> .error-line:empty) { display: none; }
     .error-line { color: var(--out); }
 
@@ -281,87 +271,146 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ===== 交易记录 ===== */
-    .tx-card { overflow: hidden; }
-    .tx-scroll { overflow-x: auto; }
-    .tx-table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+    /* ===== 交易记录（账本表格） ===== */
+    /* 不裁切内容，表头才能在页面滚动时固定在顶部 */
+    .tx-card { overflow: visible; }
+    .tx-table { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0; }
 
     /* 固定列宽：翻页、筛选时列不跳动；两列地址平分剩下的宽度 */
-    .c-hash { width: 136px; }
-    .c-time { width: 152px; }
-    .c-type { width: 48px; }
-    .c-amt { width: 120px; }
-    .c-rc { width: 44px; }
-    .c-st { width: 72px; }
+    .c-hash { width: 128px; }
+    .c-time { width: 156px; }
+    .c-type { width: 64px; }
+    .c-amt { width: 132px; }
+    .c-rc { width: 48px; }
+    .c-st { width: 84px; }
 
     .tx-table th,
     .tx-table td {
-      padding: 0 8px;
-      text-align: center;
+      padding: 0 12px;
+      text-align: left;
       white-space: nowrap;
     }
 
     .tx-table th {
-      height: 40px;
-      border-bottom: 1px solid var(--line);
-      background: #f8fafc;
-      color: #667085;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      height: 42px;
+      border-bottom: 1px solid var(--line-2);
+      background: #fff;
+      color: var(--ink-3);
       font-size: 12.5px;
-      font-weight: 500;
+      font-weight: 400;
     }
 
-    .tx-table td { height: 52px; border-bottom: 1px solid var(--line-2); }
-    .tx-table tbody tr:hover { background: #fafbfd; }
-    /* 新交易：浅黄底 + 左侧蓝条，和蓝色“新交易”标签区分开 */
-    .tx-table tbody tr.is-new { background: #fff8e1; }
+    .tx-table .th-r, .tx-table .td-amt { text-align: right; }
+    .tx-table .th-c, .tx-table .td-rc, .tx-table .td-st { text-align: center; }
+    .tx-table th:nth-child(7), .tx-table .td-rc { padding: 0 8px; }
+    .tx-table td { height: 54px; border-bottom: 1px solid var(--line-2); font-size: 13px; }
+    .tx-table tbody tr:hover > td { background: #fafbfd; }
+    /* 新交易：浅黄底 + 左侧蓝条 */
+    .tx-table tbody tr.is-new > td { background: #fff8e1; }
     .tx-table tbody tr.is-new > td:first-child { box-shadow: inset 3px 0 0 var(--brand); }
-    .td-time { font: 500 13.5px var(--font-time); }
-    .type { font-size: 13.5px; font-weight: 500; }
-    .type-in, .amt-in { color: var(--in); }
-    .type-out, .amt-out { color: var(--out); }
-    .hash { color: var(--brand); font: 500 13.5px var(--font-data); text-decoration: none; }
+    .td-time { color: var(--ink-2); font: 400 13px var(--font-time); }
+    /* 类型：小圆点 + 收入 / 支出 */
+    .type { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 13px; }
+    .type::before { content: ""; width: 7px; height: 7px; border-radius: 50%; }
+    .type-in::before { background: var(--in); }
+    .type-out::before { background: var(--out); }
+    .amt-in { color: var(--in); }
+    .amt-out { color: var(--out); }
+    .hash { color: var(--brand); font: 400 13px var(--font-mono); text-decoration: none; }
     .hash:hover { color: var(--brand-dark); }
-    /* 对方地址蓝色、本地址黑色，一眼分清；悬停只变色，不加下划线 */
-    .addr { color: var(--brand); font: 500 13.5px var(--font-data); text-decoration: none; cursor: pointer; }
-    .addr.is-self { color: var(--ink); }
-    /* 鼠标移到地址上：浅蓝底稍微亮一下（用阴影扩边，不挤动排版） */
-    .addr { border-radius: 4px; transition: background-color .12s, box-shadow .12s; }
-    .addr:hover { color: var(--brand-dark); background: #e6edff; box-shadow: 0 0 0 3px #e6edff; }
-    .addr.is-self:hover { color: #000; }
+    /* 地址：等宽字体；对方地址深色，本地址（每行都一样）浅灰 */
+    .td-from, .td-to { position: relative; }
+    .addr { border-radius: 4px; color: var(--ink); font: 400 13px var(--font-mono); text-decoration: none; cursor: pointer; transition: background-color .12s, box-shadow .12s; }
+    .addr.is-self { color: var(--self); }
+    .addr:hover { background: #e6edff; box-shadow: 0 0 0 3px #e6edff; color: var(--brand-dark); }
+    .addr.is-self:hover { color: var(--ink-2); }
     .find-hidden-address::before { content: attr(data-address); }
-    .amt { padding: 3px 4px; border-radius: 6px; font: 600 14.5px var(--font-data); cursor: pointer; }
+    /* 漏斗：鼠标移到行上才出现，点一下只看这个对方地址的交易 */
+    .flt-btn {
+      position: absolute;
+      top: 50%;
+      right: 4px;
+      display: inline-grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      margin-top: -11px;
+      padding: 0;
+      border: 0;
+      border-radius: 6px;
+      background: var(--brand-soft);
+      color: var(--brand);
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .12s;
+    }
+
+    .flt-btn .icon { width: 13px; height: 13px; }
+    .tx-table tbody tr:hover .flt-btn, .flt-btn:focus-visible { opacity: 1; pointer-events: auto; }
+    .flt-btn:hover { background: #dbe5ff; }
+    .amt { padding: 3px 4px; border-radius: 6px; font: 600 14.5px var(--font-num); cursor: pointer; }
     .amt:hover { background: var(--brand-soft); }
     .amt-long { font-size: 12.5px; }
     .amt-xlong { font-size: 11.5px; }
-    .rc-btn { vertical-align: middle; }
+    .rc-btn { vertical-align: middle; color: var(--brand); }
+    .rc-btn .icon { width: 17px; height: 17px; }
 
+    /* 状态：浅色底 + 同色字，不加图标 */
     .tag {
       display: inline-block;
       min-width: 52px;
-      padding: 3px 8px;
-      border-radius: 5px;
-      color: #fff;
+      padding: 3px 10px;
+      border-radius: 999px;
       font-size: 12px;
       font-weight: 500;
       line-height: 16px;
-      letter-spacing: .5px;
+      text-align: center;
     }
 
-    .tag-ok { background: #17a364; }
-    .tag-wait { background: #f0a400; }
-    .tag-new { background: #2f5bd8; }
-    .tx-table .empty { height: 120px; color: #98a2b3; white-space: normal; }
+    .tag-ok { background: #e7f6ee; color: #0b7a4b; }
+    .tag-wait { background: #fff4dc; color: #a86b00; }
+    .tag-new { background: var(--brand); color: #fff; }
+    .tx-table .empty { height: 120px; color: #98a2b3; text-align: center; white-space: normal; }
 
-    /* 上移 1px 盖住最后一行的分隔线 */
+    /* 底部：左边每页笔数和加载更早记录，右边翻页 */
     .tx-foot {
       position: relative;
       display: flex;
-      justify-content: flex-end;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
       margin-top: -1px;
       padding: 12px 20px;
       border-top: 1px solid var(--line-2);
+      border-radius: 0 0 12px 12px;
       background: #fff;
     }
+
+    .foot-left { display: flex; align-items: center; gap: 14px; color: var(--ink-3); font-size: 13px; white-space: nowrap; }
+    .page-size { display: flex; align-items: center; gap: 8px; }
+    .size-seg { display: flex; padding: 2px; border-radius: 8px; background: #f1f3f7; }
+
+    .size-btn {
+      height: 24px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 6px;
+      background: none;
+      color: #667085;
+      font-size: 12.5px;
+      cursor: pointer;
+    }
+
+    .size-btn:hover { color: var(--ink); }
+    .size-btn.is-on { background: #fff; color: var(--ink); font-weight: 500; box-shadow: 0 1px 2px rgba(16, 24, 40, .1); }
+    .more-btn { height: 30px; padding: 0 12px; font-size: 13px; }
+    .more-btn:disabled { color: #c8ced9; cursor: default; }
+    .more-btn:disabled:hover { border-color: #d5dbe5; background: #fff; }
+    .more-btn.is-loading .icon { animation: spin 1s linear infinite; }
 
     .pager { display: flex; align-items: center; gap: 6px; }
 
@@ -379,7 +428,7 @@
 
     .pager button:hover:not(:disabled) { border-color: #c4ccd9; color: var(--brand); }
     .pager button:disabled { color: #c8ced9; cursor: default; }
-    .page-no { padding: 0 6px; font: 500 13px var(--font-data); font-variant-numeric: tabular-nums; }
+    .page-no { padding: 0 6px; font: 400 13px var(--font-data); font-variant-numeric: tabular-nums; }
 
     /* ===== 交易凭证弹窗 ===== */
     .tx-modal {
@@ -393,6 +442,13 @@
     }
 
     .tx-modal[hidden] { display: none; }
+    /* 凭证打开时锁住背后的页面，不能滚动；用右侧留白补上滚动条的宽度，页面不会左右跳 */
+    html.modal-open { overflow: hidden; }
+    html.modal-open body { padding-right: var(--scrollbar-gap, 0px); }
+    .tx-modal { overscroll-behavior: contain; }
+    /* 鼠标点开时不显示黑色焦点框；用键盘切换时显示柔和的蓝色框 */
+    .tx-modal :focus:not(:focus-visible) { outline: none; }
+    .tx-modal :focus-visible { outline: 2px solid rgba(47, 91, 216, .45); outline-offset: 2px; }
     .tx-modal-backdrop { position: absolute; inset: 0; background: rgba(15, 23, 42, .45); }
 
     .tx-modal-dialog {
@@ -409,7 +465,7 @@
     @keyframes modal-in { from { opacity: 0; transform: translateY(8px); } }
 
     .tx-modal-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 0 20px; }
-    .tx-modal-head h2 { font-size: 15px; font-weight: 500; }
+    .tx-modal-head h2 { font: 700 16px/24px var(--font-ui); }
     .tx-modal-close { width: 32px; height: 32px; color: var(--ink-3); }
     .tx-sheet { margin: 12px 20px 0; padding: 18px 18px 14px; border: 1px solid var(--line); border-radius: 12px; }
     /* 币种标识：币种图标 + 右下角 TRON 小标，旁边是币种名和网络 */
@@ -419,16 +475,26 @@
     .tx-token-logo .chain { position: absolute; right: -5px; bottom: -4px; width: 19px; height: 19px; border: 2px solid #fff; border-radius: 50%; background: #fff; }
     .tx-token-name { font: 600 15px/20px var(--font-ui); }
     .tx-token-net { color: var(--ink-3); font-size: 12px; line-height: 16px; }
+    /* 金额前面的“收入 / 支出”小标签 */
+    .tx-amount-row { display: flex; align-items: baseline; gap: 10px; }
+    .tx-dir { display: inline-flex; align-items: center; gap: 4px; align-self: center; padding: 2px 8px; border-radius: 6px; font-size: 12.5px; font-weight: 500; line-height: 18px; }
+    .tx-dir .icon { width: 12px; height: 12px; }
+    .tx-dir.is-in { background: #e8f7f1; color: var(--in); }
+    .tx-dir.is-out { background: #fdeced; color: var(--out); }
     .tx-sheet-amount { font: 600 30px/1.2 var(--font-num); }
     .tx-sheet-amount.is-in { color: var(--in); }
     .tx-sheet-amount.is-out { color: var(--out); }
-    .tx-sheet-amount .unit { margin-left: 6px; color: var(--ink-3); font-size: 14px; font-weight: 500; }
+    .tx-sheet-amount .unit { margin-left: 6px; color: var(--ink-3); font-size: 14px; }
     .tx-flow { margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: #f8fafc; }
     .tx-flow-row, .tx-fields > div { display: flex; align-items: baseline; gap: 12px; }
+    .tx-flow-row { align-items: center; }
+    /* 地址、哈希旁边的复制图标 */
+    .tx-copy { flex: none; width: 24px; height: 24px; margin-left: auto; align-self: center; }
+    .tx-copy .icon { width: 14px; height: 14px; }
     .tx-flow-arrow { margin: 4px 0 4px 3px; color: var(--ink-3); font-size: 12px; }
     .tx-flow-label, .tx-fields dt { flex: 0 0 36px; color: var(--ink-3); font-size: 12.5px; }
     .tx-flow-addr, .tx-fields dd { min-width: 0; margin: 0; font-size: 13.5px; word-break: break-all; }
-    .tx-flow-addr, #txHash { font-family: var(--font-data); font-weight: 500; }
+    .tx-flow-addr, #txHash { font-family: var(--font-mono); font-size: 13px; }
     .tx-copyable { cursor: pointer; }
     .tx-copyable:hover { color: var(--brand); }
     .tx-fields { margin: 12px 0 0; }
@@ -440,7 +506,7 @@
     .tx-result.is-pending { background: #fffaeb; color: #b54708; }
     .tx-result.is-failed { background: #fef3f2; color: #b42318; }
     .tx-sheet-foot { margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--line-2); color: var(--ink-3); font-size: 11.5px; }
-    /* 两个按钮：左边 在 Tronscan 查看，右边 复制图片，等宽 */
+    /* 两个按钮：左边 复制哈希，右边 复制图片，等宽 */
     .tx-modal-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 16px 20px 20px; }
 
     .toast {
@@ -465,23 +531,26 @@
     /* ===== 1000–1279px：收紧列宽和字号；地址字号随窗口缩放，保证一行完整显示 ===== */
     @media (min-width: 1000px) and (max-width: 1279px) {
       :root { --gutter: 12px; }
-      .c-hash { width: 120px; }
-      .c-time { width: 132px; }
-      .c-type { width: 36px; }
+      .c-hash { width: 110px; }
+      .c-time { width: 138px; }
+      .c-type { width: 54px; }
       .c-amt { width: 108px; }
-      .c-rc { width: 36px; }
-      .c-st { width: 56px; }
-      .tx-table th, .tx-table td { padding: 0 5px; }
-      .tx-table .td-from, .tx-table .td-to { padding: 0 3px; }
-      .tx-table :is(th, td):first-child { padding-left: 10px; }
-      .tx-table :is(th, td):last-child { padding-right: 10px; }
-      .tx-table th, .td-time, .hash { font-size: 12px; }
-      .type { font-size: 12.5px; }
+      .c-rc { width: 40px; }
+      .c-st { width: 72px; }
+      .tx-table th, .tx-table td { padding: 0 8px; }
+      .tx-table th:nth-child(1), .tx-table .td-hash { padding-right: 4px; }
+      .tx-table th:nth-child(7), .tx-table .td-rc { padding: 0 6px; }
+      /* 地址列左右只留 4px，右边给漏斗留出位置，不压住地址 */
+      .tx-table th:nth-child(4), .tx-table th:nth-child(5), .tx-table .td-from, .tx-table .td-to { padding: 0 4px; }
+      .tx-table :is(th, td):first-child { padding-left: 12px; }
+      .tx-table :is(th, td):last-child { padding-right: 12px; }
+      .tx-table th, .tx-table .td-time, .hash, .type { font-size: 12px; }
       .amt { padding: 3px 2px; font-size: 13px; }
-      .amt-long { font-size: 11.5px; }
-      .amt-xlong { font-size: 10.5px; }
-      .addr { font-size: min(13.5px, (50vw - 266px) / 23.2); }
-      .tag { min-width: 0; padding: 3px 4px; font-size: 11px; letter-spacing: 0; }
+      .amt-long { font-size: 11px; }
+      .amt-xlong { font-size: 10px; }
+      /* 等宽字体：34 位地址宽度正好是 20.4 个字号 */
+      .addr { font-size: min(13px, (50vw - 308px) / 20.6); }
+      .tag { min-width: 0; padding: 3px 8px; font-size: 11.5px; }
       .addr-main { font-size: 17px; }
     }
 
@@ -515,6 +584,9 @@
       .td-rc { grid-area: rc; }
       .td-st { grid-area: st; }
       .td-from { grid-area: from; margin-top: 4px; }
+      .tx-table .td-amt, .tx-table .td-rc, .tx-table .td-st { text-align: left; }
+      .flt-btn { display: none; }
+      .tx-foot { flex-wrap: wrap; }
       .td-to { grid-area: to; }
       .hash { font-size: 13px; }
       .amt { margin-left: -6px; padding: 2px 6px; font-size: min(17px, 4.5vw); }
@@ -530,7 +602,7 @@
         font: 400 12px var(--font-ui);
       }
 
-      .addr { font-size: min(14px, (100vw - 108px) / 23.4); line-height: 20px; }
+      .addr { font-size: min(14px, (100vw - 108px) / 21); line-height: 20px; }
     }
 
     /* ===== 手机 ===== */
@@ -546,10 +618,8 @@
       .head-search .search { width: 100%; }
       .card-head { padding: 11px 14px 10px; }
       .summary { display: block; padding: 12px 14px 14px; }
-      .identity { grid-template-columns: 28px minmax(0, 1fr); column-gap: 8px; }
-      .identity-icon { width: 28px; height: 28px; padding: 3px; border-radius: 7px; }
       .addr-line { min-height: 28px; gap: 2px; }
-      .addr-main { font-size: min(14px, (100vw - 118px) / 23.8); line-height: 20px; white-space: normal; overflow-wrap: anywhere; }
+      .addr-main { font-size: min(15px, (100vw - 84px) / 20.8); line-height: 22px; white-space: normal; overflow-wrap: anywhere; }
       .balance { font-size: 18px; }
       .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
       .action-stack { display: contents; }
@@ -557,6 +627,7 @@
       .btn { height: 38px; padding: 0 8px; }
       .tx-table tr { column-gap: 6px; padding: 12px 14px; }
       .tx-foot { justify-content: center; padding: 10px 14px; }
+      .foot-left { flex-wrap: wrap; justify-content: center; }
       .tx-modal { align-items: flex-end; padding: 0; }
       .tx-modal-dialog { width: 100%; max-height: 92vh; border-radius: 14px 14px 0 0; }
       .tx-sheet { margin: 10px 14px 0; padding: 16px 14px 12px; }
@@ -566,7 +637,7 @@
       .tx-flow-label, .tx-fields dt { flex-basis: 30px; }
       .tx-fields dd { font-size: 12.5px; }
       /* 转出 / 转入地址随屏宽缩小，保证一行放下 */
-      .tx-flow-addr { font-size: min(12.5px, (100vw - 120px) / 23.2); }
+      .tx-flow-addr { font-size: min(12.5px, (100vw - 150px) / 20.8); }
       .tx-modal-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 14px 14px calc(14px + env(safe-area-inset-bottom)); }
       .tx-modal-actions .btn { padding: 0 4px; font-size: 12.5px; white-space: nowrap; }
       .toast { bottom: calc(20px + env(safe-area-inset-bottom)); }
@@ -583,6 +654,10 @@
   <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6v5h-5"/><path d="M4 18v-5h5"/><path d="M6.1 9a7 7 0 0 1 11.5-2.6L20 11"/><path d="M17.9 15a7 7 0 0 1-11.5 2.6L4 13"/></symbol>
   <symbol id="i-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h5v5"/><path d="M10 14 19 5"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1L3.5 8.5"/><path d="M3.5 4v4.5H8"/><path d="M12 8v4.5l3 1.8"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
   <symbol id="i-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h12v17l-3-2-3 2-3-2-3 2z"/><path d="M9 8.5h6M9 12.5h6"/></symbol>
 </svg>
 
@@ -602,7 +677,6 @@
 
     <div class="summary">
       <div class="identity">
-        <div class="identity-icon" aria-hidden="true"><img id="brandIcon" alt=""></div>
         <div class="addr-line">
           <span id="addressBox" class="addr-main">-</span>
           <button class="icon-btn" type="button" onclick="copyCurrentAddress()" title="复制地址" aria-label="复制地址"><svg class="icon"><use href="#i-copy"/></svg></button>
@@ -649,9 +723,9 @@
             <th>类型</th>
             <th>输出地址</th>
             <th>接收地址</th>
-            <th>数量</th>
-            <th>凭证</th>
-            <th>状态</th>
+            <th class="th-r">数量</th>
+            <th class="th-c">凭证</th>
+            <th class="th-c">状态</th>
           </tr>
         </thead>
         <tbody id="txBody">
@@ -661,6 +735,17 @@
     </div>
 
     <footer class="tx-foot">
+      <div class="foot-left">
+        <div class="page-size">每页
+          <div class="size-seg" role="group" aria-label="每页笔数">
+            <button class="size-btn" type="button" data-size="10">10</button>
+            <button class="size-btn" type="button" data-size="20">20</button>
+            <button class="size-btn" type="button" data-size="50">50</button>
+          </div>笔
+        </div>
+        <span id="loadedText"></span>
+        <button id="loadOlderBtn" class="btn more-btn" type="button" hidden><svg class="icon"><use href="#i-history"/></svg><span class="btn-text">加载更早 50 笔</span></button>
+      </div>
       <nav class="pager" aria-label="分页">
         <button id="firstPageBtn" type="button" onclick="goToPage(1)">首页</button>
         <button id="prevPageBtn" type="button" onclick="goToPage(currentPage - 1)" aria-label="上一页">&lt;</button>
@@ -687,14 +772,14 @@
         <div><div id="txTokenName" class="tx-token-name">USDT</div><div class="tx-token-net">TRON Mainnet</div></div>
         <span id="txResult" class="tx-result"></span>
       </div>
-      <div id="txAmount" class="tx-sheet-amount">-</div>
+      <div class="tx-amount-row"><span id="txDir" class="tx-dir"></span><div id="txAmount" class="tx-sheet-amount">-</div></div>
       <div class="tx-flow">
-        <div class="tx-flow-row"><span class="tx-flow-label">转出</span><span id="txFrom" class="tx-flow-addr tx-copyable" title="单击复制"></span></div>
+        <div class="tx-flow-row"><span class="tx-flow-label">转出</span><span id="txFrom" class="tx-flow-addr tx-copyable" title="单击复制"></span><button class="icon-btn tx-copy" type="button" data-copy-from="txFrom" title="复制" aria-label="复制转出地址"><svg class="icon"><use href="#i-copy"/></svg></button></div>
         <div class="tx-flow-arrow">↓</div>
-        <div class="tx-flow-row"><span class="tx-flow-label">转入</span><span id="txTo" class="tx-flow-addr tx-copyable" title="单击复制"></span></div>
+        <div class="tx-flow-row"><span class="tx-flow-label">转入</span><span id="txTo" class="tx-flow-addr tx-copyable" title="单击复制"></span><button class="icon-btn tx-copy" type="button" data-copy-from="txTo" title="复制" aria-label="复制转入地址"><svg class="icon"><use href="#i-copy"/></svg></button></div>
       </div>
       <dl class="tx-fields">
-        <div><dt>哈希</dt><dd id="txHash" class="tx-copyable" title="单击复制"></dd></div>
+        <div><dt>哈希</dt><dd id="txHash" class="tx-copyable" title="单击复制"></dd><button class="icon-btn tx-copy" type="button" data-copy-from="txHash" title="复制" aria-label="复制哈希"><svg class="icon"><use href="#i-copy"/></svg></button></div>
         <div><dt>区块</dt><dd id="txBlock">-</dd></div>
         <div><dt>时间</dt><dd id="txTime"></dd></div>
       </dl>
@@ -702,7 +787,7 @@
     </div>
 
     <div class="tx-modal-actions">
-      <button id="txOpenBtn" class="btn" type="button">在 Tronscan 查看</button>
+      <button id="txCopyHashBtn" class="btn" type="button"><svg class="icon"><use href="#i-copy"/></svg>复制哈希</button>
       <button id="txCopyImgBtn" class="btn btn-primary" type="button">复制图片</button>
     </div>
   </div>
@@ -722,7 +807,9 @@
   const TRANSACTION_CACHE_PREFIX = "TRON_USDT_TRANSACTIONS_";
   const INITIAL_TRANSACTION_LIMIT = 50;
   const UPDATE_TRANSACTION_LIMIT = 50;
-  const PAGE_SIZE = 10;
+  const PAGE_SIZES = [10, 20, 50];
+  const PAGE_SIZE_KEY = "TX_PAGE_SIZE";
+  const OLDER_TRANSACTION_LIMIT = 50;
   const MAX_CACHED_TRANSACTIONS = 500;
   const MAX_UPDATE_PAGES = 20;
   const REQUEST_TIMEOUT_MS = 12000;
@@ -744,6 +831,10 @@
   let currentBalanceValue = "";
   let searchText = "";
   let typeFilter = "all"; // all / in / out
+  let pageSize = loadPageSize();
+  let noOlderTransactions = false;
+  let loadingOlderFor = "";   // 正在“加载更早”的地址（按地址区分，换地址后不会卡住按钮）
+  let funnelAddress = "";     // 点漏斗填进搜索框的对方地址：只筛选，不当作要切换查询的地址
 
   let activeQueryId = 0;
   let updateBtnOwnerId = 0;
@@ -756,11 +847,8 @@
   let detailReturnFocus = null;
 
   window.addEventListener("DOMContentLoaded", () => {
-    const iconLink = document.querySelector('link[rel="icon"]');
-    if (iconLink) {
-      document.getElementById("brandIcon").src = iconLink.href;
-    }
     initSearch();
+    initPageSize();
     initTypeFilter();
     initShortcuts();
     initTransactionEvents();
@@ -862,7 +950,7 @@
   function shortText(text, start = 10, end = 10) {
     if (!text) return "-";
     if (text.length <= start + end) return text;
-    return text.slice(0, start) + "..." + text.slice(-end);
+    return text.slice(0, start) + "…" + text.slice(-end);
   }
 
   function isTronAddress(address) {
@@ -954,6 +1042,7 @@
     const input = document.getElementById("searchInput");
     input.addEventListener("input", () => {
       clearTimeout(searchTimer);
+      funnelAddress = "";
       updateSearchBox();
       const value = input.value.trim();
       // 清空、完整地址、完整哈希：立即搜索；其他（如金额）停顿一下再搜，避免每按一个键都刷新
@@ -999,12 +1088,14 @@
 
   function clearSearch() {
     clearTimeout(searchTimer);
+    funnelAddress = "";
     document.getElementById("searchInput").value = "";
     setSearchText("");
   }
 
   function getSearchAddress() {
     const value = document.getElementById("searchInput").value.trim();
+    if (funnelAddress && value === funnelAddress) return "";
     return isTronAddress(value) && value !== currentQueryAddress ? value : "";
   }
 
@@ -1166,6 +1257,11 @@
   function initTransactionEvents() {
     // 表格点击：凭证图标打开弹窗；哈希、地址、数量单击复制（哈希同时在新标签页打开 Tronscan）
     document.getElementById("txBody").addEventListener("click", event => {
+      const filter = event.target.closest("[data-filter]");
+      if (filter) {
+        filterByAddress(filter.dataset.filter);
+        return;
+      }
       const receipt = event.target.closest("[data-receipt]");
       if (receipt) {
         openTransactionDetail(receipt.dataset.receipt);
@@ -1177,8 +1273,12 @@
 
     document.querySelectorAll("#txModal [data-close]").forEach(item => item.addEventListener("click", closeTransactionDetail));
     document.getElementById("txCopyImgBtn").addEventListener("click", copyTransactionImage);
-    document.getElementById("txOpenBtn").addEventListener("click", () => {
-      if (detailData) window.open(EXPLORER_TX_URL + detailData.hash, "_blank", "noopener,noreferrer");
+    document.getElementById("loadOlderBtn").addEventListener("click", loadOlderTransactions);
+    document.querySelectorAll("#txModal [data-copy-from]").forEach(btn => {
+      btn.addEventListener("click", () => copyText(document.getElementById(btn.dataset.copyFrom).textContent.trim()));
+    });
+    document.getElementById("txCopyHashBtn").addEventListener("click", () => {
+      if (detailData) copyText(detailData.hash);
     });
     ["txFrom", "txTo", "txHash"].forEach(id => {
       document.getElementById(id).addEventListener("click", event => copyText(event.target.textContent.trim()));
@@ -1223,6 +1323,7 @@
     renderTransactionDetail();
     loadImageFonts();
     detailReturnFocus = document.activeElement;
+    lockPageScroll(true);
     document.getElementById("txModal").hidden = false;
     document.querySelector(".tx-modal-close").focus();
 
@@ -1239,7 +1340,19 @@
     }).catch(() => {});
   }
 
+  function lockPageScroll(lock) {
+    const root = document.documentElement;
+    if (lock) {
+      root.style.setProperty("--scrollbar-gap", `${Math.max(0, window.innerWidth - root.clientWidth)}px`);
+      root.classList.add("modal-open");
+    } else {
+      root.classList.remove("modal-open");
+      root.style.removeProperty("--scrollbar-gap");
+    }
+  }
+
   function closeTransactionDetail() {
+    lockPageScroll(false);
     document.getElementById("txModal").hidden = true;
     detailData = null;
     detailRequestId++;
@@ -1384,6 +1497,9 @@
     const amountBox = document.getElementById("txAmount");
     amountBox.className = "tx-sheet-amount " + (data.isIn ? "is-in" : "is-out");
     amountBox.innerHTML = `${escapeHtml(data.amount)}<span class="unit">${escapeHtml(data.symbol)}</span>`;
+    const dir = document.getElementById("txDir");
+    dir.className = "tx-dir " + (data.isIn ? "is-in" : "is-out");
+    dir.innerHTML = `<svg class="icon"><use href="#i-${data.isIn ? "down" : "up"}"/></svg>${data.isIn ? "收入" : "支出"}`;
     document.getElementById("txTokenName").textContent = data.symbol;
     renderTokenLogo(document.getElementById("txTokenLogo"), data);
     document.getElementById("txFrom").textContent = data.from;
@@ -1399,9 +1515,10 @@
   // 画图前先把要用到的字体加载好，图片里的字和网页上一致（最多等 1.5 秒，超时就用系统字体）
   function loadImageFonts() {
     if (!document.fonts || !document.fonts.load) return Promise.resolve();
-    const text = "交易凭证转出转入哈希结果区块时间数据来自链上记录可用在核验已成功确认中失败" + document.title +
+    const text = "交易凭证转出转入哈希结果区块时间数据来自链上记录可用在核验已成功确认中失败收入支出" + document.title +
       " 0123456789.-:·↓✓✕USDTabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const jobs = ["400 13px", "500 15px", "600 38px"].map(font => document.fonts.load(`${font} "HL Sans"`, text));
+    const jobs = ["400 13px", "500 15px", "600 38px"].map(font => document.fonts.load(`${font} "HL Sans"`, text))
+      .concat(document.fonts.load('400 15px "HL Mono"', text));
     return Promise.race([Promise.all(jobs), new Promise(resolve => setTimeout(resolve, 1500))]).catch(() => {});
   }
 
@@ -1413,6 +1530,7 @@
     const pad = 36;
     const sans = '"HL Sans", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif';
     const numFont = sans;
+    const mono = '"HL Mono", Consolas, "Courier New", monospace';
     const valueX = pad + 64;
     const valueWidth = width - valueX - pad;
 
@@ -1433,14 +1551,16 @@
       return lines;
     };
 
-    const valueFont = `500 15px ${sans}`;
-    const fromLines = wrap(data.from, valueFont, valueWidth);
-    const toLines = wrap(data.to, valueFont, valueWidth);
-    const hashLines = wrap(data.hash, valueFont, valueWidth);
+    const valueFont = `15px ${sans}`;
+    // 地址、哈希用等宽字体，和网页上一致
+    const monoFont = `15px ${mono}`;
+    const fromLines = wrap(data.from, monoFont, valueWidth);
+    const toLines = wrap(data.to, monoFont, valueWidth);
+    const hashLines = wrap(data.hash, monoFont, valueWidth);
     const lineHeight = 22;
     const flowHeight = 24 + (fromLines.length + toLines.length) * lineHeight + 26;
     const rowsHeight = (hashLines.length * lineHeight + 22) + 2 * (lineHeight + 22);
-    const height = pad + 26 + 72 + 18 + flowHeight + 10 + rowsHeight + 52 + pad - 10;
+    const height = pad + 26 + 72 + 18 + flowHeight + 10 + rowsHeight + 30 + pad - 10;
 
     const canvas = document.createElement("canvas");
     canvas.width = width * scale;
@@ -1480,13 +1600,37 @@
     drawResultPill(ctx, width - pad, pad + 12, data.result, texts.result, sans);
 
     y += 66;
+    // 金额前面的“收入 / 支出”小标签
+    const dirText = data.isIn ? "收入" : "支出";
+    const dirColor = data.isIn ? "#079455" : "#d92d20";
+    ctx.font = `500 14px ${sans}`;
+    const dirWidth = ctx.measureText(dirText).width + 34;
+    const dirTop = y - 26;
+    roundRect(pad, dirTop, dirWidth, 26, 6);
+    ctx.fillStyle = data.isIn ? "#e8f7f1" : "#fdeced";
+    ctx.fill();
+    ctx.strokeStyle = dirColor;
+    ctx.lineWidth = 1.8;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    const ax = pad + 13, ay = dirTop + 13;
+    if (data.isIn) {
+      ctx.moveTo(ax, ay - 5); ctx.lineTo(ax, ay + 5); ctx.moveTo(ax - 4, ay + 1); ctx.lineTo(ax, ay + 5); ctx.lineTo(ax + 4, ay + 1);
+    } else {
+      ctx.moveTo(ax, ay + 5); ctx.lineTo(ax, ay - 5); ctx.moveTo(ax - 4, ay - 1); ctx.lineTo(ax, ay - 5); ctx.lineTo(ax + 4, ay - 1);
+    }
+    ctx.stroke();
+    ctx.fillStyle = dirColor;
+    ctx.fillText(dirText, pad + 23, dirTop + 18);
+    const amountX = pad + dirWidth + 12;
     ctx.font = `600 38px ${numFont}`;
-    ctx.fillStyle = data.isIn ? "#079455" : "#d92d20";
-    ctx.fillText(data.amount, pad, y);
+    ctx.fillStyle = dirColor;
+    ctx.fillText(data.amount, amountX, y);
     const amountWidth = ctx.measureText(data.amount).width;
     ctx.font = `500 16px ${numFont}`;
     ctx.fillStyle = "#8590a2";
-    ctx.fillText(data.symbol, pad + amountWidth + 8, y);
+    ctx.fillText(data.symbol, amountX + amountWidth + 8, y);
 
     y += 22;
     roundRect(pad, y, width - pad * 2, flowHeight, 10);
@@ -1497,7 +1641,7 @@
       ctx.font = `13px ${sans}`;
       ctx.fillStyle = "#8590a2";
       ctx.fillText(label, pad + 16, flowY);
-      ctx.font = valueFont;
+      ctx.font = monoFont;
       ctx.fillStyle = "#142039";
       lines.forEach((line, index) => ctx.fillText(line, valueX, flowY + index * lineHeight));
       flowY += lines.length * lineHeight;
@@ -1510,7 +1654,7 @@
     drawFlowLines("转入", toLines);
 
     y += flowHeight + 10;
-    const drawRow = (label, lines, color, isFirst) => {
+    const drawRow = (label, lines, color, isFirst, font = valueFont) => {
       if (!isFirst) {
         ctx.fillStyle = "#eef1f5";
         ctx.fillRect(pad, y, width - pad * 2, 1);
@@ -1519,12 +1663,12 @@
       ctx.font = `13px ${sans}`;
       ctx.fillStyle = "#8590a2";
       ctx.fillText(label, pad, baseY);
-      ctx.font = valueFont;
+      ctx.font = font;
       ctx.fillStyle = color;
       lines.forEach((line, index) => ctx.fillText(line, valueX, baseY + index * lineHeight));
       y += lines.length * lineHeight + 22;
     };
-    drawRow("哈希", hashLines, "#142039", true);
+    drawRow("哈希", hashLines, "#142039", true, monoFont);
     drawRow("区块", [data.block || "-"], "#142039");
     drawRow("时间", [texts.time], "#142039");
 
@@ -1691,7 +1835,7 @@
   }
 
   function updatePageText(total) {
-    const totalPage = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    const totalPage = Math.max(1, Math.ceil(total / pageSize));
     if (currentPage > totalPage) currentPage = totalPage;
 
     document.getElementById("pageText").textContent = `${currentPage} / ${totalPage}`;
@@ -1705,10 +1849,118 @@
     document.getElementById("prevPageBtn").disabled = isFirst;
     document.getElementById("nextPageBtn").disabled = isLast;
     document.getElementById("lastPageBtn").disabled = isLast;
+    updateLoadOlder();
+  }
+
+  // ---------- 每页笔数：10 / 20 / 50，记在本浏览器 ----------
+  function loadPageSize() {
+    try {
+      const size = Number(localStorage.getItem(PAGE_SIZE_KEY));
+      return PAGE_SIZES.includes(size) ? size : 10;
+    } catch (err) {
+      return 10;
+    }
+  }
+
+  function initPageSize() {
+    document.querySelectorAll(".size-btn").forEach(btn => {
+      btn.classList.toggle("is-on", Number(btn.dataset.size) === pageSize);
+      btn.addEventListener("click", () => {
+        const size = Number(btn.dataset.size);
+        if (size === pageSize) return;
+        pageSize = size;
+        try {
+          localStorage.setItem(PAGE_SIZE_KEY, String(size));
+        } catch (err) {}
+        document.querySelectorAll(".size-btn").forEach(item => item.classList.toggle("is-on", item === btn));
+        currentPage = 1;
+        if (currentQueryAddress) renderTransactions();
+        else updatePageText(0);
+      });
+    });
+  }
+
+  // ---------- 加载更早记录：每次只往前拿 50 笔，避免 API key 一次请求太多被限流 ----------
+  function updateLoadOlder() {
+    const btn = document.getElementById("loadOlderBtn");
+    const text = document.getElementById("loadedText");
+    const hasData = Boolean(currentQueryAddress) && allTransactions.length > 0;
+    btn.hidden = !hasData;
+    text.textContent = hasData ? `已加载最近 ${allTransactions.length} 笔` : "";
+    const loading = Boolean(loadingOlderFor) && loadingOlderFor === currentQueryAddress;
+    btn.disabled = loading || noOlderTransactions;
+    btn.classList.toggle("is-loading", loading);
+    btn.querySelector(".btn-text").textContent = loading ? "加载中…" : noOlderTransactions ? "没有更早的记录了" : `加载更早 ${OLDER_TRANSACTION_LIMIT} 笔`;
+  }
+
+  async function queryOlderTransactions(address, maxTimestamp) {
+    const url = buildUrl(`/v1/accounts/${address}/transactions/trc20`, {
+      limit: OLDER_TRANSACTION_LIMIT,
+      only_confirmed: false,
+      contract_address: USDT_CONTRACT,
+      order_by: "block_timestamp,desc",
+      max_timestamp: maxTimestamp
+    });
+    const data = await requestJson(url, 1);
+    return Array.isArray(data.data) ? data.data : [];
+  }
+
+  async function loadOlderTransactions() {
+    if (loadingOlderFor || noOlderTransactions || !currentQueryAddress || !allTransactions.length) return;
+    const address = currentQueryAddress;
+    const oldest = allTransactions.reduce((min, tx) => {
+      const timestamp = Number(tx.block_timestamp || 0);
+      return timestamp && timestamp < min ? timestamp : min;
+    }, Infinity);
+    if (!Number.isFinite(oldest)) return;
+
+    loadingOlderFor = address;
+    updateLoadOlder();
+    try {
+      // 时间上限包含最早那一笔的时间：同一区块里还没拿到的交易也能拿到，重复的会自动去掉
+      let list = await queryOlderTransactions(address, oldest);
+      let before = allTransactions.length;
+      let merged = mergeTransactions(allTransactions, list);
+      // 极少数情况：同一区块超过 50 笔全是已有记录，再往前跳过这个区块取一次
+      if (merged.length === before && list.length >= OLDER_TRANSACTION_LIMIT) {
+        list = await queryOlderTransactions(address, oldest - 1);
+        merged = mergeTransactions(allTransactions, list);
+      }
+      // 期间换了地址：丢弃；同一个地址就算期间点了“更新交易”也照样合并（更新是在当前列表上合并的）
+      if (address !== currentQueryAddress) return;
+      before = allTransactions.length;
+      allTransactions = mergeTransactions(allTransactions, list);
+      const added = allTransactions.length - before;
+      saveTransactionCache(address, allTransactions);
+      if (list.length < OLDER_TRANSACTION_LIMIT) noOlderTransactions = true;
+      if (!added) {
+        noOlderTransactions = true;
+        showToast("没有更早的记录了");
+      } else {
+        showToast(`已加载更早的 ${added} 笔交易`);
+      }
+      renderTransactions();
+    } catch (err) {
+      if (address !== currentQueryAddress) return;
+      const message = err && err.message ? err.message : "";
+      showToast(message.includes("429") ? "请求过快，被限流了，请稍后再点" : "加载失败，请稍后再试");
+    } finally {
+      if (loadingOlderFor === address) loadingOlderFor = "";
+      updateLoadOlder();
+    }
+  }
+
+
+  // ---------- 点漏斗：只看这个对方地址的交易（搜索框填入该地址） ----------
+  function filterByAddress(address) {
+    const input = document.getElementById("searchInput");
+    funnelAddress = address;
+    input.value = address;
+    setSearchText(address);
   }
 
   function goToPage(page) {
-    const totalPage = Math.max(1, Math.ceil(getVisibleTransactions().length / PAGE_SIZE));
+    const totalPage = Math.max(1, Math.ceil(getVisibleTransactions().length / pageSize));
     const target = Math.min(Math.max(1, page), totalPage);
     if (!currentQueryAddress || target === currentPage) return;
     currentPage = target;
@@ -1741,16 +1993,18 @@
     const isNew = newTransactionHashes.has(hash);
     const [tagClass, tagText] = isNew ? ["tag-new", "新交易"] : isConfirmedTx(tx) ? ["tag-ok", "已确认"] : ["tag-wait", "待确认"];
     const safeHash = escapeHtml(hash);
-    // 地址用 ::before 显示 data-address（find-hidden-address），点击复制
+    // 地址用 ::before 显示 data-address（find-hidden-address），点击复制；对方地址右边有漏斗，点它只看这个地址
     const addressCell = (cellClass, label, value) => {
       const safe = escapeHtml(value);
-      return `<td class="${cellClass}" data-label="${label}"><span class="addr find-hidden-address${value === address ? " is-self" : ""}" data-address="${safe}" title="${safe}"></span></td>`;
+      const isSelf = value === address;
+      const filter = isSelf || value === "-" ? "" : `<button class="flt-btn" type="button" data-filter="${safe}" title="只看这个地址的交易" aria-label="只看这个地址的交易"><svg class="icon"><use href="#i-filter"/></svg></button>`;
+      return `<td class="${cellClass}" data-label="${label}"><span class="addr find-hidden-address${isSelf ? " is-self" : ""}" data-address="${safe}" title="${safe}"></span>${filter}</td>`;
     };
 
     return `<tr${isNew ? ' class="is-new"' : ""}>
       <td class="td-hash"><a class="hash" href="${EXPLORER_TX_URL}${safeHash}" target="_blank" rel="noopener noreferrer" data-copy="${safeHash}" title="复制哈希并在 Tronscan 查看">${escapeHtml(shortText(hash, 6, 6))}</a></td>
-      <td class="td-time">${escapeHtml(formatTime(tx.block_timestamp))}</td>
-      <td class="td-type"><span class="type ${isIn ? "type-in" : "type-out"}">${isIn ? "接收" : "发送"}</span></td>
+      <td class="td-time">${escapeHtml(formatTime(tx.block_timestamp, "-"))}</td>
+      <td class="td-type"><span class="type ${isIn ? "type-in" : "type-out"}">${isIn ? "收入" : "支出"}</span></td>
       ${addressCell("td-from", "输出地址", from)}
       ${addressCell("td-to", "接收地址", to)}
       <td class="td-amt"><span class="amt ${isIn ? "amt-in" : "amt-out"}${amount.length > 11 ? " amt-long" : ""}${amount.length > 13 ? " amt-xlong" : ""}" data-copy="${amount}" title="点击复制">${amount}</span></td>
@@ -1759,7 +2013,7 @@
     </tr>`;
   }
 
-  // 按当前搜索词筛选后分页显示，每页 10 条
+  // 按当前搜索词筛选后分页显示，每页 10 / 20 / 50 条
   function renderTransactions() {
     updateSearchBox();
     if (!currentQueryAddress) return;
@@ -1774,8 +2028,8 @@
       return;
     }
 
-    const startIndex = (currentPage - 1) * PAGE_SIZE;
-    document.getElementById("txBody").innerHTML = txs.slice(startIndex, startIndex + PAGE_SIZE)
+    const startIndex = (currentPage - 1) * pageSize;
+    document.getElementById("txBody").innerHTML = txs.slice(startIndex, startIndex + pageSize)
       .map(tx => buildTransactionRow(tx, currentQueryAddress)).join("");
   }
 
@@ -1795,14 +2049,15 @@
 
     let addedCount = 0;
     if (txResult.status === "fulfilled") {
-      const oldTransactionHashes = new Set(cachedTransactions.map(getTransactionHash).filter(Boolean));
+      // 以当前已显示的交易为基础合并（包括期间“加载更早”拿到的记录），避免被覆盖
+      const base = currentQueryAddress === address && allTransactions.length >= cachedTransactions.length ? allTransactions : cachedTransactions;
+      const oldTransactionHashes = new Set(base.map(getTransactionHash).filter(Boolean));
       const latestTransactions = txResult.value;
-      const newHashes = trackNewTransactions && cachedTransactions.length
-        ? latestTransactions.map(getTransactionHash).filter(hash => hash && !oldTransactionHashes.has(hash))
-        : [];
+      const addedHashes = latestTransactions.map(getTransactionHash).filter(hash => hash && !oldTransactionHashes.has(hash));
+      const newHashes = trackNewTransactions && base.length ? addedHashes : [];
 
-      allTransactions = mergeTransactions(cachedTransactions, latestTransactions);
-      addedCount = allTransactions.length - cachedTransactions.length;
+      allTransactions = mergeTransactions(base, latestTransactions);
+      addedCount = new Set(addedHashes).size;
       currentQueryAddress = address;
       // 有新交易才回到第一页（新交易排在最上方），没有就停留在当前页
       if (addedCount > 0) currentPage = 1;
@@ -1810,7 +2065,10 @@
       showNewTransactionTags(newHashes, queryId);
       renderTransactions();
     } else if (cachedTransactions.length) {
-      allTransactions = cachedTransactions;
+      // 请求失败：保留当前已显示的交易（包括期间“加载更早”拿到的记录），不退回旧快照
+      if (!(currentQueryAddress === address && allTransactions.length >= cachedTransactions.length)) {
+        allTransactions = cachedTransactions;
+      }
       currentQueryAddress = address;
       renderTransactions();
     }
@@ -1884,6 +2142,7 @@
       if (address !== currentQueryAddress) {
         setTypeFilter("all");
         document.getElementById("updatedAt").textContent = "";
+        noOlderTransactions = false;
       }
 
       const cachedTransactions = loadTransactionCache(address);
