@@ -199,7 +199,8 @@
     .side-unit { color: var(--ink-3); font-size: 12.5px; }
     .addr-line { display: flex; align-items: center; gap: 6px; min-height: 30px; }
     .addr-line .label { line-height: 26px; }
-    .addr-main { color: #7c3aed; font: 600 18px/26px var(--font-mono); white-space: nowrap; }
+    /* 查询的地址：橙色（#ea580c）80% 透明度，浅一点不刺眼 */
+    .addr-main { color: rgba(234, 88, 12, .8); font: 600 18px/26px var(--font-mono); white-space: nowrap; }
     .balance-line { display: flex; align-items: baseline; gap: 6px; margin-top: 6px; }
     /* “地址：”“余额：”标签加粗、同宽，后面的地址和余额左边对齐 */
     .label { flex: none; width: 46px; color: var(--ink-2); font: 700 14px var(--font-ui); }
@@ -481,6 +482,8 @@
     .tx-flow-label, .tx-fields dt { flex: 0 0 36px; color: var(--ink-3); font-size: 12.5px; }
     .tx-flow-addr, .tx-fields dd { min-width: 0; margin: 0; font-size: 13.5px; word-break: break-all; }
     .tx-flow-addr, #txHash { font-family: var(--font-mono); font-size: 13px; }
+    .tx-flow-addr { color: #4a7ff0; }
+    .tx-flow-addr.is-self { color: var(--ink); font-weight: 500; }
     .tx-copyable { cursor: pointer; }
     .tx-copyable:hover { color: var(--brand); }
     .tx-fields { margin: 12px 0 0; }
@@ -1332,9 +1335,6 @@
       }
       renderTransactionDetail();
     }).catch(() => {});
-
-    // 打开凭证的同时自动复制图片（这次点击就是复制的授权；图片等区块号查到再画，最多等 4 秒）
-    autoCopyTransactionImage(requestId);
   }
 
   function setCopyImageState(copied) {
@@ -1343,33 +1343,42 @@
     btn.textContent = copied ? "✓ 图片已复制" : "复制图片";
   }
 
-  function autoCopyTransactionImage(requestId) {
-    if (!navigator.clipboard || !navigator.clipboard.write || typeof ClipboardItem === "undefined") return;
-    const hash = detailData && detailData.hash;
-    // 画图前确认弹窗里还是这一笔，换了别的交易就不复制，避免复制错
+  // 点“复制图片”：在点击的这一刻调用剪贴板，图片等区块号查到再画（最多 4 秒），保证图片里信息完整；
+  // 画之前确认弹窗里还是这一笔，换了别的交易就不复制，避免复制错
+  function copyTransactionImage() {
+    if (!detailData) return;
+    const requestId = detailRequestId;
+    const hash = detailData.hash;
+    const isCurrent = () => requestId === detailRequestId && detailData && detailData.hash === hash;
     const blobPromise = Promise.race([detailInfoReady, new Promise(resolve => setTimeout(resolve, 4000))])
       .then(() => {
-        if (requestId !== detailRequestId || !detailData || detailData.hash !== hash) throw new Error("stale");
+        if (!isCurrent()) throw new Error("stale");
         return getTransactionImageBlob();
       });
+    blobPromise.catch(() => {});
     let write;
     try {
-      // 必须在点击的这一刻调用剪贴板，图片内容可以稍后再给
       write = navigator.clipboard.write([new ClipboardItem({ "image/png": blobPromise })]);
     } catch (err) {
-      return;
+      write = Promise.reject(err);
     }
     write.then(() => {
-      if (requestId !== detailRequestId || !detailData || detailData.hash !== hash) return;
+      if (!isCurrent()) return;
       setCopyImageState(true);
-      showToast("凭证图片已自动复制，可以直接粘贴");
-    }).catch(err => {
-      if (requestId !== detailRequestId || !detailData) return;
-      if (err && err.message === "stale") return;
-      showToast("自动复制没成功，请点“复制图片”");
+      showToast("图片已复制，可以直接粘贴");
+    }).catch(async err => {
+      if (!isCurrent() || (err && err.message === "stale")) return;
+      // 不支持复制图片（如部分手机浏览器）：改为保存图片
+      try {
+        await blobPromise;
+        await saveTransactionImage();
+        showToast("当前浏览器不能复制图片，已保存图片");
+      } catch (e) {
+        showToast("复制图片失败，请稍后再试");
+      }
     });
-    blobPromise.catch(() => {});
   }
+
 
   function lockPageScroll(lock) {
     const root = document.documentElement;
@@ -1533,8 +1542,13 @@
     dir.innerHTML = `<svg class="icon"><use href="#i-${data.isIn ? "down" : "up"}"/></svg>${data.isIn ? "收入" : "支出"}`;
     document.getElementById("txTokenName").textContent = data.symbol;
     renderTokenLogo(document.getElementById("txTokenLogo"), data);
-    document.getElementById("txFrom").textContent = data.from;
-    document.getElementById("txTo").textContent = data.to;
+    // 转出 / 转入地址和表格一样：查询的地址黑色稍加粗，其他地址浅蓝色
+    ["txFrom", "txTo"].forEach((id, index) => {
+      const value = index ? data.to : data.from;
+      const box = document.getElementById(id);
+      box.textContent = value;
+      box.classList.toggle("is-self", value === currentQueryAddress);
+    });
     document.getElementById("txHash").textContent = data.hash;
     const result = document.getElementById("txResult");
     result.innerHTML = RESULT_ICON[data.result] + `<span>${texts.result}</span>`;
@@ -1549,7 +1563,7 @@
     const text = "交易凭证转出转入哈希结果区块时间数据来自链上记录可用在核验已成功确认中失败收入支出" + document.title +
       " 0123456789.-:·↓✓✕USDTabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const jobs = ["400 13px", "500 15px", "600 38px"].map(font => document.fonts.load(`${font} "HL Sans"`, text))
-      .concat(document.fonts.load('400 15px "HL Mono"', text));
+      .concat(document.fonts.load('400 15px "HL Mono"', text), document.fonts.load('500 15px "HL Mono"', text));
     return Promise.race([Promise.all(jobs), new Promise(resolve => setTimeout(resolve, 1500))]).catch(() => {});
   }
 
@@ -1668,21 +1682,22 @@
     ctx.fillStyle = "#f8fafc";
     ctx.fill();
     let flowY = y + 30;
-    const drawFlowLines = (label, lines) => {
+    // 和网页一致：查询的地址黑色稍加粗，其他地址浅蓝色
+    const drawFlowLines = (label, lines, isSelf) => {
       ctx.font = `13px ${sans}`;
       ctx.fillStyle = "#8590a2";
       ctx.fillText(label, pad + 16, flowY);
-      ctx.font = monoFont;
-      ctx.fillStyle = "#142039";
+      ctx.font = isSelf ? `500 15px ${mono}` : monoFont;
+      ctx.fillStyle = isSelf ? "#142039" : "#4a7ff0";
       lines.forEach((line, index) => ctx.fillText(line, valueX, flowY + index * lineHeight));
       flowY += lines.length * lineHeight;
     };
-    drawFlowLines("转出", fromLines);
+    drawFlowLines("转出", fromLines, data.from === currentQueryAddress);
     ctx.font = `13px ${sans}`;
     ctx.fillStyle = "#8590a2";
     ctx.fillText("↓", pad + 18, flowY + 2);
     flowY += 26;
-    drawFlowLines("转入", toLines);
+    drawFlowLines("转入", toLines, data.to === currentQueryAddress);
 
     y += flowHeight + 10;
     const drawRow = (label, lines, color, isFirst, font = valueFont) => {
@@ -1732,21 +1747,6 @@
       setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     } catch (err) {
       showToast("保存图片失败");
-    }
-  }
-
-  async function copyTransactionImage() {
-    if (!detailData) return;
-    let blob;
-    try {
-      blob = await getTransactionImageBlob();
-      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-      setCopyImageState(true);
-      showToast("图片已复制，可以直接粘贴");
-    } catch (err) {
-      // 不支持复制图片（如部分手机浏览器）：改为保存图片
-      if (blob) await saveTransactionImage();
-      showToast("当前浏览器不能复制图片，已保存图片");
     }
   }
 
