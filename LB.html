@@ -333,13 +333,12 @@
     .hash { color: var(--brand); font: 400 13px var(--font-mono); text-decoration: none; }
     .hash:hover { color: var(--brand-dark); }
     /* 地址：等宽字体；查询的地址黑色，其他地址浅蓝色 */
-    .addr { border-radius: 4px; color: #4a7ff0; font: 400 13px var(--font-mono); text-decoration: none; cursor: pointer; transition: background-color .12s, box-shadow .12s; }
+    /* 表格里的地址只显示，不再单击复制 */
+    .addr { color: #4a7ff0; font: 400 13px var(--font-mono); text-decoration: none; }
     .addr.is-self { color: var(--ink); font-weight: 500; }
-    .addr:hover { background: #e6edff; box-shadow: 0 0 0 3px #e6edff; color: var(--brand-dark); }
-    .addr.is-self:hover { color: #000; }
     .find-hidden-address::before { content: attr(data-address); }
-    .amt { padding: 3px 4px; border-radius: 6px; font: 600 14.5px var(--font-num); font-variant-numeric: tabular-nums; cursor: pointer; }
-    .amt:hover { background: var(--brand-soft); }
+    /* 数量只显示，不再单击复制 */
+    .amt { padding: 3px 4px; border-radius: 6px; font: 600 14.5px var(--font-num); font-variant-numeric: tabular-nums; }
     .amt-long { font-size: 12.5px; }
     .amt-xlong { font-size: 11px; }
     .amt-xxlong { font-size: 10px; }
@@ -1256,15 +1255,16 @@
 
   // ---------- 交易凭证弹窗：点“凭证”图标打开，数据来自 TRON 链上 ----------
   function initTransactionEvents() {
-    // 表格点击：凭证图标打开弹窗；哈希、地址、数量单击复制（哈希同时在新标签页打开 Tronscan）
+    // 表格点击：凭证图标打开弹窗；单击哈希复制并在新标签页打开 Tronscan
     document.getElementById("txBody").addEventListener("click", event => {
       const receipt = event.target.closest("[data-receipt]");
       if (receipt) {
         openTransactionDetail(receipt.dataset.receipt);
         return;
       }
-      const item = event.target.closest("[data-copy], [data-address]");
-      if (item) copyText(item.dataset.copy || item.dataset.address);
+      // 只有哈希单击复制（同时打开 Tronscan）；地址、数量不再单击复制
+      const item = event.target.closest(".hash[data-copy]");
+      if (item) copyText(item.dataset.copy);
     });
 
     document.querySelectorAll("#txModal [data-close]").forEach(item => item.addEventListener("click", closeTransactionDetail));
@@ -1682,22 +1682,22 @@
     ctx.fillStyle = "#f8fafc";
     ctx.fill();
     let flowY = y + 30;
-    // 和网页一致：查询的地址黑色稍加粗，其他地址浅蓝色
-    const drawFlowLines = (label, lines, isSelf) => {
+    // 复制出来的图片：转出、转入地址都用黑色（发给别人更清楚）
+    const drawFlowLines = (label, lines) => {
       ctx.font = `13px ${sans}`;
       ctx.fillStyle = "#8590a2";
       ctx.fillText(label, pad + 16, flowY);
-      ctx.font = isSelf ? `500 15px ${mono}` : monoFont;
-      ctx.fillStyle = isSelf ? "#142039" : "#4a7ff0";
+      ctx.font = monoFont;
+      ctx.fillStyle = "#142039";
       lines.forEach((line, index) => ctx.fillText(line, valueX, flowY + index * lineHeight));
       flowY += lines.length * lineHeight;
     };
-    drawFlowLines("转出", fromLines, data.from === currentQueryAddress);
+    drawFlowLines("转出", fromLines);
     ctx.font = `13px ${sans}`;
     ctx.fillStyle = "#8590a2";
     ctx.fillText("↓", pad + 18, flowY + 2);
     flowY += 26;
-    drawFlowLines("转入", toLines, data.to === currentQueryAddress);
+    drawFlowLines("转入", toLines);
 
     y += flowHeight + 10;
     const drawRow = (label, lines, color, isFirst, font = valueFont) => {
@@ -1807,8 +1807,47 @@
     throw lastError;
   }
 
-  // 一次请求同时拿 USDT 余额和 TRX 余额
-  async function queryBalance(address) {
+  // ---------- 余额：直接读链上最新状态 ----------
+  // /v1/accounts 是 TronGrid 的索引数据，会比链上慢几秒到几十秒；交易记录查的是最新区块（only_confirmed=false），
+  // 所以以前会出现“新交易已经出来，余额还是旧的”。现在 USDT 余额直接调合约 balanceOf，TRX 用 getaccount，
+  // 都是节点上的最新状态，和交易记录同步；这两个请求失败时才退回 /v1/accounts。
+  const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+  // T 开头的地址 → 21 字节十六进制（41 + 20 字节），去掉最后 4 字节校验
+  function tronAddressToHex(address) {
+    let value = 0n;
+    for (const char of address) {
+      const index = BASE58_ALPHABET.indexOf(char);
+      if (index < 0) throw new Error("地址格式不正确");
+      value = value * 58n + BigInt(index);
+    }
+    return value.toString(16).padStart(50, "0").slice(0, 42);
+  }
+
+  async function queryUsdtBalanceLive(address) {
+    const parameter = tronAddressToHex(address).slice(2).padStart(64, "0");
+    const data = await requestJson(TRONGRID_BASE + "/wallet/triggerconstantcontract", 1, {
+      owner_address: address,
+      contract_address: USDT_CONTRACT,
+      function_selector: "balanceOf(address)",
+      parameter,
+      visible: true
+    });
+    const hex = data && Array.isArray(data.constant_result) ? data.constant_result[0] : "";
+    if (!data || !data.result || data.result.result !== true || !/^[0-9a-fA-F]+$/.test(hex || "")) {
+      throw new Error("读取合约余额失败");
+    }
+    return formatTokenAmount(BigInt("0x" + hex).toString(), 6);
+  }
+
+  async function queryTrxBalanceLive(address) {
+    const data = await requestJson(TRONGRID_BASE + "/wallet/getaccount", 1, { address, visible: true });
+    if (!data || typeof data !== "object" || data.Error) throw new Error("读取 TRX 余额失败");
+    return formatTokenAmount(data.balance || 0, 6);
+  }
+
+  // 备用：TronGrid 索引数据（可能慢一点）
+  async function queryBalanceIndexed(address) {
     const data = await requestJson(buildUrl(`/v1/accounts/${address}`));
     let balance = "0";
     let trx = "0";
@@ -1827,6 +1866,19 @@
     }
 
     return { usdt: balance, trx };
+  }
+
+  // USDT 和 TRX 同时查；哪个失败就用索引数据补上
+  async function queryBalance(address) {
+    const [usdt, trx] = await Promise.allSettled([queryUsdtBalanceLive(address), queryTrxBalanceLive(address)]);
+    if (usdt.status === "fulfilled" && trx.status === "fulfilled") {
+      return { usdt: usdt.value, trx: trx.value };
+    }
+    const indexed = await queryBalanceIndexed(address);
+    return {
+      usdt: usdt.status === "fulfilled" ? usdt.value : indexed.usdt,
+      trx: trx.status === "fulfilled" ? trx.value : indexed.trx
+    };
   }
 
   // 可用能量 = 能量上限（质押 + 租用）- 已用
@@ -2047,7 +2099,7 @@
       <td class="td-type"><span class="type ${isIn ? "type-in" : "type-out"}">${isIn ? "收入" : "支出"}</span></td>
       ${addressCell("td-from", "输出地址", from)}
       ${addressCell("td-to", "接收地址", to)}
-      <td class="td-amt"><span class="amt ${isIn ? "amt-in" : "amt-out"}${amount.length > 10 ? " amt-long" : ""}${amount.length > 12 ? " amt-xlong" : ""}${amount.length > 14 ? " amt-xxlong" : ""}" data-copy="${amount}" title="点击复制">${amount}</span></td>
+      <td class="td-amt"><span class="amt ${isIn ? "amt-in" : "amt-out"}${amount.length > 10 ? " amt-long" : ""}${amount.length > 12 ? " amt-xlong" : ""}${amount.length > 14 ? " amt-xxlong" : ""}">${amount}</span></td>
       <td class="td-rc"><button class="icon-btn rc-btn" type="button" data-receipt="${safeHash}" title="交易凭证" aria-label="交易凭证"><svg class="icon"><use href="#i-receipt"/></svg></button></td>
       <td class="td-st"><span class="tag ${tagClass}">${tagText}</span></td>
     </tr>`;
@@ -2128,6 +2180,10 @@
       }
       currentBalanceValue = newBalanceValue;
       setBalanceText(newBalanceValue);
+      // 查到了新交易，余额却没变：节点之间可能还没同步，隔 2 秒、5 秒各补查一次余额（只补查这两次，不会一直查）
+      if (trackNewTransactions && addedCount > 0 && previousBalanceValue && newBalanceValue === previousBalanceValue) {
+        recheckBalance(address, queryId, previousBalanceValue, energyValue, [2000, 5000]);
+      }
     } else {
       setBalanceText("查询失败");
       setResourceText("-", energyValue);
@@ -2138,6 +2194,26 @@
     }
 
     return addedCount;
+  }
+
+  // 补查余额：只在“查到新交易但余额没变”时用，按给定的间隔最多补查几次
+  function recheckBalance(address, queryId, previousBalanceValue, energyValue, delays) {
+    if (!delays.length) return;
+    setTimeout(async () => {
+      if (queryId !== activeQueryId || address !== currentQueryAddress) return;
+      try {
+        const result = await queryBalance(address);
+        if (queryId !== activeQueryId || address !== currentQueryAddress) return;
+        currentBalanceValue = result.usdt;
+        setBalanceText(result.usdt);
+        setResourceText(result.trx, energyValue);
+        if (result.usdt !== previousBalanceValue) {
+          setCopyBalanceChanged(true);
+          return;
+        }
+      } catch (err) {}
+      recheckBalance(address, queryId, previousBalanceValue, energyValue, delays.slice(1));
+    }, delays[0]);
   }
 
   // ---------- 记住上次查询的地址（每个页面分开记） ----------
