@@ -99,60 +99,14 @@
     .btn-primary:disabled .icon { animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ===== 汇总数字 ===== */
-    .kpis { display: grid; grid-template-columns: minmax(300px, 1.6fr) repeat(3, minmax(160px, 1fr)); }
-    .kpi { min-width: 0; padding: 18px 24px 20px; }
-    .kpi + .kpi { border-left: 1px solid var(--line-2); }
-    .kpi-label { color: var(--ink-2); font-size: 13px; line-height: 20px; white-space: nowrap; }
-
-    .kpi-value {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      margin-top: 10px;
-      color: var(--ink);
-      font: 600 22px/32px var(--font-num);
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-    }
-
-    .kpi-sub { margin-top: 4px; overflow: hidden; color: var(--ink-3); font-size: 12.5px; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
-    .kpi-sub .bad { color: var(--out); }
-    .total { margin-top: 4px; font-size: 36px; line-height: 44px; letter-spacing: -.01em; }
-    .total { gap: 0; }
-    .total .frac { color: var(--ink-3); font-size: 24px; letter-spacing: 0; }
-    .total .unit { margin-left: 8px; }
-    .unit { color: var(--ink-3); font-size: 13px; font-weight: 400; letter-spacing: 0; }
-    .kpi-value .of { color: var(--ink-3); font-size: 15px; font-weight: 500; }
-    .kpi-value .who { margin-right: 4px; color: var(--ink-2); font-size: 15px; font-weight: 500; }
-
     /* ===== 地址表格 ===== */
-    .seg { display: flex; padding: 2px; border-radius: 8px; background: #f1f3f7; }
-
-    .seg-btn {
-      height: 26px;
-      padding: 0 12px;
-      border: 0;
-      border-radius: 6px;
-      background: none;
-      color: #667085;
-      font-size: 12.5px;
-      cursor: pointer;
-    }
-
-    .seg-btn:hover { color: var(--ink); }
-    .seg-btn.is-on { background: #fff; color: var(--ink); font-weight: 500; box-shadow: 0 1px 2px rgba(16, 24, 40, .1); }
-    .seg-label { color: var(--ink-3); font-size: 13px; }
-
     .table-wrap { overflow-x: auto; }
-    .bal-table { width: 100%; min-width: 960px; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
-    .c-no { width: 48px; }
-    .c-name { width: 76px; }
-    .c-bal { width: 170px; }
-    .c-pct { width: 150px; }
-    .c-energy { width: 110px; }
-    .c-trx { width: 110px; }
-    .c-act { width: 112px; }
+    .bal-table { width: 100%; min-width: 820px; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+    .c-name { width: 110px; }
+    .c-bal { width: 200px; }
+    .c-energy { width: 140px; }
+    .c-trx { width: 140px; }
+    .c-act { width: 140px; }
 
     .bal-table th, .bal-table td { padding: 0 10px; text-align: center; white-space: nowrap; }
 
@@ -168,28 +122,22 @@
     .bal-table td { height: 56px; border-bottom: 1px solid var(--line-2); font-size: 13px; }
     .bal-table tbody tr:hover > td { background: #fafbfd; }
     .bal-table tbody tr.is-loading > td { opacity: .55; }
-    .no { color: var(--ink-3); }
     .name { color: var(--ink); font-weight: 500; }
     .name .dot { display: inline-block; width: 6px; height: 6px; margin-left: 5px; border-radius: 50%; background: var(--out); vertical-align: 2px; }
     .addr { color: var(--ink); font: 500 13px/20px var(--font-mono); }
 
-    /* 余额：两位小数，小数点上下对齐 */
-    .num { display: inline-block; font: 600 14.5px var(--font-num); font-variant-numeric: tabular-nums; white-space: nowrap; }
-    .num .i { display: inline-block; min-width: 7ch; text-align: right; }
-    .num .f { color: var(--ink-3); font-weight: 500; }
+    /* USDT 余额：只显示整数，居中对齐表头 */
+    .num { font: 600 15px var(--font-num); font-variant-numeric: tabular-nums; white-space: nowrap; }
     .num.is-zero, .is-stale .num { color: var(--ink-4); }
-    .is-stale .num .f { color: var(--ink-4); }
 
-    .pct { display: inline-flex; align-items: center; gap: 8px; }
-    .bar { position: relative; width: 48px; height: 4px; border-radius: 2px; background: var(--line-2); overflow: hidden; }
-    .bar > i { position: absolute; inset: 0 auto 0 0; border-radius: 2px; background: var(--brand); opacity: .75; }
-    .pct-val { min-width: 48px; color: var(--ink-2); text-align: right; }
 
     .energy { color: var(--ink); font-weight: 500; }
     .trx { color: var(--ink-2); }
     .none { color: var(--ink-4); }
 
-    .acts { display: inline-flex; align-items: center; gap: 2px; }
+    /* 复制、Tronscan 两个图标居中对齐表头；查询失败时“重试”挂在右边，不挤动这两个图标 */
+    .acts { position: relative; display: inline-flex; align-items: center; gap: 2px; vertical-align: middle; }
+    .acts .retry { position: absolute; top: 0; left: calc(100% + 2px); }
 
     .icon-btn {
       display: inline-grid;
@@ -208,7 +156,6 @@
     .icon-btn:hover { background: var(--brand-soft); color: var(--brand); }
     .icon-btn .icon { width: 15px; height: 15px; }
     /* 查询失败时多一个红色“重试”图标，和另外两个图标一样大，操作列放得下 */
-    .icon-slot { width: 28px; height: 28px; }
     .icon-btn.retry { color: var(--out); }
     .icon-btn.retry:hover { background: #fef3f2; color: var(--out); }
 
@@ -235,30 +182,18 @@
 
     /* 1279px 以下：收窄其他列，保证地址一行完整显示；再窄就表格内左右滑动 */
     @media (max-width: 1279px) {
-      .c-name { width: 64px; }
-      .c-bal { width: 150px; }
-      .c-pct { width: 118px; }
-      .c-energy { width: 92px; }
-      .c-trx { width: 92px; }
-      .c-act { width: 108px; }
+      .c-name { width: 90px; }
+      .c-bal { width: 170px; }
+      .c-energy { width: 110px; }
+      .c-trx { width: 110px; }
+      .c-act { width: 130px; }
       .bal-table th, .bal-table td { padding: 0 8px; }
-      .pct { gap: 6px; }
-      .pct .bar { width: 36px; }
     }
 
-    @media (max-width: 900px) {
-      .kpis { grid-template-columns: 1fr 1fr; }
-      .kpi:nth-child(3) { border-left: 0; }
-      .kpi:nth-child(n + 3) { border-top: 1px solid var(--line-2); }
+    @media (max-width: 700px) {
+      :root { --gutter: 10px; }
       .card-head { flex-wrap: wrap; }
       .head-tools { width: 100%; justify-content: space-between; margin-left: 0; }
-    }
-
-    @media (max-width: 560px) {
-      :root { --gutter: 10px; }
-      .kpis { grid-template-columns: 1fr; }
-      .kpi + .kpi { border-left: 0; border-top: 1px solid var(--line-2); }
-      .total { font-size: 30px; }
     }
   </style>
 </head>
@@ -272,65 +207,26 @@
 </svg>
 
 <main class="page">
-  <section class="card">
+  <section class="card table-card">
     <header class="card-head">
       <h1 class="card-title">余额总览</h1>
-      <span class="card-meta">USDT · TRC20</span>
+      <span class="card-meta">USDT · TRC20 · <span id="countText"></span></span>
       <div class="head-tools">
         <span class="updated">上次更新<b id="updatedAt">-</b><span id="updatedNote" class="bad"></span></span>
         <button id="refreshBtn" class="btn btn-primary" type="button"><svg class="icon"><use href="#i-refresh"/></svg><span class="btn-text">更新余额</span></button>
       </div>
     </header>
 
-    <div class="kpis">
-      <div class="kpi">
-        <div class="kpi-label">合计 USDT</div>
-        <div id="kpiTotal" class="kpi-value total">-</div>
-        <div id="kpiTotalSub" class="kpi-sub"></div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">余额最多</div>
-        <div id="kpiMax" class="kpi-value">-</div>
-        <div id="kpiMaxSub" class="kpi-sub"></div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">可用能量合计</div>
-        <div id="kpiEnergy" class="kpi-value">-</div>
-        <div id="kpiEnergySub" class="kpi-sub"></div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">地址数</div>
-        <div id="kpiCount" class="kpi-value">-</div>
-        <div id="kpiCountSub" class="kpi-sub"></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="card table-card">
-    <header class="card-head">
-      <h2 class="card-title">地址余额</h2>
-      <span id="countText" class="card-meta"></span>
-      <div class="head-tools">
-        <span class="seg-label">排序</span>
-        <div class="seg" role="group" aria-label="排序">
-          <button class="seg-btn" type="button" data-sort="no">序号</button>
-          <button class="seg-btn" type="button" data-sort="balance">余额</button>
-        </div>
-      </div>
-    </header>
-
     <div class="table-wrap">
       <table class="bal-table">
         <colgroup>
-          <col class="c-no"><col class="c-name"><col><col class="c-bal"><col class="c-pct"><col class="c-energy"><col class="c-trx"><col class="c-act">
+          <col class="c-name"><col><col class="c-bal"><col class="c-energy"><col class="c-trx"><col class="c-act">
         </colgroup>
         <thead>
           <tr>
-            <th>序号</th>
             <th>名称</th>
             <th>地址</th>
             <th>USDT 余额</th>
-            <th>占比</th>
             <th>能量</th>
             <th>TRX</th>
             <th>操作</th>
@@ -361,16 +257,13 @@
   const DEFAULT_TRONGRID_API_KEY = "e39e6de7-6c7a-474b-8198-058cfbe437f0";
   const EXPLORER_ADDRESS_URL = "https://tronscan.org/#/address/";
   const CACHE_KEY = "BALANCE_OVERVIEW_V1";
-  const SORT_KEY = "BALANCE_OVERVIEW_SORT";
   const REQUEST_TIMEOUT_MS = 12000;
-  const MAX_CONCURRENT = 4;          // 同时最多发 4 个请求，避免触发 429 限流
-  const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  const MAX_CONCURRENT = 2;          // 同时最多发 2 个请求，避免触发 429 限流
 
   // 每个地址的结果：usdt / trx 为链上原始整数（6 位小数），energy 为整数
   let results = WALLETS.map(() => ({}));
   let updatedAt = 0;
   let loading = false;
-  let sortMode = "no";
 
   // ---------- 通用 ----------
   function getApiKey() {
@@ -422,27 +315,23 @@
           signal: controller.signal
         }));
         clearTimeout(timer);
-        if (response.status === 429) throw new Error("429");
-        if (!response.ok) throw new Error("HTTP " + response.status);
-        return await response.json();
+        if (response.status === 429) throw new Error("请求太快，被限流（429）");
+        if (!response.ok) throw new Error("服务器返回错误（" + response.status + "）");
+        try {
+          return await response.json();
+        } catch (err) {
+          throw new Error("返回的数据格式不对");
+        }
       } catch (err) {
         clearTimeout(timer);
-        lastError = err;
-        if (i < retryTimes) await sleep(600 * (i + 1));
+        // 把错误换成看得懂的原因，鼠标移到“重试”图标上可以看到
+        if (err && err.name === "AbortError") lastError = new Error("网络超时（超过 12 秒没有响应）");
+        else if (err instanceof TypeError) lastError = new Error("网络连接失败（连不上 TronGrid）");
+        else lastError = err;
+        if (i < retryTimes) await sleep(800 * (i + 1));
       }
     }
     throw lastError;
-  }
-
-  // T 开头的地址 → 21 字节十六进制（41 + 20 字节）
-  function tronAddressToHex(address) {
-    let value = 0n;
-    for (const char of address) {
-      const index = BASE58_ALPHABET.indexOf(char);
-      if (index < 0) throw new Error("地址格式不正确");
-      value = value * 58n + BigInt(index);
-    }
-    return value.toString(16).padStart(50, "0").slice(0, 42);
   }
 
   // 链上整数（6 位小数）→ 只保留两位小数（直接截掉，不四舍五入，不加千分位）
@@ -494,26 +383,20 @@
   }
 
   // ---------- 链上数据 ----------
-  // USDT：直接调合约 balanceOf，是链上最新余额
-  async function queryUsdt(address) {
-    const data = await requestJson(TRONGRID_BASE + "/wallet/triggerconstantcontract", {
-      owner_address: address,
-      contract_address: USDT_CONTRACT,
-      function_selector: "balanceOf(address)",
-      parameter: tronAddressToHex(address).slice(2).padStart(64, "0"),
-      visible: true
-    });
-    const hex = data && Array.isArray(data.constant_result) ? data.constant_result[0] : "";
-    if (!data || !data.result || data.result.result !== true || !/^[0-9a-fA-F]+$/.test(hex || "")) {
-      throw new Error("读取余额失败");
+  // USDT 和 TRX 余额：一个请求同时拿到（TronGrid 账户接口，比链上慢几秒，看余额足够）
+  async function queryBalance(address) {
+    const data = await requestJson(`${TRONGRID_BASE}/v1/accounts/${address}`);
+    if (!data || !Array.isArray(data.data)) throw new Error("返回的数据格式不对");
+    const account = data.data[0];
+    if (!account) return { usdt: "0", trx: "0" };   // 地址还没激活：余额都是 0
+    let usdt = "0";
+    for (const item of Array.isArray(account.trc20) ? account.trc20 : []) {
+      if (item[USDT_CONTRACT] !== undefined) {
+        usdt = String(item[USDT_CONTRACT]);
+        break;
+      }
     }
-    return BigInt("0x" + hex).toString();
-  }
-
-  async function queryTrx(address) {
-    const data = await requestJson(TRONGRID_BASE + "/wallet/getaccount", { address, visible: true });
-    if (!data || typeof data !== "object" || data.Error) throw new Error("读取 TRX 失败");
-    return String(data.balance || 0);
+    return { usdt, trx: String(account.balance || 0) };
   }
 
   // 可用能量 = 能量上限（质押 + 租用）- 已用
@@ -524,23 +407,22 @@
     return Math.max(0, limit - used);
   }
 
-  // 一个地址的三项数据一起查；某一项失败只影响那一项，其他照常显示（失败时保留上次的值，灰色显示）
+  // 每个地址只发 2 个请求：余额（USDT + TRX）、能量。某一项失败只影响那一项，失败时保留上次的值（灰色显示）
   async function queryWallet(index) {
     const { address } = WALLETS[index];
-    const [usdt, trx, energy] = await Promise.allSettled([queryUsdt(address), queryTrx(address), queryEnergy(address)]);
+    const [balance, energy] = await Promise.allSettled([queryBalance(address), queryEnergy(address)]);
     const old = results[index] || {};
-    const next = { failed: [] };
-    const take = (key, result) => {
+    const next = { failed: [], reasons: [] };
+    const take = (keys, result, label, pick) => {
       if (result.status === "fulfilled") {
-        next[key] = result.value;
+        keys.forEach(key => { next[key] = pick(result.value, key); });
       } else {
-        next.failed.push(key);
-        next[key] = old[key];
+        keys.forEach(key => { next.failed.push(key); next[key] = old[key]; });
+        next.reasons.push(`${label}：${result.reason && result.reason.message ? result.reason.message : "未知错误"}`);
       }
     };
-    take("usdt", usdt);
-    take("trx", trx);
-    take("energy", energy);
+    take(["usdt", "trx"], balance, "余额", (value, key) => value[key]);
+    take(["energy"], energy, "能量", value => value);
     results[index] = next;
   }
 
@@ -548,23 +430,13 @@
   function amountHtml(raw, stale) {
     const value = formatAmount(raw);
     if (!value) return '<span class="none">—</span>';
-    return `<span class="num${value.zero ? " is-zero" : ""}"><span class="i">${value.integer}</span><span class="f">.${value.frac}</span></span>`;
-  }
-
-  function sumRaw(key) {
-    return results.reduce((sum, item) => (item[key] !== undefined && item[key] !== null ? sum + BigInt(item[key]) : sum), 0n);
+    // 只显示整数部分（小数直接舍去，不四舍五入）
+    return `<span class="num${value.zero ? " is-zero" : ""}">${value.integer}</span>`;
   }
 
   function render() {
-    const total = sumRaw("usdt");
+    // 顺序固定：按上面 WALLETS 的顺序
     const order = WALLETS.map((_, i) => i);
-    if (sortMode === "balance") {
-      order.sort((a, b) => {
-        const x = BigInt(results[a].usdt || 0);
-        const y = BigInt(results[b].usdt || 0);
-        return x === y ? a - b : (y > x ? 1 : -1);
-      });
-    }
 
     document.getElementById("rows").innerHTML = order.map(i => {
       const wallet = WALLETS[i];
@@ -572,74 +444,24 @@
       const failed = item.failed && item.failed.length ? item.failed : [];
       const stale = key => (failed.includes(key) ? " is-stale" : "");
       const usdt = item.usdt;
-      const pct = usdt !== undefined && usdt !== null && total > 0n
-        ? (Number(BigInt(usdt) * 10000n / total) / 100).toFixed(2)
-        : null;
       const energy = item.energy;
       return `<tr class="${loading ? "is-loading" : ""}">
-        <td class="no">${i + 1}</td>
-        <td class="name">${escapeHtml(wallet.name)}${failed.length ? '<span class="dot" title="部分数据查询失败"></span>' : ""}</td>
+        <td class="name">${escapeHtml(wallet.name)}${failed.length ? '<span class="dot" title="${escapeHtml((item.reasons || []).join("；") || "查询失败")}"></span>' : ""}</td>
         <td><span class="addr">${wallet.address}</span></td>
         <td class="${stale("usdt").trim()}">${amountHtml(usdt)}</td>
-        <td>${pct === null ? '<span class="none">—</span>' : `<span class="pct"><span class="bar"><i style="width:${Math.max(pct > 0 ? 3 : 0, Math.round(pct))}%"></i></span><span class="pct-val">${pct}%</span></span>`}</td>
         <td class="${stale("energy").trim()}">${energy === undefined || energy === null ? '<span class="none">—</span>' : `<span class="energy">${energy}</span>`}</td>
         <td class="trx${stale("trx")}">${item.trx === undefined || item.trx === null ? '<span class="none">—</span>' : formatAmount(item.trx).text}</td>
         <td><span class="acts">` +
         `<button class="icon-btn" type="button" data-copy="${wallet.address}" title="复制地址" aria-label="复制地址"><svg class="icon"><use href="#i-copy"/></svg></button>` +
         `<a class="icon-btn" href="${EXPLORER_ADDRESS_URL}${wallet.address}" target="_blank" rel="noopener noreferrer" title="在 Tronscan 查看" aria-label="在 Tronscan 查看"><svg class="icon"><use href="#i-external"/></svg></a>` +
         (failed.length && !loading
-          ? `<button class="icon-btn retry" type="button" data-retry="${i}" title="查询失败（${failed.map(k => ({ usdt: "余额", trx: "TRX", energy: "能量" }[k])).join("、")}），点击重试" aria-label="重试"><svg class="icon"><use href="#i-refresh"/></svg></button>`
-          : '<span class="icon-slot"></span>') +
+          ? `<button class="icon-btn retry" type="button" data-retry="${i}" title="${escapeHtml((item.reasons || []).join("；") || "查询失败")}，点击重试" aria-label="重试"><svg class="icon"><use href="#i-refresh"/></svg></button>`
+          : "") +
         `</span></td>
       </tr>`;
     }).join("");
 
-    // 合计行与顶部汇总
-    const hasAny = results.some(item => item.usdt !== undefined && item.usdt !== null);
-    const energyTotal = results.reduce((sum, item) => sum + (Number(item.energy) || 0), 0);
-    const energyKnown = results.some(item => item.energy !== undefined && item.energy !== null);
-    const trxTotal = sumRaw("trx");
     const failedWallets = WALLETS.filter((w, i) => results[i].failed && results[i].failed.length);
-
-
-    const totalAmount = formatAmount(total.toString());
-    document.getElementById("kpiTotal").innerHTML = hasAny
-      ? `${totalAmount.integer}<span class="frac">.${totalAmount.frac}</span><span class="unit">USDT</span>`
-      : "-";
-    // 余额查询失败的地址：有上次的余额就按上次计入，没有就不计入，分别说明
-    const failedUsdt = WALLETS.map((w, i) => i).filter(i => results[i].failed && results[i].failed.includes("usdt"));
-    const usedOld = failedUsdt.filter(i => results[i].usdt !== undefined && results[i].usdt !== null).map(i => WALLETS[i].name);
-    const missing = failedUsdt.filter(i => results[i].usdt === undefined || results[i].usdt === null).map(i => WALLETS[i].name);
-    const notes = [];
-    if (usedOld.length) notes.push(`${usedOld.join("、")} 查询失败，按上次余额计入`);
-    if (missing.length) notes.push(`${missing.join("、")} 查询失败，未计入`);
-    document.getElementById("kpiTotalSub").innerHTML = !hasAny ? "" : notes.length
-      ? `${WALLETS.length} 个地址余额之和，<span class="bad">${escapeHtml(notes.join("；"))}</span>`
-      : `${WALLETS.length} 个地址余额之和`;
-
-    // 余额最多的地址
-    let maxIndex = -1;
-    results.forEach((item, i) => {
-      if (item.usdt === undefined || item.usdt === null) return;
-      if (maxIndex < 0 || BigInt(item.usdt) > BigInt(results[maxIndex].usdt)) maxIndex = i;
-    });
-    const maxAmount = maxIndex >= 0 ? formatAmount(results[maxIndex].usdt) : null;
-    document.getElementById("kpiMax").innerHTML = maxAmount
-      ? `<span class="who">${escapeHtml(WALLETS[maxIndex].name)}</span>${maxAmount.text}`
-      : "-";
-    document.getElementById("kpiMaxSub").textContent = maxAmount && total > 0n
-      ? `占合计 ${(Number(BigInt(results[maxIndex].usdt) * 10000n / total) / 100).toFixed(2)}%`
-      : "";
-
-    document.getElementById("kpiEnergy").textContent = energyKnown ? String(energyTotal) : "-";
-    document.getElementById("kpiEnergySub").textContent = hasAny ? `TRX 合计 ${formatAmount(trxTotal.toString()).text}` : "";
-
-    document.getElementById("kpiCount").innerHTML = `${WALLETS.length}<span class="of">个</span>`;
-    const kpiCountSub = document.getElementById("kpiCountSub");
-    kpiCountSub.innerHTML = !hasAny ? "" : failedWallets.length
-      ? `${WALLETS.length - failedWallets.length} 个正常 · <span class="bad">${failedWallets.length} 个查询失败</span>`
-      : "全部查询正常";
-
     document.getElementById("countText").textContent = `${WALLETS.length} 个地址`;
     document.getElementById("updatedAt").textContent = updatedAt ? formatClock(updatedAt) : "-";
     document.getElementById("updatedNote").textContent = !loading && failedWallets.length ? `· ${failedWallets.length} 个地址查询失败` : "";
@@ -695,17 +517,7 @@
     showToast(results[index].failed.length ? "仍然查询失败，请稍后再试" : `${WALLETS[index].name} 已更新`);
   }
 
-  function setSort(mode) {
-    sortMode = mode;
-    document.querySelectorAll(".seg-btn").forEach(btn => btn.classList.toggle("is-on", btn.dataset.sort === mode));
-    try {
-      localStorage.setItem(SORT_KEY, mode);
-    } catch (err) {}
-    render();
-  }
-
   document.getElementById("refreshBtn").addEventListener("click", refreshAll);
-  document.querySelectorAll(".seg-btn").forEach(btn => btn.addEventListener("click", () => setSort(btn.dataset.sort)));
   document.getElementById("rows").addEventListener("click", event => {
     const copy = event.target.closest("[data-copy]");
     if (copy) {
@@ -716,11 +528,8 @@
     if (retry) retryWallet(Number(retry.dataset.retry));
   });
 
-  try {
-    sortMode = localStorage.getItem(SORT_KEY) === "balance" ? "balance" : "no";
-  } catch (err) {}
   loadCache();
-  setSort(sortMode);
+  render();
   // 打开页面时查询一次；之后只在点“更新余额”时更新（不自动刷新）
   refreshAll();
 </script>

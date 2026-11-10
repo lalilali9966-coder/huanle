@@ -333,8 +333,10 @@
     .hash { color: var(--brand); font: 400 13px var(--font-mono); text-decoration: none; }
     .hash:hover { color: var(--brand-dark); }
     /* 地址：等宽字体；查询的地址黑色，其他地址浅蓝色 */
-    /* 表格里的地址只显示，不再单击复制 */
-    .addr { color: #4a7ff0; font: 400 13px var(--font-mono); text-decoration: none; }
+    /* 表格里的地址：单击复制，鼠标移上去浅蓝底（用阴影扩边，不挤动排版） */
+    .addr { border-radius: 4px; color: #4a7ff0; font: 400 13px var(--font-mono); text-decoration: none; cursor: pointer; transition: background-color .12s, box-shadow .12s; }
+    .addr:hover { background: #e6edff; box-shadow: 0 0 0 3px #e6edff; color: var(--brand-dark); }
+    .addr.is-self:hover { color: #000; }
     .addr.is-self { color: var(--ink); font-weight: 500; }
     .find-hidden-address::before { content: attr(data-address); }
     /* 数量只显示，不再单击复制 */
@@ -481,8 +483,8 @@
     .tx-flow-label, .tx-fields dt { flex: 0 0 36px; color: var(--ink-3); font-size: 12.5px; }
     .tx-flow-addr, .tx-fields dd { min-width: 0; margin: 0; font-size: 13.5px; word-break: break-all; }
     .tx-flow-addr, #txHash { font-family: var(--font-mono); font-size: 13px; }
-    .tx-flow-addr { color: #4a7ff0; }
-    .tx-flow-addr.is-self { color: var(--ink); font-weight: 500; }
+    /* 凭证里的转出、转入地址都用黑色 */
+    .tx-flow-addr { color: var(--ink); }
     .tx-copyable { cursor: pointer; }
     .tx-copyable:hover { color: var(--brand); }
     .tx-fields { margin: 12px 0 0; }
@@ -1255,16 +1257,16 @@
 
   // ---------- 交易凭证弹窗：点“凭证”图标打开，数据来自 TRON 链上 ----------
   function initTransactionEvents() {
-    // 表格点击：凭证图标打开弹窗；单击哈希复制并在新标签页打开 Tronscan
+    // 表格点击：凭证图标打开弹窗；单击哈希复制并在新标签页打开 Tronscan；单击地址复制
     document.getElementById("txBody").addEventListener("click", event => {
       const receipt = event.target.closest("[data-receipt]");
       if (receipt) {
         openTransactionDetail(receipt.dataset.receipt);
         return;
       }
-      // 只有哈希单击复制（同时打开 Tronscan）；地址、数量不再单击复制
-      const item = event.target.closest(".hash[data-copy]");
-      if (item) copyText(item.dataset.copy);
+      // 单击哈希复制（同时打开 Tronscan）；单击输出地址、接收地址复制；数量不复制
+      const item = event.target.closest(".hash[data-copy], .addr[data-address]");
+      if (item) copyText(item.dataset.copy || item.dataset.address);
     });
 
     document.querySelectorAll("#txModal [data-close]").forEach(item => item.addEventListener("click", closeTransactionDetail));
@@ -1542,13 +1544,8 @@
     dir.innerHTML = `<svg class="icon"><use href="#i-${data.isIn ? "down" : "up"}"/></svg>${data.isIn ? "收入" : "支出"}`;
     document.getElementById("txTokenName").textContent = data.symbol;
     renderTokenLogo(document.getElementById("txTokenLogo"), data);
-    // 转出 / 转入地址和表格一样：查询的地址黑色稍加粗，其他地址浅蓝色
-    ["txFrom", "txTo"].forEach((id, index) => {
-      const value = index ? data.to : data.from;
-      const box = document.getElementById(id);
-      box.textContent = value;
-      box.classList.toggle("is-self", value === currentQueryAddress);
-    });
+    document.getElementById("txFrom").textContent = data.from;
+    document.getElementById("txTo").textContent = data.to;
     document.getElementById("txHash").textContent = data.hash;
     const result = document.getElementById("txResult");
     result.innerHTML = RESULT_ICON[data.result] + `<span>${texts.result}</span>`;
