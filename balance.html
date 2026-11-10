@@ -101,12 +101,11 @@
 
     /* ===== 地址表格 ===== */
     .table-wrap { overflow-x: auto; }
-    .bal-table { width: 100%; min-width: 820px; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
-    .c-name { width: 110px; }
-    .c-bal { width: 200px; }
-    .c-energy { width: 140px; }
-    .c-trx { width: 140px; }
-    .c-act { width: 140px; }
+    .bal-table { width: 100%; min-width: 720px; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+    .c-name { width: 130px; }
+    .c-bal { width: 220px; }
+    .c-cnt { width: 180px; }
+    .c-act { width: 150px; }
 
     .bal-table th, .bal-table td { padding: 0 10px; text-align: center; white-space: nowrap; }
 
@@ -131,8 +130,11 @@
     .num.is-zero, .is-stale .num { color: var(--ink-4); }
 
 
-    .energy { color: var(--ink); font-weight: 500; }
-    .trx { color: var(--ink-2); }
+    /* 笔数：今天还能转几笔 / 每天可转几笔；转完了显示红色 0 */
+    .cnt { font: 600 15px var(--font-num); white-space: nowrap; }
+    .cnt .quota { color: var(--ink-3); font-size: 13px; font-weight: 400; }
+    .cnt.is-empty { color: var(--out); }
+    .is-stale .cnt, .is-stale .cnt .quota { color: var(--ink-4); }
     .none { color: var(--ink-4); }
 
     /* 复制、Tronscan 两个图标居中对齐表头；查询失败时“重试”挂在右边，不挤动这两个图标 */
@@ -182,10 +184,9 @@
 
     /* 1279px 以下：收窄其他列，保证地址一行完整显示；再窄就表格内左右滑动 */
     @media (max-width: 1279px) {
-      .c-name { width: 90px; }
+      .c-name { width: 100px; }
       .c-bal { width: 170px; }
-      .c-energy { width: 110px; }
-      .c-trx { width: 110px; }
+      .c-cnt { width: 140px; }
       .c-act { width: 130px; }
       .bal-table th, .bal-table td { padding: 0 8px; }
     }
@@ -220,15 +221,14 @@
     <div class="table-wrap">
       <table class="bal-table">
         <colgroup>
-          <col class="c-name"><col><col class="c-bal"><col class="c-energy"><col class="c-trx"><col class="c-act">
+          <col class="c-name"><col><col class="c-bal"><col class="c-cnt"><col class="c-act">
         </colgroup>
         <thead>
           <tr>
             <th>名称</th>
             <th>地址</th>
-            <th>USDT 余额</th>
-            <th>能量</th>
-            <th>TRX</th>
+            <th>余额</th>
+            <th title="今天还能转出几笔 / 每天可转出几笔">笔数</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -242,14 +242,14 @@
 <div id="toast" class="toast" role="status"></div>
 
 <script>
-  // ---------- 配置：地址和名称（增删地址、调整上下顺序改这里即可，序号按这里的顺序） ----------
+  // ---------- 配置：地址、名称、每天可转出笔数（增删地址、调整上下顺序、改笔数都改这里） ----------
   const WALLETS = [
-    { name: "IVI", address: "TUaG4CqiNCgUKZd5m4yBPtqnvECL4HBzkG" },
-    { name: "VARA", address: "TYrGmcSHKjARZoKPtjpJWgespuhpK3zDxg" },
-    { name: "HB", address: "TQHyRiwJxCYDGhDhd9vJCqcU9PBeVkaAiP" },
-    { name: "海神", address: "TJtwXCiiN4NRJNeyNm6eb8RSZkH6nzqX5s" },
-    { name: "蓝宝", address: "TKkN47q9nekpfk6ubTU1pQXY5enhPikoiV" },
-    { name: "英伟达", address: "TSm5ag2cGHCtgBdQJxnQLpKj6foeUJK5VP" }
+    { name: "IVI", address: "TUaG4CqiNCgUKZd5m4yBPtqnvECL4HBzkG", daily: 3 },
+    { name: "VARA", address: "TYrGmcSHKjARZoKPtjpJWgespuhpK3zDxg", daily: 3 },
+    { name: "HB", address: "TQHyRiwJxCYDGhDhd9vJCqcU9PBeVkaAiP", daily: 3 },
+    { name: "海神", address: "TJtwXCiiN4NRJNeyNm6eb8RSZkH6nzqX5s", daily: 25 },
+    { name: "蓝宝", address: "TKkN47q9nekpfk6ubTU1pQXY5enhPikoiV", daily: 3 },
+    { name: "英伟达", address: "TSm5ag2cGHCtgBdQJxnQLpKj6foeUJK5VP", daily: 5 }
   ];
 
   const USDT_CONTRACT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
@@ -259,8 +259,10 @@
   const CACHE_KEY = "BALANCE_OVERVIEW_V1";
   const REQUEST_TIMEOUT_MS = 12000;
   const MAX_CONCURRENT = 2;          // 同时最多发 2 个请求，避免触发 429 限流
+  const SENT_PAGE_SIZE = 50;         // 今天的转出记录每页取 50 笔（每天最多 25 笔，一页就够）
+  const SENT_MAX_PAGES = 4;
 
-  // 每个地址的结果：usdt / trx 为链上原始整数（6 位小数），energy 为整数
+  // 每个地址的结果：usdt 为链上原始整数（6 位小数）；sent 为今天已转出笔数，sentDay 为统计的是哪一天
   let results = WALLETS.map(() => ({}));
   let updatedAt = 0;
   let loading = false;
@@ -383,55 +385,93 @@
   }
 
   // ---------- 链上数据 ----------
-  // USDT 和 TRX 余额：一个请求同时拿到（TronGrid 账户接口，比链上慢几秒，看余额足够）
+  // 今天 0 点（按这台电脑的时间），笔数从这个时间开始算
+  function todayStart() {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
+
+  // USDT 余额（TronGrid 账户接口，比链上慢几秒，看余额足够）
   async function queryBalance(address) {
     const data = await requestJson(`${TRONGRID_BASE}/v1/accounts/${address}`);
     if (!data || !Array.isArray(data.data)) throw new Error("返回的数据格式不对");
     const account = data.data[0];
-    if (!account) return { usdt: "0", trx: "0" };   // 地址还没激活：余额都是 0
-    let usdt = "0";
+    if (!account) return "0";   // 地址还没激活：余额是 0
     for (const item of Array.isArray(account.trc20) ? account.trc20 : []) {
-      if (item[USDT_CONTRACT] !== undefined) {
-        usdt = String(item[USDT_CONTRACT]);
-        break;
-      }
+      if (item[USDT_CONTRACT] !== undefined) return String(item[USDT_CONTRACT]);
     }
-    return { usdt, trx: String(account.balance || 0) };
+    return "0";
   }
 
-  // 可用能量 = 能量上限（质押 + 租用）- 已用
-  async function queryEnergy(address) {
-    const data = await requestJson(TRONGRID_BASE + "/wallet/getaccountresource", { address, visible: true });
-    const limit = Number(data && data.EnergyLimit) || 0;
-    const used = Number(data && data.EnergyUsed) || 0;
-    return Math.max(0, limit - used);
+  // 今天已转出几笔 USDT：只取今天 0 点以后、从这个地址转出去的 USDT 记录（失败的交易不会出现，TRX 转账不算）
+  async function querySentToday(address, dayStart) {
+    const hashes = new Set();
+    let fingerprint = "";
+    for (let page = 0; page < SENT_MAX_PAGES; page++) {
+      const url = new URL(`${TRONGRID_BASE}/v1/accounts/${address}/transactions/trc20`);
+      url.searchParams.set("only_from", "true");
+      url.searchParams.set("only_confirmed", "false");
+      url.searchParams.set("contract_address", USDT_CONTRACT);
+      url.searchParams.set("min_timestamp", String(dayStart));
+      url.searchParams.set("order_by", "block_timestamp,desc");
+      url.searchParams.set("limit", String(SENT_PAGE_SIZE));
+      if (fingerprint) url.searchParams.set("fingerprint", fingerprint);
+      const data = await requestJson(url.toString());
+      if (!data || !Array.isArray(data.data)) throw new Error("返回的数据格式不对");
+      for (const tx of data.data) {
+        if (tx.from !== address) continue;                              // 只算转出
+        if (tx.type && tx.type !== "Transfer") continue;                // 授权（Approval）不算
+        if (Number(tx.block_timestamp || 0) < dayStart) continue;       // 只算今天
+        if (tx.transaction_id) hashes.add(tx.transaction_id);           // 同一笔交易只算一次
+      }
+      fingerprint = data.meta && data.meta.fingerprint ? data.meta.fingerprint : "";
+      if (!fingerprint) break;
+    }
+    return hashes.size;
   }
 
-  // 每个地址只发 2 个请求：余额（USDT + TRX）、能量。某一项失败只影响那一项，失败时保留上次的值（灰色显示）
+  // 每个地址只发 2 个请求：余额、今天转出的记录。某一项失败只影响那一项，失败时保留上次的值（灰色显示）
   async function queryWallet(index) {
     const { address } = WALLETS[index];
-    const [balance, energy] = await Promise.allSettled([queryBalance(address), queryEnergy(address)]);
+    const dayStart = todayStart();
+    const [balance, sent] = await Promise.allSettled([queryBalance(address), querySentToday(address, dayStart)]);
     const old = results[index] || {};
     const next = { failed: [], reasons: [] };
-    const take = (keys, result, label, pick) => {
-      if (result.status === "fulfilled") {
-        keys.forEach(key => { next[key] = pick(result.value, key); });
-      } else {
-        keys.forEach(key => { next.failed.push(key); next[key] = old[key]; });
-        next.reasons.push(`${label}：${result.reason && result.reason.message ? result.reason.message : "未知错误"}`);
-      }
-    };
-    take(["usdt", "trx"], balance, "余额", (value, key) => value[key]);
-    take(["energy"], energy, "能量", value => value);
+    const reason = result => (result.reason && result.reason.message ? result.reason.message : "未知错误");
+    if (balance.status === "fulfilled") {
+      next.usdt = balance.value;
+    } else {
+      next.usdt = old.usdt;
+      next.failed.push("usdt");
+      next.reasons.push(`余额：${reason(balance)}`);
+    }
+    if (sent.status === "fulfilled") {
+      next.sent = sent.value;
+      next.sentDay = dayStart;
+    } else {
+      next.sent = old.sent;
+      next.sentDay = old.sentDay;
+      next.failed.push("sent");
+      next.reasons.push(`笔数：${reason(sent)}`);
+    }
     results[index] = next;
   }
 
   // ---------- 显示 ----------
-  function amountHtml(raw, stale) {
+  function amountHtml(raw) {
     const value = formatAmount(raw);
     if (!value) return '<span class="none">—</span>';
     // 只显示整数部分（小数直接舍去，不四舍五入）
     return `<span class="num${value.zero ? " is-zero" : ""}">${value.integer}</span>`;
+  }
+
+  // 笔数：今天还能转几笔 / 每天可转几笔（统计的不是今天的数据就不显示，等更新）
+  function countHtml(wallet, item) {
+    if (typeof item.sent !== "number" || item.sentDay !== todayStart()) return '<span class="none">—</span>';
+    const left = Math.max(0, wallet.daily - item.sent);
+    const tip = `今天已转出 ${item.sent} 笔，每天可转 ${wallet.daily} 笔`;
+    return `<span class="cnt${left === 0 ? " is-empty" : ""}" title="${tip}">${left}<span class="quota"> / ${wallet.daily}</span></span>`;
   }
 
   function render() {
@@ -443,14 +483,11 @@
       const item = results[i] || {};
       const failed = item.failed && item.failed.length ? item.failed : [];
       const stale = key => (failed.includes(key) ? " is-stale" : "");
-      const usdt = item.usdt;
-      const energy = item.energy;
       return `<tr class="${loading ? "is-loading" : ""}">
         <td class="name">${escapeHtml(wallet.name)}${failed.length ? '<span class="dot" title="${escapeHtml((item.reasons || []).join("；") || "查询失败")}"></span>' : ""}</td>
         <td><span class="addr">${wallet.address}</span></td>
-        <td class="${stale("usdt").trim()}">${amountHtml(usdt)}</td>
-        <td class="${stale("energy").trim()}">${energy === undefined || energy === null ? '<span class="none">—</span>' : `<span class="energy">${energy}</span>`}</td>
-        <td class="trx${stale("trx")}">${item.trx === undefined || item.trx === null ? '<span class="none">—</span>' : formatAmount(item.trx).text}</td>
+        <td class="${stale("usdt").trim()}">${amountHtml(item.usdt)}</td>
+        <td class="${stale("sent").trim()}">${countHtml(wallet, item)}</td>
         <td><span class="acts">` +
         `<button class="icon-btn" type="button" data-copy="${wallet.address}" title="复制地址" aria-label="复制地址"><svg class="icon"><use href="#i-copy"/></svg></button>` +
         `<a class="icon-btn" href="${EXPLORER_ADDRESS_URL}${wallet.address}" target="_blank" rel="noopener noreferrer" title="在 Tronscan 查看" aria-label="在 Tronscan 查看"><svg class="icon"><use href="#i-external"/></svg></a>` +
@@ -481,7 +518,7 @@
       updatedAt = Number(data.updatedAt) || 0;
       results = WALLETS.map(w => {
         const saved = data.wallets.find(item => item.address === w.address) || {};
-        return { usdt: saved.usdt, trx: saved.trx, energy: saved.energy, failed: [] };
+        return { usdt: saved.usdt, sent: saved.sent, sentDay: saved.sentDay, failed: [] };
       });
     } catch (err) {}
   }
@@ -502,7 +539,7 @@
     saveCache();
     render();
     const failed = results.filter(item => item.failed && item.failed.length).length;
-    showToast(failed ? `已更新，${failed} 个地址查询失败，可点“重试”` : "余额已更新");
+    showToast(failed ? `已更新，${failed} 个地址查询失败，可点“重试”` : "余额和笔数已更新");
   }
 
   async function retryWallet(index) {
