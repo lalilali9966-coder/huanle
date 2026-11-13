@@ -1176,7 +1176,7 @@
     document.querySelectorAll(".seg-btn").forEach(btn => btn.classList.toggle("is-on", btn.dataset.type === type));
   }
 
-  // ---------- 快捷键：R 更新交易，C 复制余额（正在输入或弹窗打开时不响应） ----------
+  // ---------- 快捷键：R 更新交易，C 复制余额（正在输入时不响应；凭证弹窗打开时 C 改为复制图片，见下面弹窗的按键处理） ----------
   function initShortcuts() {
     document.addEventListener("keydown", event => {
       if (event.ctrlKey || event.metaKey || event.altKey || event.repeat || event.isComposing) return;
@@ -1326,12 +1326,15 @@
     ["txFrom", "txTo", "txHash"].forEach(id => {
       document.getElementById(id).addEventListener("click", event => copyText(event.target.textContent.trim()));
     });
-    // 弹窗开着时：Esc 关闭；Tab 只在弹窗的按钮之间切换
+    // 弹窗开着时：Esc 关闭；C 复制图片（和点“复制图片”一样，不显示提示）；Tab 只在弹窗的按钮之间切换
     document.addEventListener("keydown", event => {
       const modal = document.getElementById("txModal");
       if (modal.hidden) return;
       if (event.key === "Escape") {
         closeTransactionDetail();
+      } else if (event.key.toLowerCase() === "c" && !event.ctrlKey && !event.metaKey && !event.altKey && !event.repeat && !event.isComposing) {
+        event.preventDefault();
+        copyTransactionImage();
       } else if (event.key === "Tab") {
         event.preventDefault();
         const buttons = [...modal.querySelectorAll("button")];
