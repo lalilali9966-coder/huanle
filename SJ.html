@@ -459,6 +459,8 @@
     /* 鼠标点开时不显示黑色焦点框；用键盘切换时显示柔和的蓝色框 */
     .tx-modal :focus:not(:focus-visible) { outline: none; }
     .tx-modal :focus-visible { outline: 2px solid rgba(47, 91, 216, .45); outline-offset: 2px; }
+    /* 焦点框只在用 Tab 键切换时显示；鼠标点击、按快捷键 C / R / Esc 后都不出现框框 */
+    html:not(.kbd-nav) :focus { outline: none; }
     .tx-modal-backdrop { position: absolute; inset: 0; background: rgba(15, 23, 42, .45); }
 
     .tx-modal-dialog {
@@ -550,12 +552,14 @@
        两张卡片间隔 100ms；交易行在打开页面、查询新地址时依次淡入（翻页、筛选、搜索不播放）。
        --t 是这次入场已经过去的时间：1 秒内表格重画，动画接着播完，不会突然跳出来 */
     @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+    @keyframes fade { from { opacity: 0; } }
 
     @media (prefers-reduced-motion: no-preference) {
       .page > .card { animation: rise .5s var(--ease-out) backwards; animation-delay: calc(var(--i, 0) * 100ms); }
       .tx-table tr.enter { animation: rise .4s var(--ease-out) backwards; animation-delay: calc(min(var(--i, 0), 10) * 40ms + 150ms - var(--t, 0ms)); }
-      /* 凭证弹窗：标题、凭证、按钮依次出现，间隔 40ms，0.4 秒内全部到位 */
-      .tx-modal-dialog > * { animation: rise .28s var(--ease-out) backwards; }
+      /* 凭证弹窗：标题、凭证、按钮依次淡入，间隔 40ms，0.4 秒内全部到位。
+         只淡入不位移：内容往上滑会短暂超出弹窗，Windows 上右侧会闪出一条滚动条 */
+      .tx-modal-dialog > * { animation: fade .28s var(--ease-out) backwards; }
       .tx-modal-dialog > .tx-sheet { animation-delay: 40ms; }
       .tx-modal-dialog > .tx-modal-actions { animation-delay: 80ms; }
     }
@@ -1178,6 +1182,12 @@
 
   // ---------- 快捷键：R 更新交易，C 复制余额（正在输入时不响应；凭证弹窗打开时 C 改为复制图片，见下面弹窗的按键处理） ----------
   function initShortcuts() {
+    // 焦点框：按 Tab 键切换时才显示（html 加上 kbd-nav），一用鼠标就隐藏
+    document.addEventListener("keydown", event => {
+      if (event.key === "Tab") document.documentElement.classList.add("kbd-nav");
+    }, true);
+    document.addEventListener("pointerdown", () => document.documentElement.classList.remove("kbd-nav"), true);
+
     document.addEventListener("keydown", event => {
       if (event.ctrlKey || event.metaKey || event.altKey || event.repeat || event.isComposing) return;
       if (!document.getElementById("txModal").hidden) return;
