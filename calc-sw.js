@@ -1,5 +1,5 @@
 // 汇率计算器离线缓存：优先用网络上的最新版本，断网时用缓存
-const CACHE_NAME = "calc-v6";
+const CACHE_NAME = "calc-v8";
 const FILES = ["calc.html", "calc.webmanifest", "calc-icon-192.png", "calc-icon-512.png"];
 
 self.addEventListener("install", event => {

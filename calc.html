@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>汇率计算器</title>
+  <title>计算器</title>
   <meta name="theme-color" content="#f3f4f6">
   <link rel="manifest" href="calc.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="calc-icon-192.png">
@@ -24,7 +24,8 @@
       --screen-bottom: #11151e;
       --screen-ink: #f4f5f7;
       --screen-label: #7d8596;
-      --card-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 2px 4px rgba(15, 23, 42, 0.04), 0 28px 60px -24px rgba(15, 23, 42, 0.28);
+      /* 阴影代替边框：一圈很淡的描边 + 两层柔和阴影，再加原来的顶部高光和大投影 */
+      --card-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 0 0 1px rgb(0 0 0 / .06), 0 1px 2px -1px rgb(0 0 0 / .06), 0 2px 4px rgb(0 0 0 / .04), 0 28px 60px -24px rgba(15, 23, 42, 0.28);
       --num-font: "SF Pro Display", "Segoe UI", "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
       color-scheme: light;
     }
@@ -46,13 +47,24 @@
         --screen-bottom: #090b10;
         --screen-ink: #f4f5f7;
         --screen-label: #646c7a;
-        --card-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 2px 4px rgba(0, 0, 0, 0.3), 0 30px 70px -20px rgba(0, 0, 0, 0.7);
+        --card-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 0 0 1px rgb(255 255 255 / .06), 0 1px 2px -1px rgb(0 0 0 / .4), 0 2px 4px rgb(0 0 0 / .3), 0 30px 70px -20px rgba(0, 0, 0, 0.7);
         color-scheme: dark;
       }
     }
 
     * {
       box-sizing: border-box;
+    }
+
+    /* 等宽数字：每个数字一样宽，输入、结果变化时不会左右跳动，结果的数位上下对齐。
+       用 !important 是因为 font 简写会把它重置回默认 */
+    *, *::before, *::after {
+      font-variant-numeric: tabular-nums !important;
+    }
+
+    /* 平衡换行：提示文字换行时每行长度接近 */
+    .input-hint, .app-foot, .toast {
+      text-wrap: balance;
     }
 
     body {
@@ -72,59 +84,48 @@
       padding: 30px 0 20px;
     }
 
+    /* 同心圆角：卡片 28 = 输入格 14 + 间距 14（上 14，左右 12 + 2） */
     .card {
       overflow: hidden;
-      padding: 10px;
-      border: 1px solid var(--line);
-      border-radius: 24px;
+      padding: 14px 12px 10px;
+      border-radius: 28px;
       background: var(--surface);
       box-shadow: var(--card-shadow);
     }
 
+    /* 底部出现“U 已手动修改”提示时，下边距也是 14：提示圆角 14 + 14 = 28 */
+    .card:has(.result-hint:not([hidden])) {
+      padding-bottom: 14px;
+    }
+
     /* 输入：深色显示屏 */
     .display {
-      position: relative;
       display: block;
-      padding: 10px;
-      border-radius: 16px;
-      background: linear-gradient(180deg, var(--screen-top), var(--screen-bottom));
-      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 8px 18px -10px rgba(0, 0, 0, 0.45);
-      cursor: text;
+      padding: 0 2px 6px;
     }
 
-    /* 屏幕顶部一道很淡的高光 */
-    .display::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto;
-      height: 50%;
-      border-radius: 16px 16px 0 0;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent);
-      pointer-events: none;
-    }
-
-    /* 三个输入格：人民币 / 汇率 / 下浮 */
     .fields {
-      position: relative;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 0.9fr);
+      gap: 14px;
     }
 
+    /* 每一格都是独立的深色小屏：渐变 + 顶部高光 + 投影 */
     .field {
       display: block;
       min-width: 0;
-      padding: 9px 11px 10px;
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 11px;
-      background: rgba(255, 255, 255, 0.04);
+      padding: 12px 13px 13px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, var(--screen-top), var(--screen-bottom));
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.07) inset, 0 10px 20px -12px rgba(0, 0, 0, 0.55);
       cursor: text;
-      transition: border-color 0.2s ease, background 0.2s ease;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
     }
 
+    /* 选中的格子：金色描边也用阴影画，不占位置 */
     .field:focus-within {
-      border-color: var(--gold);
-      background: rgba(255, 255, 255, 0.07);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.07) inset, 0 0 0 1px var(--gold), 0 0 0 4px var(--gold-soft), 0 12px 22px -12px rgba(0, 0, 0, 0.6);
+      transform: translateY(-1px);
     }
 
     .field-label {
@@ -154,9 +155,8 @@
     }
 
     .input-hint {
-      position: relative;
-      margin: 8px 4px 2px;
-      color: #ff8a80;
+      margin: 10px 2px 0;
+      color: var(--warn);
       font-size: 12px;
     }
 
@@ -166,7 +166,9 @@
 
     /* 结果 */
     .results {
-      padding: 4px 12px 2px;
+      margin-top: 8px;
+      padding: 2px 12px;
+      border-top: 1px solid var(--line);
     }
 
     .result-row {
@@ -273,7 +275,7 @@
       align-items: center;
       margin: 4px 2px 0;
       padding: 10px 12px;
-      border-radius: 12px;
+      border-radius: 14px;
       background: var(--gold-soft);
       color: var(--ink-2);
       font-size: 12px;
@@ -312,11 +314,13 @@
       left: 50%;
       bottom: 22px;
       z-index: 50;
+      width: max-content;
       max-width: calc(100% - 32px);
       padding: 8px 16px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 999px;
       background: rgba(17, 19, 24, 0.94);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 4px 12px rgba(0, 0, 0, 0.18);
+      text-align: center;
       color: #f4f5f7;
       font-size: 12.5px;
       letter-spacing: 0.5px;
@@ -331,56 +335,16 @@
       transform: translate(-50%, 0);
     }
 
-    /* 紧凑布局：仅调整显示，不改变输入、计算和复制功能。 */
-    body {
-      min-height: 100vh;
-      background: var(--surface);
-      overflow-x: hidden;
+    /* 错开入场：卡片先出现，里面的三个输入格、结果、底部说明依次淡入（不影响马上输入） */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
     }
 
-    .app {
-      width: 100%;
-      max-width: 360px;
-      margin: 0 auto;
-      padding: 0;
-    }
-
-    .card {
-      padding: 10px;
-      border: 0;
-      border-radius: 20px;
-      box-shadow: none;
-    }
-
-    .results {
-      padding: 4px 12px 2px;
-    }
-
-    .result-row {
-      padding: 14px 0 12px;
-    }
-
-    .app-foot {
-      display: none;
-    }
-
-    /* 提示覆盖在卡片下部，不增加页面高度。 */
-    .toast {
-      top: 236px;
-      bottom: auto;
-      max-width: calc(100% - 24px);
-      padding: 7px 12px;
-      font-size: 12px;
-    }
-
-    @media (max-width: 320px) {
-      .card { padding: 8px; }
-      .display { padding: 8px; }
-      .fields { gap: 6px; }
-      .field { padding: 8px; }
-      .field-input { font-size: 19px; }
-      .result-value { font-size: 27px; }
-      .results { padding-right: 10px; padding-left: 10px; }
+    @media (prefers-reduced-motion: no-preference) {
+      .field, .results, .app-foot {
+        animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+        animation-delay: var(--d, 0ms);
+      }
     }
   </style>
 </head>
@@ -390,15 +354,15 @@
   <div class="card">
     <div class="display">
       <div class="fields">
-        <label class="field">
+        <label class="field" style="--d: 0ms">
           <span class="field-label">人民币</span>
           <input id="rmbInput" class="field-input" placeholder="20w" autocomplete="off" spellcheck="false" autofocus>
         </label>
-        <label class="field">
+        <label class="field" style="--d: 60ms">
           <span class="field-label">汇率</span>
           <input id="rateInput" class="field-input" placeholder="6.65" inputmode="decimal" autocomplete="off" spellcheck="false">
         </label>
-        <label class="field">
+        <label class="field" style="--d: 120ms">
           <span class="field-label">下浮</span>
           <input id="downInput" class="field-input" placeholder="0.2" inputmode="decimal" autocomplete="off" spellcheck="false">
         </label>
@@ -406,7 +370,7 @@
       <div id="inputHint" class="input-hint"></div>
     </div>
 
-    <div class="results">
+    <div class="results" style="--d: 200ms">
       <div class="result-row">
         <div class="result-label">汇率</div>
         <div id="rateValue" class="result-value is-empty" title="单击复制">-</div>
@@ -427,7 +391,7 @@
     </div>
   </div>
 
-  <div class="app-foot">空格 / Tab 下一格 · 单击数字复制 · Esc 清空</div>
+  <div class="app-foot" style="--d: 280ms">空格 / Tab 下一格 · 单击数字复制 · Esc 清空</div>
 </div>
 
 <div id="toast" class="toast" role="status"></div>
@@ -539,7 +503,18 @@
     return FIELD_IDS.map(id => document.getElementById(id));
   }
 
+  // 输入内容较长时自动缩小字号，保证格子里完整显示
+  function fitFieldFont(field) {
+    field.style.fontSize = "";
+    let size = parseFloat(getComputedStyle(field).fontSize);
+    while (field.scrollWidth > field.clientWidth && size > 13) {
+      size -= 1;
+      field.style.fontSize = size + "px";
+    }
+  }
+
   function render() {
+    getFields().forEach(fitFieldFont);
     const hint = document.getElementById("inputHint");
     const values = getFields().map(field => field.value.trim());
     // 三格没填全就不出结果，也不提示错误
@@ -662,6 +637,8 @@
       getFields()[0].focus();
     }
   });
+
+  window.addEventListener("resize", () => getFields().forEach(fitFieldFont));
 
   render();
 

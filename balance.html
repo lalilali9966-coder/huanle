@@ -36,9 +36,20 @@
       --font-ui: "HL Sans", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
       --font-num: "HL Sans", "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
       --font-mono: "HL Mono", ui-monospace, Consolas, "Courier New", monospace;
+      /* 同心圆角：外层圆角 = 内层圆角 + 间距。卡片 18 = 右上角按钮 8 + 间距 10 */
+      --r-card: 18px;
+      /* 阴影代替边框：一圈很淡的描边 + 两层柔和阴影，换了背景颜色也能自然融入 */
+      --shadow-card: 0 0 0 1px rgb(0 0 0 / .06), 0 1px 2px -1px rgb(0 0 0 / .06), 0 2px 4px rgb(0 0 0 / .04);
+      /* 按钮的描边画在内侧，和蓝色主按钮一样大 */
+      --shadow-btn: inset 0 0 0 1px rgb(16 24 40 / .12), 0 1px 2px rgb(16 24 40 / .05);
+      --shadow-btn-hover: inset 0 0 0 1px rgb(16 24 40 / .2), 0 1px 2px rgb(16 24 40 / .06);
+      --ease-out: cubic-bezier(.2, .7, .2, 1);
     }
 
     * { box-sizing: border-box; }
+    /* 等宽数字：所有数字一样宽，余额、时间、笔数、页码变化时不会左右跳动。
+       用 !important 是因为各处的 font: 简写会把它重置回默认（比例数字） */
+    *, *::before, *::after { font-variant-numeric: tabular-nums !important; }
     html { -webkit-text-size-adjust: 100%; }
 
     body {
@@ -51,11 +62,13 @@
 
     button { font: inherit; }
     h1, h2, p { margin: 0; }
+    /* 平衡换行：标题、提示文字换行时每行长度接近 */
+    h1, h2, .card-title, .toast { text-wrap: balance; }
     .page { width: min(1240px, 100% - 2 * var(--gutter)); margin: 0 auto; padding: 20px 0 40px; }
     .icon { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
     /* ===== 卡片 ===== */
-    .card { border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 1px 2px rgba(16, 24, 40, .03); }
+    .card { border-radius: var(--r-card); background: #fff; box-shadow: var(--shadow-card); }
     .card + .card { margin-top: 14px; }
     .card.table-card { overflow: hidden; }
 
@@ -63,8 +76,8 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      min-height: 60px;
-      padding: 12px 16px 12px 20px;
+      /* “更新余额”按钮贴着卡片右上角：上、右间距都是 10，圆角 8 + 10 = 卡片 18 */
+      padding: 10px 10px 10px 20px;
       border-bottom: 1px solid var(--line-2);
     }
 
@@ -82,25 +95,29 @@
       gap: 6px;
       height: 34px;
       padding: 0 14px;
-      border: 1px solid #d5dbe5;
+      border: 0;
       border-radius: 8px;
       background: #fff;
+      box-shadow: var(--shadow-btn);
       color: #344054;
       font-size: 13.5px;
       white-space: nowrap;
       cursor: pointer;
-      transition: background .15s, border-color .15s;
+      transition: background .15s, box-shadow .15s;
     }
 
     .btn .icon { width: 15px; height: 15px; }
-    .btn-primary { padding: 0 16px 0 13px; border-color: var(--brand); background: var(--brand); color: #fff; font-weight: 500; }
-    .btn-primary:hover { border-color: var(--brand-dark); background: var(--brand-dark); }
-    .btn-primary:disabled { border-color: #8ea6ea; background: #8ea6ea; cursor: default; }
+    .btn:hover { background: #f8fafc; box-shadow: var(--shadow-btn-hover); }
+    .btn-primary, .btn-primary:hover { box-shadow: 0 1px 2px rgb(16 24 40 / .12); }
+    .btn-primary { padding: 0 16px 0 13px; background: var(--brand); color: #fff; font-weight: 500; }
+    .btn-primary:hover { background: var(--brand-dark); }
+    .btn-primary:disabled { background: #8ea6ea; box-shadow: none; cursor: default; }
     .btn-primary:disabled .icon { animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ===== 地址表格 ===== */
-    .table-wrap { overflow-x: auto; }
+    /* 竖向不滚动：行往上滑入时不会闪出滚动条 */
+    .table-wrap { overflow-x: auto; overflow-y: hidden; }
     .bal-table { width: 100%; min-width: 720px; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
     .c-name { width: 130px; }
     .c-bal { width: 220px; }
@@ -168,9 +185,11 @@
       left: 50%;
       bottom: 32px;
       z-index: 70;
+      width: max-content;
       max-width: calc(100% - 32px);
       padding: 10px 16px;
       border-radius: 10px;
+      text-align: center;
       background: rgba(20, 32, 57, .92);
       color: #fff;
       font-size: 13px;
@@ -181,6 +200,15 @@
     }
 
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    /* ===== 错开入场：卡片先淡入，6 行再依次淡入（只在打开页面时）=====
+       --t 是打开页面后已经过去的时间：1.2 秒内表格重画（比如开始更新），动画接着播完，不会突然跳出来 */
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .page > .card { animation: rise .5s var(--ease-out) backwards; }
+      .bal-table tr.enter { animation: rise .4s var(--ease-out) backwards; animation-delay: calc(var(--i, 0) * 60ms + 120ms - var(--t, 0ms)); }
+    }
 
     /* 1279px 以下：收窄其他列，保证地址一行完整显示；再窄就表格内左右滑动 */
     @media (max-width: 1279px) {
@@ -195,6 +223,7 @@
       :root { --gutter: 10px; }
       .card-head { flex-wrap: wrap; }
       .head-tools { width: 100%; justify-content: space-between; margin-left: 0; }
+      .card-head { padding: 10px 20px 12px; }
     }
   </style>
 </head>
@@ -256,14 +285,17 @@
   const TRONGRID_BASE = "https://api.trongrid.io";
   const DEFAULT_TRONGRID_API_KEY = "e39e6de7-6c7a-474b-8198-058cfbe437f0";
   const EXPLORER_ADDRESS_URL = "https://tronscan.org/#/address/";
-  const CACHE_KEY = "BALANCE_OVERVIEW_V1";
+  const CACHE_KEY = "BALANCE_OVERVIEW_V2";
   const REQUEST_TIMEOUT_MS = 12000;
   const MAX_CONCURRENT = 2;          // 同时最多发 2 个请求，避免触发 429 限流
-  const SENT_PAGE_SIZE = 50;         // 今天的转出记录每页取 50 笔（每天最多 25 笔，一页就够）
-  const SENT_MAX_PAGES = 4;
+  const SENT_PAGE_SIZE = 200;        // 今天的转出记录每页取 200 条（接口上限），一般一页就够
+  const SENT_MAX_PAGES = 5;
+  // 笔数每天几点重置：null = 按看网页这台电脑的时间 0 点；如果要固定按北京时间 0 点，改成 8
+  const RESET_UTC_OFFSET_HOURS = null;
 
   // 每个地址的结果：usdt 为链上原始整数（6 位小数）；sent 为今天已转出笔数，sentDay 为统计的是哪一天
   let results = WALLETS.map(() => ({}));
+  const pageOpenedAt = performance.now();   // 错开入场：打开页面后 1.2 秒内显示的行依次淡入
   let updatedAt = 0;
   let loading = false;
 
@@ -317,7 +349,7 @@
           signal: controller.signal
         }));
         clearTimeout(timer);
-        if (response.status === 429) throw new Error("请求太快，被限流（429）");
+        if (response.status === 429 || response.status === 403 || response.status === 503) throw new Error("请求太快，被限流（" + response.status + "）");
         if (!response.ok) throw new Error("服务器返回错误（" + response.status + "）");
         try {
           return await response.json();
@@ -385,9 +417,13 @@
   }
 
   // ---------- 链上数据 ----------
-  // 今天 0 点（按这台电脑的时间），笔数从这个时间开始算
-  function todayStart() {
-    const d = new Date();
+  // 今天 0 点的时间戳，笔数从这个时间开始算
+  function todayStart(now = Date.now()) {
+    if (typeof RESET_UTC_OFFSET_HOURS === "number") {
+      const offset = RESET_UTC_OFFSET_HOURS * 3600000;
+      return Math.floor((now + offset) / 86400000) * 86400000 - offset;
+    }
+    const d = new Date(now);
     d.setHours(0, 0, 0, 0);
     return d.getTime();
   }
@@ -404,8 +440,9 @@
     return "0";
   }
 
-  // 今天已转出几笔 USDT：只取今天 0 点以后、从这个地址转出去的 USDT 记录（失败的交易不会出现，TRX 转账不算）
-  async function querySentToday(address, dayStart) {
+  // 今天已转出几笔 USDT：只取今天 0 点以后、从这个地址转出去的 USDT 记录
+  // 不算：转入、授权、失败的交易（链上不会有记录）、TRX 转账、金额为 0 的转出（常见的“零转账”骗局，别人就能伪造）
+  async function querySentToday(address, dayStart, daily) {
     const hashes = new Set();
     let fingerprint = "";
     for (let page = 0; page < SENT_MAX_PAGES; page++) {
@@ -418,24 +455,28 @@
       url.searchParams.set("limit", String(SENT_PAGE_SIZE));
       if (fingerprint) url.searchParams.set("fingerprint", fingerprint);
       const data = await requestJson(url.toString());
-      if (!data || !Array.isArray(data.data)) throw new Error("返回的数据格式不对");
+      if (!data || data.success === false || !Array.isArray(data.data)) throw new Error("返回的数据格式不对");
       for (const tx of data.data) {
         if (tx.from !== address) continue;                              // 只算转出
         if (tx.type && tx.type !== "Transfer") continue;                // 授权（Approval）不算
+        if (tx.token_info && tx.token_info.address && tx.token_info.address !== USDT_CONTRACT) continue;   // 只算真 USDT
+        if (!/[1-9]/.test(String(tx.value || ""))) continue;            // 金额为 0 的不算（零转账骗局）
         if (Number(tx.block_timestamp || 0) < dayStart) continue;       // 只算今天
         if (tx.transaction_id) hashes.add(tx.transaction_id);           // 同一笔交易只算一次
       }
       fingerprint = data.meta && data.meta.fingerprint ? data.meta.fingerprint : "";
-      if (!fingerprint) break;
+      if (!fingerprint) return hashes.size;
     }
-    return hashes.size;
+    // 记录多到翻了 5 页还没翻完：已经超过每天笔数就按 0 剩余显示，否则算查询失败，不显示不准的数
+    if (hashes.size >= daily) return hashes.size;
+    throw new Error("今天的记录太多，没统计完");
   }
 
   // 每个地址只发 2 个请求：余额、今天转出的记录。某一项失败只影响那一项，失败时保留上次的值（灰色显示）
   async function queryWallet(index) {
-    const { address } = WALLETS[index];
+    const { address, daily } = WALLETS[index];
     const dayStart = todayStart();
-    const [balance, sent] = await Promise.allSettled([queryBalance(address), querySentToday(address, dayStart)]);
+    const [balance, sent] = await Promise.allSettled([queryBalance(address), querySentToday(address, dayStart, daily)]);
     const old = results[index] || {};
     const next = { failed: [], reasons: [] };
     const reason = result => (result.reason && result.reason.message ? result.reason.message : "未知错误");
@@ -447,7 +488,8 @@
       next.reasons.push(`余额：${reason(balance)}`);
     }
     if (sent.status === "fulfilled") {
-      next.sent = sent.value;
+      // 同一天里已转出笔数只会增加：接口偶尔漏返回或返回空时，不让剩余笔数变多
+      next.sent = old.sentDay === dayStart && typeof old.sent === "number" ? Math.max(old.sent, sent.value) : sent.value;
       next.sentDay = dayStart;
     } else {
       next.sent = old.sent;
@@ -468,7 +510,7 @@
 
   // 笔数：今天还能转几笔 / 每天可转几笔（统计的不是今天的数据就不显示，等更新）
   function countHtml(wallet, item) {
-    if (typeof item.sent !== "number" || item.sentDay !== todayStart()) return '<span class="none">—</span>';
+    if (typeof item.sent !== "number" || item.sentDay !== todayStart()) return '<span class="none" title="还没有今天的笔数，请点“更新余额”">—</span>';
     const left = Math.max(0, wallet.daily - item.sent);
     const tip = `今天已转出 ${item.sent} 笔，每天可转 ${wallet.daily} 笔`;
     return `<span class="cnt${left === 0 ? " is-empty" : ""}" title="${tip}">${left}<span class="quota"> / ${wallet.daily}</span></span>`;
@@ -477,14 +519,19 @@
   function render() {
     // 顺序固定：按上面 WALLETS 的顺序
     const order = WALLETS.map((_, i) => i);
+    const enterElapsed = performance.now() - pageOpenedAt;
+    const animateRows = enterElapsed < 1200;
+    const rowsBox = document.getElementById("rows");
+    rowsBox.style.setProperty("--t", animateRows ? `${Math.round(enterElapsed)}ms` : "0ms");
 
-    document.getElementById("rows").innerHTML = order.map(i => {
+    rowsBox.innerHTML = order.map(i => {
       const wallet = WALLETS[i];
       const item = results[i] || {};
       const failed = item.failed && item.failed.length ? item.failed : [];
       const stale = key => (failed.includes(key) ? " is-stale" : "");
-      return `<tr class="${loading ? "is-loading" : ""}">
-        <td class="name">${escapeHtml(wallet.name)}${failed.length ? '<span class="dot" title="${escapeHtml((item.reasons || []).join("；") || "查询失败")}"></span>' : ""}</td>
+      const rowClass = [loading ? "is-loading" : "", animateRows ? "enter" : ""].filter(Boolean).join(" ");
+      return `<tr class="${rowClass}"${animateRows ? ` style="--i: ${i}"` : ""}>
+        <td class="name">${escapeHtml(wallet.name)}${failed.length ? `<span class="dot" title="${escapeHtml((item.reasons || []).join("；") || "查询失败")}"></span>` : ""}</td>
         <td><span class="addr">${wallet.address}</span></td>
         <td class="${stale("usdt").trim()}">${amountHtml(item.usdt)}</td>
         <td class="${stale("sent").trim()}">${countHtml(wallet, item)}</td>
@@ -565,8 +612,18 @@
     if (retry) retryWallet(Number(retry.dataset.retry));
   });
 
+  // 页面开着过了 0 点：只重新显示一次（不自动查询），昨天的笔数变成“—”，等点“更新余额”
+  function scheduleMidnightRender() {
+    const wait = todayStart() + 86400000 - Date.now() + 1000;
+    setTimeout(() => {
+      if (!loading) render();
+      scheduleMidnightRender();
+    }, Math.max(1000, Math.min(wait, 3600000)));
+  }
+
   loadCache();
   render();
+  scheduleMidnightRender();
   // 打开页面时查询一次；之后只在点“更新余额”时更新（不自动刷新）
   refreshAll();
 </script>
