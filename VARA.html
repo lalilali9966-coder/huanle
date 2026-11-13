@@ -858,12 +858,12 @@
   const DEFAULT_TRONGRID_API_KEY = "e39e6de7-6c7a-474b-8198-058cfbe437f0";
   const TRANSACTION_CACHE_PREFIX = "TRON_USDT_TRANSACTIONS_";
   const INITIAL_TRANSACTION_LIMIT = 50;
-  const UPDATE_TRANSACTION_LIMIT = 50;
   const PAGE_SIZES = [10, 20, 50];
   const PAGE_SIZE_KEY = "TX_PAGE_SIZE";
   const OLDER_TRANSACTION_LIMIT = 50;
   const MAX_CACHED_TRANSACTIONS = 500;
   const MAX_UPDATE_PAGES = 20;
+  const UPDATE_PAGE_LIMIT = 200;     // 更新时每页 200 笔（TronGrid 上限），新交易多时少发几次请求
   const REQUEST_TIMEOUT_MS = 12000;
   const RESULT_TEXT = { success: "已成功", pending: "确认中", failed: "失败" };
   const RESULT_ICON = {
@@ -1863,13 +1863,29 @@
         }
 
         if (!response.ok) {
-          throw new Error("请求失败，状态码：" + response.status);
+          // 带上 TronGrid 返回的原因（例如 {"error":"..."}），出错时能看出是哪里的问题
+          let detail = "";
+          try {
+            const text = (await response.text()).trim();
+            try {
+              const json = JSON.parse(text);
+              detail = json.error || json.message || json.Error || "";
+            } catch (e) {
+              detail = text;
+            }
+          } catch (e) {}
+          detail = String(detail || "").replace(/\s+/g, " ").slice(0, 120);
+          const error = new Error("请求失败，状态码：" + response.status + (detail ? "（" + detail + "）" : ""));
+          error.status = response.status;
+          throw error;
         }
 
         return await response.json();
       } catch (err) {
         clearTimeout(timer);
         lastError = err;
+        // 400 这类“请求本身有问题”的错误，再试也一样，不再重试
+        if (err && err.status >= 400 && err.status < 500 && err.status !== 408) break;
         if (i < retryTimes) {
           await new Promise(resolve => setTimeout(resolve, 500 * (i + 1)));
         }
@@ -1967,30 +1983,41 @@
     document.getElementById("energyUnit").hidden = !/^\d/.test(energy || "");
   }
 
+  // 首次查询：取最近 50 笔。
+  // 更新：只取上次之后的新交易。新交易很多时要翻页——不用 TronGrid 的 fingerprint 翻页（换页时参数稍有不同
+  // 就会返回 400，之前“更新失败：状态码 400”就是这样来的），改成按时间往前翻：每页 200 笔，
+  // 下一页的 max_timestamp = 这一页最早一笔的时间，边界上重复的交易按哈希去掉。
   async function queryTransactions(address, minTimestamp = 0) {
     const params = {
-      limit: minTimestamp ? UPDATE_TRANSACTION_LIMIT : INITIAL_TRANSACTION_LIMIT,
       only_confirmed: false,
       contract_address: USDT_CONTRACT,
       order_by: "block_timestamp,desc"
     };
-
-    if (minTimestamp) {
-      params.min_timestamp = minTimestamp;
-    }
-
+    const path = `/v1/accounts/${address}/transactions/trc20`;
     const list = [];
-    let fingerprint = "";
-    let pageCount = 0;
 
-    do {
-      const url = buildUrl(`/v1/accounts/${address}/transactions/trc20`, { ...params, fingerprint });
-      const data = await requestJson(url);
+    if (!minTimestamp) {
+      const data = await requestJson(buildUrl(path, { ...params, limit: INITIAL_TRANSACTION_LIMIT }));
       if (Array.isArray(data.data)) list.push(...data.data);
-      fingerprint = data.meta && data.meta.fingerprint ? data.meta.fingerprint : "";
-      pageCount++;
-      // 首次查询只取最近 50 笔；更新时继续翻页，避免两次更新之间超过 50 笔时漏单
-    } while (minTimestamp && fingerprint && pageCount < MAX_UPDATE_PAGES);
+    } else {
+      let maxTimestamp = 0;
+      for (let page = 0; page < MAX_UPDATE_PAGES; page++) {
+        const pageParams = { ...params, limit: UPDATE_PAGE_LIMIT, min_timestamp: minTimestamp };
+        if (maxTimestamp) pageParams.max_timestamp = maxTimestamp;
+        const data = await requestJson(buildUrl(path, pageParams));
+        const rows = Array.isArray(data.data) ? data.data : [];
+        list.push(...rows);
+        const hasMore = rows.length >= UPDATE_PAGE_LIMIT || Boolean(data.meta && data.meta.fingerprint);
+        if (!rows.length || !hasMore) break;
+        const oldest = rows.reduce((min, tx) => {
+          const timestamp = Number(tx.block_timestamp || 0);
+          return timestamp && timestamp < min ? timestamp : min;
+        }, Infinity);
+        if (!Number.isFinite(oldest) || oldest <= minTimestamp) break;
+        // 整页都是同一时间：往前挪 1 毫秒，避免原地打转
+        maxTimestamp = oldest === maxTimestamp ? oldest - 1 : oldest;
+      }
+    }
 
     const seen = new Set();
     return list.filter(tx => {
